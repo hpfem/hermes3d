@@ -1,0 +1,58 @@
+hermes3d
+========
+
+Compilation
+------------
+
+$ cmake .
+$ make
+
+Intel C Compiler
+----------------
+
+To use Intel C compiler
+
+$ export CC=/path/to/icc
+$ export CXX=/path/to/icpc
+$ cmake .
+$ make
+
+NOTE: version 10.0.026 did not work for me (some compatibility issues with STL), 10.1.022 works ok
+
+Tests
+-----
+
+To run tests, do:
+
+$ make test-quick
+
+To run all tests (warning: takes very long time to finish):
+
+$ make test
+
+
+Examples
+--------
+
+To build examples, type:
+
+$ make examples
+
+To get output files that can be viewed in a visualizer, you need to say:
+
+set(OUTPUT_DIR /path/where/the/files/will/be/stored)
+
+To view the files:
+# gmsh my-file.gmsh (for gmsh)
+# paraview --data=my-file.vtk (for VTK)
+
+
+Debugging
+---------
+
+If you need to debug the build, use:
+
+cmake -DCMAKE_VERBOSE_MAKEFILE=ON .
+
+Then the make will print the exact commands that are executed.
+

@@ -1,0 +1,6 @@
+if(REAL)
+add_subdirectory(copy)
+add_subdirectory(refinements)
+add_subdirectory(regularize)
+add_subdirectory(multi-mesh)
+endif(REAL)
