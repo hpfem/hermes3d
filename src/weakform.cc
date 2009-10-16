@@ -326,6 +326,9 @@ bool **WeakForm::get_blocks()
 			if (bfvol[i].sym)
 				blocks[bfvol[i].j][bfvol[i].i] = true;
 		}
+
+		for (unsigned i = 0; i < bfsurf.size(); i++)
+			blocks[bfsurf[i].i][bfsurf[i].j] = true;
 	}
 	else {
 		for (unsigned i = 0; i < jfvol.size(); i++) {
@@ -337,9 +340,6 @@ bool **WeakForm::get_blocks()
 		for (unsigned i = 0; i < jfsurf.size(); i++)
 			blocks[jfsurf[i].i][jfsurf[i].j] = true;
 	}
-
-	for (unsigned i = 0; i < bfsurf.size(); i++)
-		blocks[bfsurf[i].i][bfsurf[i].j] = true;
 
 	return blocks;
 }
