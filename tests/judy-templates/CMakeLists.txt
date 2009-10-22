@@ -18,5 +18,6 @@ configure_file(
 )
 
 # Tests
-add_test(judy-templates-1 ${PROJECT_NAME})
+set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
+add_test(judy-templates-1 ${BIN})
 

@@ -24,6 +24,7 @@ configure_file(
 
 # Tests
 
-add_test(quadrature-1 ${PROJECT_NAME})
+set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
+add_test(quadrature-1 ${BIN})
 
 endif(REAL)

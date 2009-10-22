@@ -23,6 +23,7 @@ configure_file(
 
 # Tests
 
-add_test(orders-1 ${PROJECT_NAME})
+set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
+add_test(orders-1 ${BIN})
 
 endif(REAL)

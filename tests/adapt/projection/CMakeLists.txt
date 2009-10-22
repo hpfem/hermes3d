@@ -26,8 +26,9 @@ configure_file(
 
 enable_testing()
 
-add_test(projection-h1-1 ${PROJECT_NAME} h1 ${MESHES_DIR}/mesh3d/hex1.mesh3d)
-add_test(projection-h1-2 ${PROJECT_NAME} h1 ${MESHES_DIR}/mesh3d/hex2.mesh3d)
-add_test(projection-h1-3 ${PROJECT_NAME} h1 ${MESHES_DIR}/mesh3d/hex4.mesh3d)
-add_test(projection-h1-4 ${PROJECT_NAME} h1 ${MESHES_DIR}/mesh3d/hex8.mesh3d)
-add_test(projection-h1-5 ${PROJECT_NAME} h1 ${MESHES_DIR}/mesh3d/hex27.mesh3d)
+set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
+add_test(projection-h1-1 ${BIN} h1 ${MESHES_DIR}/mesh3d/hex1.mesh3d)
+add_test(projection-h1-2 ${BIN} h1 ${MESHES_DIR}/mesh3d/hex2.mesh3d)
+add_test(projection-h1-3 ${BIN} h1 ${MESHES_DIR}/mesh3d/hex4.mesh3d)
+add_test(projection-h1-4 ${BIN} h1 ${MESHES_DIR}/mesh3d/hex8.mesh3d)
+add_test(projection-h1-5 ${BIN} h1 ${MESHES_DIR}/mesh3d/hex27.mesh3d)
