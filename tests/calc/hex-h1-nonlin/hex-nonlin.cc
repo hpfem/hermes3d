@@ -71,19 +71,19 @@ scalar bc_values(int marker, double x, double y, double z)
 }
 
 template<typename f_t, typename res_t>
-res_t jacobi_form(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
+res_t jacobi_form(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, vi, vj, e);
 }
 
 template<typename f_t, typename res_t>
-res_t resid_form(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t resid_form(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (grad_grad(u, vi) + 6.0 * vi->fn[i]);
+		res += wt[i] * (grad_grad(u[0], vi) + 6.0 * vi->fn[i]);
 	return res;
 }
 
@@ -122,24 +122,24 @@ scalar bc_values(int marker, double x, double y, double z)
 }
 
 template<typename f_t, typename res_t>
-res_t jacobi_form(int n, double *wt, fn_t<f_t> *itr, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t jacobi_form(int n, double *wt, fn_t<f_t> *itr[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
 		res += wt[i] *
-			(dlambda(itr->fn[i]) * u->fn[i] * grad_grad(itr, v) +
-			  lambda(itr->fn[i]) * grad_grad(u, v));
+			(dlambda(itr[0]->fn[i]) * u->fn[i] * grad_grad(itr[0], v) +
+			  lambda(itr[0]->fn[i]) * grad_grad(u, v));
 	return res;
 }
 
 template<typename f_t, typename res_t>
-res_t resid_form(int n, double *wt, fn_t<f_t> *itr, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t resid_form(int n, double *wt, fn_t<f_t> *itr[], fn_t<f_t> *v, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (lambda(itr->fn[i]) * grad_grad(itr, v));
+		res += wt[i] * (lambda(itr[0]->fn[i]) * grad_grad(itr[0], v));
 	return res;
 }
 
@@ -191,23 +191,23 @@ inline T f(T x, T y, T z)
 
 
 template<typename f_t, typename res_t>
-res_t jacobi_form(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
+res_t jacobi_form(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (vj->fn[i] * grad_grad(u, vi) + u->fn[i] * grad_grad(vj, vi));
+		res += wt[i] * (vj->fn[i] * grad_grad(u[0], vi) + u[0]->fn[i] * grad_grad(vj, vi));
 	return res;
 }
 
 
 template<typename f_t, typename res_t>
-res_t resid_form(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t resid_form(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (u->fn[i] * grad_grad(u, vi) - f(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
+		res += wt[i] * (u[0]->fn[i] * grad_grad(u[0], vi) - f(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
 	return res;
 }
 

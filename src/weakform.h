@@ -62,14 +62,14 @@ class WeakForm {
 	                              user_data_t<ord_t> *);
 
 	// non-linear case
-	typedef scalar (*jacform_val_t)(int n, double *wt, fn_t<scalar> *u, fn_t<double> *vi,
+	typedef scalar (*jacform_val_t)(int n, double *wt, fn_t<scalar> *u[], fn_t<double> *vi,
 	                                fn_t<double> *vj, geom_t<double> *e, user_data_t<scalar> *);
-	typedef ord_t (*jacform_ord_t)(int n, double *wt, fn_t<ord_t> *u, fn_t<ord_t> *vi,
+	typedef ord_t (*jacform_ord_t)(int n, double *wt, fn_t<ord_t> *u[], fn_t<ord_t> *vi,
 	                               fn_t<ord_t> *vj, geom_t<ord_t> *e, user_data_t<ord_t> *);
 
-	typedef scalar (*resform_val_t)(int n, double *wt, fn_t<scalar> *u, fn_t<double> *vi,
+	typedef scalar (*resform_val_t)(int n, double *wt, fn_t<scalar> *u[], fn_t<double> *vi,
 	                                geom_t<double> *e, user_data_t<scalar> *);
-	typedef ord_t (*resform_ord_t)(int n, double *wt, fn_t<ord_t> *u, fn_t<ord_t> *vi,
+	typedef ord_t (*resform_ord_t)(int n, double *wt, fn_t<ord_t> *u[], fn_t<ord_t> *vi,
 	                               geom_t<ord_t> *e, user_data_t<ord_t> *);
 
 public:

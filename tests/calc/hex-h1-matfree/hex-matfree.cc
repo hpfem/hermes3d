@@ -92,18 +92,18 @@ double bc_values(int marker, double x, double y, double z)
 }
 
 template<typename f_t, typename res_t>
-res_t form_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
              user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (grad_grad(u, vi) - dfnc(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
+		res += wt[i] * (grad_grad(u[0], vi) - dfnc(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
 	return res;
 }
 
 // precond
 template<typename f_t, typename res_t>
-res_t precond_0_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
+res_t precond_0_0(int n, double *wt, fn_t<f_t> *u[0], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
@@ -132,19 +132,19 @@ EBCType bc_types(int marker)
 }
 
 template<typename f_t, typename res_t>
-res_t form_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0(int n, double *wt, fn_t<f_t> *u[0], fn_t<f_t> *vi, geom_t<f_t> *e,
              user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (grad_grad(u, vi)
-				+ u->fn[i] * vi->fn[i]
+		res += wt[i] * (grad_grad(u[0], vi)
+				+ u[0]->fn[i] * vi->fn[i]
 				- dfnc(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
 	return res;
 }
 
 template<typename f_t, typename res_t>
-res_t form_0_surf(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0_surf(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t result = 0;
@@ -160,7 +160,7 @@ res_t form_0_surf(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e
 
 // precond
 template<typename f_t, typename res_t>
-res_t precond_0_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
+res_t precond_0_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
@@ -189,18 +189,18 @@ EBCType bc_types(int marker)
 }
 
 template<typename f_t, typename res_t>
-res_t form_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
              user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (grad_grad(u, vi)
+		res += wt[i] * (grad_grad(u[0], vi)
 				- dfnc(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
 	return res;
 }
 
 template<typename f_t, typename res_t>
-res_t form_0_surf(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0_surf(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0;
@@ -209,7 +209,7 @@ res_t form_0_surf(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e
 		res_t dy = 2 * e->y[i];
 		res_t dz = 2 * e->z[i];
 
-		res += wt[i] * (u->fn[i] * vi->fn[i]
+		res += wt[i] * (u[0]->fn[i] * vi->fn[i]
 				- (dx * e->nx[i] + dy * e->ny[i] + dz * e->nz[i] + fnc(e->x[i], e->y[i], e->z[i])) * vi->fn[i]);
 	}
 	return res;
@@ -237,18 +237,18 @@ inline T f(T x, T y, T z)
 
 
 template<typename f_t, typename res_t>
-res_t form_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
              user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (u->fn[i] * grad_grad(u, vi) - f(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
+		res += wt[i] * (u[0]->fn[i] * grad_grad(u[0], vi) - f(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
 	return res;
 }
 
 // precond
 template<typename f_t, typename res_t>
-res_t precond_0_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
+res_t precond_0_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0.0;

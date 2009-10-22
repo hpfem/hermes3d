@@ -90,12 +90,12 @@ protected:
 		void free();
 	} fn_cache;
 
-	scalar eval_form(WeakForm::JacFormVol *bf, Solution *sln, ShapeFunction *fu,
+	scalar eval_form(WeakForm::JacFormVol *bf, Solution *sln[], ShapeFunction *fu,
 	                 ShapeFunction *fv, RefMap *ru, RefMap *rv);
-	scalar eval_form(WeakForm::ResFormVol *lf, Solution *sln, ShapeFunction *fv, RefMap *rv);
-	scalar eval_form(WeakForm::JacFormSurf *bf, Solution *sln, ShapeFunction *fu,
+	scalar eval_form(WeakForm::ResFormVol *lf, Solution *sln[], ShapeFunction *fv, RefMap *rv);
+	scalar eval_form(WeakForm::JacFormSurf *bf, Solution *sln[], ShapeFunction *fu,
 	                 ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp);
-	scalar eval_form(WeakForm::ResFormSurf *lf, Solution *sln, ShapeFunction *fv, RefMap *rv,
+	scalar eval_form(WeakForm::ResFormSurf *lf, Solution *sln[], ShapeFunction *fv, RefMap *rv,
 	                 FacePos *fp);
 
 	sfn_t *get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt);

@@ -220,7 +220,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 						if (!sym) { // unsymmetric block
 							for (int j = 0; j < an->cnt; j++) {
 								fu->set_active_shape(an->idx[j]);
-								scalar bi = eval_form(bfv, slns[m], fu, fv, refmap + n, refmap + m)
+								scalar bi = eval_form(bfv, slns, fu, fv, refmap + n, refmap + m)
 									* an->coef[j] * am->coef[i];
 								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
 							}
@@ -229,7 +229,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 							for (int j = 0; j < an->cnt; j++) {
 								if (j < i && an->dof[j] >= 0) continue;
 								fu->set_active_shape(an->idx[j]);
-								scalar bi = eval_form(bfv, slns[m], fu, fv, refmap + n, refmap + m)
+								scalar bi = eval_form(bfv, slns, fu, fv, refmap + n, refmap + m)
 									* an->coef[j] * am->coef[i];
 								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = mat[j][i] = bi;
 							}
@@ -259,7 +259,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 					for (int i = 0; i < am->cnt; i++) {
 						if (am->dof[i] == DIRICHLET_DOF) continue;
 						fv->set_active_shape(am->idx[i]);
-						rhs->add(am->dof[i], eval_form(lfv, slns[m], fv, refmap + m) * am->coef[i]);
+						rhs->add(am->dof[i], eval_form(lfv, slns, fv, refmap + m) * am->coef[i]);
 					}
 				}
 			}
@@ -301,7 +301,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 							fv->set_active_shape(am->idx[i]);
 							for (int j = 0; j < an->cnt; j++) {
 								fu->set_active_shape(an->idx[j]);
-								scalar bi = eval_form(bfs, slns[m], fu, fv, refmap + n, refmap + m,
+								scalar bi = eval_form(bfs, slns, fu, fv, refmap + n, refmap + m,
 									fp + iface) * an->coef[j] * am->coef[i];
 								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
 							}
@@ -326,7 +326,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 							if (am->dof[i] == DIRICHLET_DOF) continue;
 							fv->set_active_shape(am->idx[i]);
 							rhs->add(am->dof[i],
-								eval_form(lfs, slns[m], fv, refmap + m, fp + iface) * am->coef[i]);
+								eval_form(lfs, slns, fv, refmap + m, fp + iface) * am->coef[i]);
 						}
 					}
 				}
@@ -482,14 +482,15 @@ mfn_t *FeProblem::get_fn(Solution *fu, int order, RefMap *rm, const int np, cons
 	return u;
 }
 
-scalar FeProblem::eval_form(WeakForm::JacFormVol *bf, Solution *sln, ShapeFunction *fu,
+scalar FeProblem::eval_form(WeakForm::JacFormVol *bf, Solution *sln[], ShapeFunction *fu,
                             ShapeFunction *fv, RefMap *ru, RefMap *rv)
 {
 	_F_
 	Element *elem = fv->get_active_element();
 
 	// determine the integration order
-	fn_t<ord_t> oi = init_fn(sln->get_fn_order());
+	fn_t<ord_t> *oi = new fn_t<ord_t>[wf->neq];
+	for (int i = 0; i < wf->neq; i++) oi[i] = init_fn(sln[i]->get_fn_order());
 	fn_t<ord_t> ou = init_fn(fu->get_fn_order());
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 
@@ -507,7 +508,8 @@ scalar FeProblem::eval_form(WeakForm::JacFormVol *bf, Solution *sln, ShapeFuncti
 	order.limit();
 	int ord_idx = order.get_idx();
 
-	free_fn(&oi);
+	for (int i = 0; i < wf->neq; i++) free_fn(oi + i);
+	delete [] oi;
 	free_fn(&ou);
 	free_fn(&ov);
 
@@ -525,7 +527,8 @@ scalar FeProblem::eval_form(WeakForm::JacFormVol *bf, Solution *sln, ShapeFuncti
 	jwt = fn_cache.jwt[ord_idx];
 	e = fn_cache.e[ord_idx];
 
-	mfn_t *prev = get_fn(sln, ord_idx, ru, np, pt);
+	mfn_t *prev[wf->neq];
+	for (int i = 0; i < wf->neq; i++) prev[i] = get_fn(sln[i], ord_idx, rv, np, pt);
 	sfn_t *u = get_fn(fu, ord_idx, ru, np, pt);
 	sfn_t *v = get_fn(fv, ord_idx, rv, np, pt);
 
@@ -535,13 +538,14 @@ scalar FeProblem::eval_form(WeakForm::JacFormVol *bf, Solution *sln, ShapeFuncti
 	return bf->fn(np, jwt, prev, u, v, &e, &ud);
 }
 
-scalar FeProblem::eval_form(WeakForm::ResFormVol *lf, Solution *sln, ShapeFunction *fv, RefMap *rv)
+scalar FeProblem::eval_form(WeakForm::ResFormVol *lf, Solution *sln[], ShapeFunction *fv, RefMap *rv)
 {
 	_F_
 	Element *elem = fv->get_active_element();
 
 	// determine the integration order
-	fn_t<ord_t> oi = init_fn(sln->get_fn_order());
+	fn_t<ord_t> *oi = new fn_t<ord_t>[wf->neq];
+	for (int i = 0; i < wf->neq; i++) oi[i] = init_fn(sln[i]->get_fn_order());
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 
 	user_data_t<ord_t> fake_ud;
@@ -558,7 +562,8 @@ scalar FeProblem::eval_form(WeakForm::ResFormVol *lf, Solution *sln, ShapeFuncti
 	order.limit();
 	int ord_idx = order.get_idx();
 
-	free_fn(&oi);
+	for (int i = 0; i < wf->neq; i++) free_fn(oi + i);
+	delete [] oi;
 	free_fn(&ov);
 
 	// eval the form
@@ -575,7 +580,8 @@ scalar FeProblem::eval_form(WeakForm::ResFormVol *lf, Solution *sln, ShapeFuncti
 	jwt = fn_cache.jwt[ord_idx];
 	e = fn_cache.e[ord_idx];
 
-	mfn_t *prev = get_fn(sln, ord_idx, rv, np, pt);
+	mfn_t *prev[wf->neq];
+	for (int i = 0; i < wf->neq; i++) prev[i] = get_fn(sln[i], ord_idx, rv, np, pt);
 	sfn_t *v = get_fn(fv, ord_idx, rv, np, pt);
 
 	user_data_t<scalar> ud;
@@ -584,13 +590,14 @@ scalar FeProblem::eval_form(WeakForm::ResFormVol *lf, Solution *sln, ShapeFuncti
 	return lf->fn(np, jwt, prev, v, &e, &ud);
 }
 
-scalar FeProblem::eval_form(WeakForm::JacFormSurf *bf, Solution *sln, ShapeFunction *fu,
+scalar FeProblem::eval_form(WeakForm::JacFormSurf *bf, Solution *sln[], ShapeFunction *fu,
                             ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp)
 {
 	_F_
 
 	// determine the integration order
-	fn_t<ord_t> oi = init_fn(sln->get_fn_order());
+	fn_t<ord_t> *oi = new fn_t<ord_t>[wf->neq];
+	for (int i = 0; i < wf->neq; i++) oi[i] = init_fn(sln[i]->get_fn_order());
 	fn_t<ord_t> ou = init_fn(fu->get_fn_order());
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 
@@ -609,7 +616,8 @@ scalar FeProblem::eval_form(WeakForm::JacFormSurf *bf, Solution *sln, ShapeFunct
 	order2_t face_order = order.get_face_order(fp->face);
 	int ord_idx = face_order.get_idx();
 
-	free_fn(&oi);
+	for (int i = 0; i < wf->neq; i++) free_fn(oi + i);
+	delete [] oi;
 	free_fn(&ou);
 	free_fn(&ov);
 
@@ -627,7 +635,8 @@ scalar FeProblem::eval_form(WeakForm::JacFormSurf *bf, Solution *sln, ShapeFunct
 	jwt = fn_cache.jwt[ord_idx];
 	e = fn_cache.e[ord_idx];
 
-	mfn_t *prev = get_fn(sln, ord_idx, rv, np, pt);
+	mfn_t *prev[wf->neq];
+	for (int i = 0; i < wf->neq; i++) prev[i] = get_fn(sln[i], ord_idx, rv, np, pt);
 	sfn_t *u = get_fn(fu, ord_idx, ru, fp->face, np, pt);
 	sfn_t *v = get_fn(fv, ord_idx, rv, fp->face, np, pt);
 
@@ -637,8 +646,8 @@ scalar FeProblem::eval_form(WeakForm::JacFormSurf *bf, Solution *sln, ShapeFunct
 	return bf->fn(np, jwt, prev, u, v, &e, &ud);
 }
 
-scalar FeProblem::eval_form(WeakForm::ResFormSurf *lf, Solution *sln, ShapeFunction *fv, RefMap *rv,
-                            FacePos *fp)
+scalar FeProblem::eval_form(WeakForm::ResFormSurf *lf, Solution *sln[], ShapeFunction *fv,
+                            RefMap *rv, FacePos *fp)
 {
 	_F_
 
@@ -646,7 +655,8 @@ scalar FeProblem::eval_form(WeakForm::ResFormSurf *lf, Solution *sln, ShapeFunct
 	user_data_t<ord_t> fake_ud;
 	init_ext_fns(fake_ud, lf->ext);
 
-	fn_t<ord_t> oi = init_fn(sln->get_fn_order());
+	fn_t<ord_t> *oi = new fn_t<ord_t>[wf->neq];
+	for (int i = 0; i < wf->neq; i++) oi[i] = init_fn(sln[i]->get_fn_order());
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 	double fake_wt = 1.0;
 	geom_t<ord_t> fake_e = init_geom(fp->marker);
@@ -660,7 +670,8 @@ scalar FeProblem::eval_form(WeakForm::ResFormSurf *lf, Solution *sln, ShapeFunct
 	order2_t face_order = order.get_face_order(fp->face);
 	int ord_idx = face_order.get_idx();
 
-	free_fn(&oi);
+	for (int i = 0; i < wf->neq; i++) free_fn(oi + i);
+	delete [] oi;
 	free_fn(&ov);
 
 	// eval the form
@@ -677,7 +688,8 @@ scalar FeProblem::eval_form(WeakForm::ResFormSurf *lf, Solution *sln, ShapeFunct
 	jwt = fn_cache.jwt[ord_idx];
 	e = fn_cache.e[ord_idx];
 
-	mfn_t *prev = get_fn(sln, ord_idx, rv, np, pt);
+	mfn_t *prev[wf->neq];
+	for (int i = 0; i < wf->neq; i++) prev[i] = get_fn(sln[i], ord_idx, rv, np, pt);
 	sfn_t *v = get_fn(fv, ord_idx, rv, fp->face, np, pt);
 
 	user_data_t<scalar> ud;
