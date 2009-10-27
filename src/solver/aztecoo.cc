@@ -127,3 +127,14 @@ int AztecOOSolver::get_num_iters()
 	return -1;
 #endif
 }
+
+double AztecOOSolver::get_residual()
+{
+	_F_
+#ifdef HAVE_AZTECOO
+	return aztec.TrueResidual();
+#else
+	return -1.0;
+#endif
+}
+

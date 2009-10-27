@@ -42,6 +42,7 @@ public:
 	virtual bool solve();
 
 	int get_num_iters();
+	double get_residual();
 
 	/// Set the type of the solver
 	/// @param[in] solver - name of the solver [ gmres | cg | cgs | tfqmr | bicgstab ]
