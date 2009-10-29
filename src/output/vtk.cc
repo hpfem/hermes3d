@@ -53,6 +53,8 @@
 
 #define EPS								10e-15
 
+static int divs[] = { 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6 };
+
 namespace Vtk {
 
 //// OutputQuad ////////////////////////////////////////////////////////////////////////////////////
@@ -162,14 +164,25 @@ void OutputQuadHex::calculate_view_points(order3_t order) {
 	_F_
 #ifdef WITH_HEX
 	int o = order.get_idx();
-	np[o] = Hex::NUM_VERTICES;
+	np[o] = (divs[order.x] + 1) * (divs[order.y] + 1) * (divs[order.z] + 1);
+
 	tables[o] = new QuadPt3D[np[o]];
-	const Point3D *ref_vtcs = RefHex::get_vertices();
-	for (int i = 0; i < Hex::NUM_VERTICES; i++) {
-		tables[o][i].x = ref_vtcs[i].x;
-		tables[o][i].y = ref_vtcs[i].y;
-		tables[o][i].z = ref_vtcs[i].z;
-		tables[o][i].w = 1.0;	// not used
+	double step_x, step_y, step_z;
+	step_x = 2.0 / divs[order.x];
+	step_y = 2.0 / divs[order.y];
+	step_z = 2.0 / divs[order.z];
+
+	int n = 0;
+	for (int k = 0; k < divs[order.z] + 1; k++) {
+		for (int l = 0; l < divs[order.y] + 1; l++) {
+			for (int m = 0; m < divs[order.x] + 1; m++, n++) {
+				assert(n < np[o]);
+				tables[o][n].x = (step_x * m) - 1;
+				tables[o][n].y = (step_y * l) - 1;
+				tables[o][n].z = (step_z * k) - 1;
+				tables[o][n].w = 1.0;   // not used
+			}
+		}
 	}
 #endif
 }
@@ -188,6 +201,7 @@ void OutputQuadHex::calculate_view_points(order3_t order) {
 class Linearizer {
 public:
 	Linearizer() { }
+	virtual ~Linearizer();
 
 	struct Cell {
 		enum EType {
@@ -205,8 +219,6 @@ public:
 	Array<double> &get_point_data(int idx = 0) { return pt_data[idx]; }
 
 	int add_point(double x, double y, double z);
-	/// Adding cells taken direct from Mesh class (1-based indexing)
-	int add_cell(Linearizer::Cell::EType type, int n, Word_t *vtcs);
 	/// Adding cells prepared by VtkOuputEngine (0-based indexing)
 	int add_cell(Linearizer::Cell::EType type, int n, int *vtcs);
 	void set_cell_data(int i, double v) { cell_data[i] = v; }
@@ -225,6 +237,17 @@ public:
 	Array<double> pt_data[3];
 };
 
+Linearizer::~Linearizer()
+{
+	_F_
+	for (Word_t i = points.first(); i != INVALID_IDX; i = points.next(i))
+		delete points[i];
+	for (Word_t i = cells.first(); i != INVALID_IDX; i = cells.next(i)) {
+		delete [] cells[i]->idx;
+		delete cells[i];
+	}
+}
+
 int Linearizer::add_point(double x, double y, double z)
 {
 	_F_
@@ -237,19 +260,6 @@ int Linearizer::add_point(double x, double y, double z)
 		vertex_id.set(key, idx);
 		return idx;
 	}
-}
-
-int Linearizer::add_cell(Linearizer::Cell::EType type, int n, Word_t *vtcs)
-{
-	_F_
-	Cell *cell = new Cell;
-	cell->type = type;
-	cell->n = n;
-	cell->idx = new int [n];
-	for (int i = 0; i < n; i++)
-		cell->idx[i] = vtcs[i] - 1;		// our vertex indices are 1-based, paraview wants zero-based
-
-	return cells.add(cell);
 }
 
 int Linearizer::add_cell(Linearizer::Cell::EType type, int n, int *vtcs)
@@ -407,24 +417,6 @@ VtkOutputEngine::~VtkOutputEngine()
 	_F_
 }
 
-order3_t VtkOutputEngine::get_order(int mode)
-{
-	_F_
-	// FIXME: get order from the space and set sufficient division
-	order3_t order;
-	switch (mode) {
-		case MODE_TETRAHEDRON: order = order3_t(1); break;
-		case MODE_HEXAHEDRON: order = order3_t(1, 1, 1); break;
-
-		case MODE_PRISM:
-			EXIT(ERR_NOT_IMPLEMENTED); break;
-		default:
-			EXIT(ERR_UNKNOWN_MODE); break;
-	}
-
-	return order;
-}
-
 void VtkOutputEngine::out(MeshFunction *fn, const char *name, int item)
 {
 	_F_
@@ -478,7 +470,7 @@ void VtkOutputEngine::out(MeshFunction *fn, const char *name, int item)
 
 		int mode = element->get_mode();
 		Vtk::OutputQuad *quad = output_quad[mode];
-		order3_t order = get_order(mode);
+		order3_t order = fn->get_order();
 
 		int np = quad->get_num_points(order);
 		QuadPt3D *pt = quad->get_points(order);
@@ -496,7 +488,25 @@ void VtkOutputEngine::out(MeshFunction *fn, const char *name, int item)
 		int id;
 		switch (mode) {
 			case MODE_HEXAHEDRON:
-				id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, vtx_pt);
+				for (int i = 0; i < divs[order.z]; i++) {
+					for (int j = 0; j < divs[order.y]; j++) {
+						for (int o = 0; o < divs[order.x]; o++) {
+							int cell[Hex::NUM_VERTICES];
+							int base = ((divs[order.x] + 1) * (divs[order.y] + 1) * i) + ((divs[order.x] + 1) * j) + o;
+							cell[0] = vtx_pt[base];
+							cell[1] = vtx_pt[base + 1];
+							cell[2] = vtx_pt[base + (divs[order.x] + 1) + 1];
+							cell[3] = vtx_pt[base + (divs[order.x] + 1)];
+
+							int pl = (divs[order.x] + 1) * (divs[order.y] + 1);
+							cell[4] = vtx_pt[base + pl];
+							cell[5] = vtx_pt[base + pl + 1];
+							cell[6] = vtx_pt[base + pl + (divs[order.x] + 1) + 1];
+							cell[7] = vtx_pt[base + pl + (divs[order.x] + 1)];
+							id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, cell);
+						}
+					}
+				}
 				break;
 
 			case MODE_TETRAHEDRON:
@@ -528,6 +538,10 @@ void VtkOutputEngine::out(MeshFunction *fn, const char *name, int item)
 			else l.set_point_data(vtx_pt[i], REAL(val[0][i]), REAL(val[1][i]), REAL(val[2][i]));
 #endif
 		}
+
+		delete [] x;
+		delete [] y;
+		delete [] z;
 	}
 
 	Vtk::FileFormatter fmt(&l);
@@ -544,7 +558,7 @@ void VtkOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *fn
 	MeshFunction *fn[] = { fn1, fn2, fn3 };
 	Mesh *mesh = NULL;
 	Mesh *meshes[] = { fn1->get_mesh(), fn2->get_mesh(), fn3->get_mesh() };
-	bool unimesh = true;	// FIXME: do not build union mesh if the meshes are the same
+	bool unimesh = false;	// FIXME: do not build union mesh if the meshes are the same
 	if (meshes[0]->elements[1]->get_mode() == MODE_TETRAHEDRON)
 		unimesh = false;
 
@@ -581,7 +595,7 @@ void VtkOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *fn
 
 		int mode = e->get_mode();
 		Vtk::OutputQuad *quad = output_quad[mode];
-		order3_t order = get_order(mode);
+		order3_t order = max(fn1->get_order(), max(fn2->get_order(), fn3->get_order()));
 
 		int np = quad->get_num_points(order);
 		QuadPt3D *pt = quad->get_points(order);
@@ -599,7 +613,25 @@ void VtkOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *fn
 		int id;
 		switch (mode) {
 			case MODE_HEXAHEDRON:
-				id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, vtx_pt);
+				for (int i = 0; i < divs[order.z]; i++) {
+					for (int j = 0; j < divs[order.y]; j++) {
+						for (int o = 0; o < divs[order.x]; o++) {
+							int cell[Hex::NUM_VERTICES];
+							int base = ((divs[order.x] + 1) * (divs[order.y] + 1) * i) + ((divs[order.x] + 1) * j) + o;
+							cell[0] = vtx_pt[base];
+							cell[1] = vtx_pt[base + 1];
+							cell[2] = vtx_pt[base + (divs[order.x] + 1) + 1];
+							cell[3] = vtx_pt[base + (divs[order.x] + 1)];
+
+							int pl = (divs[order.x] + 1) * (divs[order.y] + 1);
+							cell[4] = vtx_pt[base + pl];
+							cell[5] = vtx_pt[base + pl + 1];
+							cell[6] = vtx_pt[base + pl + (divs[order.x] + 1) + 1];
+							cell[7] = vtx_pt[base + pl + (divs[order.x] + 1)];
+							id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, cell);
+						}
+					}
+				}
 				break;
 
 			case MODE_TETRAHEDRON:
@@ -631,6 +663,10 @@ void VtkOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *fn
 			l.set_point_data(vtx_pt[i], REAL(val[0][i]), REAL(val[1][i]), REAL(val[2][i]));
 #endif
 		}
+
+		delete [] x;
+		delete [] y;
+		delete [] z;
 	}
 
 	Vtk::FileFormatter fmt(&l);
@@ -643,25 +679,29 @@ void VtkOutputEngine::out(Mesh *mesh)
 {
 	_F_
 	Vtk::Linearizer l;
-	// add points
-	for (Word_t i = mesh->vertices.first(); i != INVALID_IDX; i = mesh->vertices.next(i)) {
-		Vertex *v = mesh->vertices[i];
-		l.add_point(v->x, v->y, v->z);
-	}
 	// add cells
 	FOR_ALL_ACTIVE_ELEMENTS(idx, mesh) {
 		Element *element = mesh->elements[idx];
-		Word_t vtcs[element->get_num_vertices()];
+
+		int nv = element->get_num_vertices();
+		Word_t vtcs[nv];
 		element->get_vertices(vtcs);
+
+		int vtx_pt[nv];
+		for (int i = 0; i < nv; i++) {
+			Vertex *v = mesh->vertices[vtcs[i]];
+			int idx = l.add_point(v->x, v->y, v->z);
+			vtx_pt[i] = idx;
+		}
 
 		int id;
 		switch (element->get_mode()) {
 			case MODE_HEXAHEDRON:
-				id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, vtcs);
+				id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, vtx_pt);
 				break;
 
 			case MODE_TETRAHEDRON:
-				id = l.add_cell(Vtk::Linearizer::Cell::Tetra, Tetra::NUM_VERTICES, vtcs);
+				id = l.add_cell(Vtk::Linearizer::Cell::Tetra, Tetra::NUM_VERTICES, vtx_pt);
 				break;
 
 			default:
@@ -680,29 +720,32 @@ void VtkOutputEngine::out_bc(Mesh *mesh, const char *name)
 {
 	_F_
 	Vtk::Linearizer l;
-	// add points
-	for (Word_t i = mesh->vertices.first(); i != INVALID_IDX; i = mesh->vertices.next(i)) {
-		Vertex *v = mesh->vertices[i];
-		l.add_point(v->x, v->y, v->z);
-	}
 	// add cells
 	FOR_ALL_ACTIVE_ELEMENTS(idx, mesh) {
 		Element *element = mesh->elements[idx];
 
 		for (int iface = 0; iface < element->get_num_faces(); iface++) {
-			Word_t vtcs[element->get_num_face_vertices(iface)];
-			element->get_face_vertices(iface, vtcs);
 			Word_t fid = mesh->get_facet_id(element, iface);
 			Facet *facet = mesh->facets[fid];
 			if (facet->type == Facet::INNER) continue;
 
+			int nv = element->get_num_face_vertices(iface);
+			Word_t vtcs[nv];
+			element->get_face_vertices(iface, vtcs);
+
+			int vtx_pt[nv];		// indices of the vertices for current element
+			for (int i = 0; i < nv; i++) {
+				Vertex *v = mesh->vertices[vtcs[i]];
+				vtx_pt[i] = l.add_point(v->x, v->y, v->z);
+			}
+
 			int id;
 			switch (facet->mode) {
 				case MODE_TRIANGLE:
-					id = l.add_cell(Vtk::Linearizer::Cell::Tri, Tri::NUM_VERTICES, vtcs);
+					id = l.add_cell(Vtk::Linearizer::Cell::Tri, Tri::NUM_VERTICES, vtx_pt);
 					break;
 				case MODE_QUAD:
-					id = l.add_cell(Vtk::Linearizer::Cell::Quad, Quad::NUM_VERTICES, vtcs);
+					id = l.add_cell(Vtk::Linearizer::Cell::Quad, Quad::NUM_VERTICES, vtx_pt);
 					break;
 				default:
 					EXIT(ERR_NOT_IMPLEMENTED);
@@ -727,6 +770,7 @@ void VtkOutputEngine::out_orders(Space *space, const char *name)
 	FOR_ALL_ACTIVE_ELEMENTS(idx, mesh) {
 		order3_t ord = space->get_element_order(idx);
 		Element *element = mesh->elements[idx];
+
 		int nv = element->get_num_vertices();
 		Word_t vtcs[nv];
 		element->get_vertices(vtcs);
@@ -791,25 +835,28 @@ void VtkOutputEngine::out_elem_markers(Mesh *mesh, const char *name)
 {
 	_F_
 	Vtk::Linearizer l;
-	// add points
-	for (Word_t i = mesh->vertices.first(); i != INVALID_IDX; i = mesh->vertices.next(i)) {
-		Vertex *v = mesh->vertices[i];
-		l.add_point(v->x, v->y, v->z);
-	}
 	// add cells
 	FOR_ALL_ACTIVE_ELEMENTS(idx, mesh) {
 		Element *element = mesh->elements[idx];
-		Word_t vtcs[element->get_num_vertices()];
+
+		int nv = element->get_num_vertices();
+		Word_t vtcs[nv];
 		element->get_vertices(vtcs);
+
+		int vtx_pt[nv];		// indices of the vertices for current element
+		for (int i = 0; i < nv; i++) {
+			Vertex *v = mesh->vertices[vtcs[i]];
+			vtx_pt[i] = l.add_point(v->x, v->y, v->z);
+		}
 
 		int id;
 		switch (element->get_mode()) {
 			case MODE_HEXAHEDRON:
-				id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, vtcs);
+				id = l.add_cell(Vtk::Linearizer::Cell::Hex, Hex::NUM_VERTICES, vtx_pt);
 				break;
 
 			case MODE_TETRAHEDRON:
-				id = l.add_cell(Vtk::Linearizer::Cell::Tetra, Tetra::NUM_VERTICES, vtcs);
+				id = l.add_cell(Vtk::Linearizer::Cell::Tetra, Tetra::NUM_VERTICES, vtx_pt);
 				break;
 
 			default:

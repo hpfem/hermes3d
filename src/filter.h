@@ -56,6 +56,8 @@ public:
 	virtual void push_transform(int son);
 	virtual void pop_transform();
 
+	virtual order3_t get_order();
+
 protected:
 	int num;
 	MeshFunction* sln[4];

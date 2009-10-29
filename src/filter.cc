@@ -172,6 +172,15 @@ void Filter::pop_transform() {
 	}
 }
 
+order3_t Filter::get_order()
+{
+	_F_
+	switch (element->get_mode()) {
+		case MODE_HEXAHEDRON: return order3_t(10, 10, 10);
+		case MODE_TETRAHEDRON: return order3_t(10);
+		default: EXIT(ERR_NOT_IMPLEMENTED); return order3_t(10);
+	}
+}
 
 //// SimpleFilter //////////////////////////////////////////////////////////////////////////////////
 

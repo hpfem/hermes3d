@@ -62,6 +62,9 @@ public:
 	Mesh *get_mesh() const { return mesh; }
 	RefMap *get_refmap() { update_refmap(); return refmap; }
 
+	/// @return Order of the function on the active element
+	virtual order3_t get_order() = 0;
+
 protected:
 	Mesh *mesh;
 	RefMap *refmap;
@@ -124,6 +127,8 @@ public:
 	}
 
 	virtual void precalculate(const int np, const QuadPt3D *pt, int mask);
+
+	virtual order3_t get_order();
 
 protected:
 	static const int NUM_ELEMENTS = 4;

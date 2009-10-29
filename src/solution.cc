@@ -820,3 +820,33 @@ void Solution::enable_transform(bool enable) {
 	_F_
 	transform = enable;
 }
+
+order3_t Solution::get_order()
+{
+	_F_
+	switch (element->get_mode()) {
+		case MODE_HEXAHEDRON:
+			switch (type) {
+				case SLN: return elem_orders[element->id];
+				case EXACT: return order3_t(10, 10, 10);
+				case CONST: return order3_t(0);
+				default: EXIT("WTF?");
+			}
+			break;
+
+		case MODE_TETRAHEDRON:
+			switch (type) {
+				case SLN: return elem_orders[element->id];
+				case EXACT: return order3_t(10);
+				case CONST: return order3_t(0);
+				default: EXIT("WTF?");
+			}
+			break;
+
+		default:
+			EXIT(ERR_NOT_IMPLEMENTED);
+			break;
+	}
+
+	return order3_t(0);
+}
