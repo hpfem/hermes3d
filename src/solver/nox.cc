@@ -180,6 +180,7 @@ NoxSolver::NoxSolver(FeProblem *problem)
 #ifdef HAVE_NOX
 	// default values
 	nl_dir = "Newton";
+	output_flags = NOX::Utils::Error;
 	// linear solver settings
 	ls_type = "GMRES";
 	ls_max_iters = 500;
@@ -264,7 +265,7 @@ bool NoxSolver::solve()
 
 	// Set the printing parameters in the "Printing" sublist
 	Teuchos::ParameterList &print_pars = nl_pars.sublist("Printing");
-	print_pars.set("Output Information", NOX::Utils::Error);
+	print_pars.set("Output Information", output_flags);
 
 	// Sublist for line search
 	Teuchos::ParameterList &search_pars = nl_pars.sublist("Line Search");

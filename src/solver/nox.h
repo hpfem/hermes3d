@@ -51,6 +51,7 @@ public:
 
 	// settings for the solver
 	void set_nl_method(const char *par);
+	void set_output_info(int flags) { output_flags = flags; }
 
 	// linear solver setters
 	void set_ls_type(const char *type) { ls_type = type; }
@@ -77,6 +78,7 @@ protected:
 #endif
 	int num_iters;
 	const char *nl_dir;
+	int output_flags;
 
 	const char *ls_type;
 	int ls_max_iters;
