@@ -56,7 +56,7 @@ public:
 	void add_values(int row, int n, double *x, double *y);
 	void add_values(int row, int n, double2 *xy);
 
-	virtual void save(const char *filename) = 0;
+	virtual void save(const char *filename = NULL) = 0;
 	void save_numbered(const char *filename, int number);
 
 	// todo: clear
@@ -85,18 +85,32 @@ public:
 		Graph(title, x_axis_name, y_axis_name) {
 	}
 
-	virtual void save(const char *filename);
+	virtual void save(const char *filename = NULL);
 };
 
 ///  Outputs a GNUPLOT graph.
 ///
 class GnuplotGraph : public Graph {
 public:
-	GnuplotGraph(const char *title = NULL, const char *x_axis_name = NULL, const char *y_axis_name = NULL) :
+	enum Type {
+		Line,
+		Column
+	};
+
+	GnuplotGraph(Type type = Line, const char *title = NULL, const char *x_axis_name = NULL, const char *y_axis_name = NULL) :
 		Graph(title, x_axis_name, y_axis_name) {
+		this->type = type;
 	}
 
-	virtual void save(const char *filename);
+	virtual void save(const char *filename = NULL);
+
+	void set_type(Type type) { this->type = type; }
+
+protected:
+	Type type;
+
+	void save_line_graph(FILE *f);
+	void save_column_graph(FILE *f);
 };
 
 #endif

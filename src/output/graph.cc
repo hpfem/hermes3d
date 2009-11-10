@@ -183,29 +183,32 @@ static void get_style_types(std::string line, std::string mark, std::string col,
 	else ct = -1;
 }
 
-void GnuplotGraph::save(const char *filename) {
+void GnuplotGraph::save(const char *filename)
+{
 	_F_
-	unsigned int i;
-	int j;
 
 	if (!rows.size()) error("No data rows defined.");
 
-	FILE *f = fopen(filename, "w");
-	if (f == NULL) error("Error writing to %s: %s", filename, strerror(errno));
+	FILE *f;
+	if (filename != NULL) {
+		f = fopen(filename, "w");
+		if (f == NULL) error("Error writing to %s: %s", filename, strerror(errno));
 
+		int len = strlen(filename);
+		char outname[len + 10];
+		strcpy(outname, filename);
+		char *slash = strrchr(outname, '/');
+		if (slash != NULL) strcpy(outname, ++slash);
+		char *dot = strrchr(outname, '.');
+		if (dot != NULL && dot > outname) *dot = 0;
+		strcat(outname, ".eps");
+		fprintf(f, "set output '%s'\n", outname);
+	}
+	else
+		f = stdout;
+
+	// write some settings
 	fprintf(f, "set terminal postscript eps enhanced\n");
-
-	int len = strlen(filename);
-	char outname[len + 10];
-	strcpy(outname, filename);
-	char *slash = strrchr(outname, '/');
-	if (slash != NULL) strcpy(outname, ++slash);
-	char *dot = strrchr(outname, '.');
-	if (dot != NULL && dot > outname) *dot = 0;
-	strcat(outname, ".eps");
-
-	fprintf(f, "set output '%s'\n", outname);
-
 	fprintf(f, "set size 0.8, 0.8\n");
 
 	if (logx && !logy) fprintf(f, "set logscale x\n");
@@ -215,13 +218,30 @@ void GnuplotGraph::save(const char *filename) {
 		fprintf(f, "set logscale y\n");
 	}
 
-	if (grid) fprintf(f, "set grid\n");
-
 	if (title.length()) fprintf(f, "set title '%s'\n", title.c_str());
 	if (xname.length()) fprintf(f, "set xlabel '%s'\n", xname.c_str());
 	if (yname.length()) fprintf(f, "set ylabel '%s'\n", yname.c_str());
 
-	fprintf(f, "plot");
+	if (grid) fprintf(f, "set grid\n");
+
+	switch (type) {
+		case Line: save_line_graph(f); break;
+		case Column: save_column_graph(f); break;
+		default: die("Unsupported type of graph."); break;
+	}
+
+	fprintf(f, "set terminal x11\n");
+	INFO("Graph saved. Process the file '%s' with gnuplot.", filename);
+	if (filename != NULL) fclose(f);
+}
+
+void GnuplotGraph::save_line_graph(FILE *f)
+{
+	_F_
+	unsigned int i;
+	int j;
+
+	fprintf(f, "plot\\\n");
 	for (i = 0; i < rows.size(); i++) {
 		int ct, lt, pt;
 		get_style_types(rows[i].line, rows[i].marker, rows[i].color, lt, pt, ct);
@@ -230,7 +250,7 @@ void GnuplotGraph::save(const char *filename) {
 		else if (ct < 0) fprintf(f, " '-' w lp linetype %d pointtype %d title '%s' ", lt, pt, rows[i].name.c_str());
 		else fprintf(f, " '-' w lp linecolor %d linetype %d pointtype %d title '%s' ", ct, lt, pt, rows[i].name.c_str());
 
-		if (i < rows.size() - 1) fprintf(f, ", ");
+		if (i < rows.size() - 1) fprintf(f, ",\\\n");
 	}
 	fprintf(f, "\n");
 
@@ -240,8 +260,34 @@ void GnuplotGraph::save(const char *filename) {
 			fprintf(f, "%.14g  %.14g\n", rows[i].data[j].x, rows[i].data[j].y);
 		fprintf(f, "e\n");
 	}
+}
 
-	fprintf(f, "set terminal x11\n");
-	INFO("Graph saved. Process the file '%s' with gnuplot.", filename);
-	fclose(f);
+void GnuplotGraph::save_column_graph(FILE *f)
+{
+	_F_
+	unsigned int i;
+	int j;
+
+	fprintf(f, "set xrange [-1:]\n");
+	fprintf(f, "set boxwidth 0.75\n");
+	fprintf(f, "set style data histogram\n");
+	fprintf(f, "set style histogram rowstacked\n");
+	fprintf(f, "\n");
+
+	fprintf(f, "plot\\\n");
+	for (i = 0; i < rows.size(); i++) {
+		int ct, lt, pt;
+		get_style_types(rows[i].line, rows[i].marker, rows[i].color, lt, pt, ct);
+
+		fprintf(f, " '-' using 2 linecolor %d fs solid 1 title '%s'", ct, rows[i].name.c_str());
+		if (i < rows.size() - 1) fprintf(f, ",\\\n");
+	}
+	fprintf(f, "\n");
+
+	for (i = 0; i < rows.size(); i++) {
+		int rsize = rows[i].data.size();
+		for (j = 0; j < rsize; j++)
+			fprintf(f, "%.14g  %.14g\n", rows[i].data[j].x, rows[i].data[j].y);
+		fprintf(f, "e\n");
+	}
 }
