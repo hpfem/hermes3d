@@ -23,6 +23,7 @@
 #include "../h3dconfig.h"
 #include "ifpack.h"
 #include <common/callstack.h>
+#include <common/timer.h>
 
 #ifdef HAVE_IFPACK
 #include <Ifpack_PointRelaxation.h>
@@ -42,6 +43,7 @@ IfpackPrecond::IfpackPrecond(const char *cls, const char *type)
 {
 	_F_
 #ifdef HAVE_IFPACK
+	this->time = 0.0;
 	this->prec = NULL;
 	this->owner = true;
 	this->mat = NULL;
@@ -57,6 +59,7 @@ IfpackPrecond::IfpackPrecond(const char *cls, const char *type, int overlap)
 {
 	_F_
 #ifdef HAVE_IFPACK
+	this->time = 0.0;
 	this->prec = NULL;
 	this->owner = true;
 	this->mat = NULL;
@@ -73,6 +76,7 @@ IfpackPrecond::IfpackPrecond(const char *cls, const char *type, int overlap)
 IfpackPrecond::IfpackPrecond(Ifpack_Preconditioner *ipc)
 {
 	_F_
+	this->time = 0.0;
 	this->prec = ipc;
 	this->owner = false;
 	this->mat = NULL;		// FIXME: take the matrix from ipc
@@ -210,7 +214,11 @@ void IfpackPrecond::compute()
 	_F_
 #ifdef HAVE_IFPACK
 	assert(prec != NULL);
+	Timer tmr;
+	tmr.start();
 	prec->Compute();
+	tmr.stop();
+	time = tmr.get_seconds();
 #endif
 }
 

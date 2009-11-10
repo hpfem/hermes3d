@@ -47,6 +47,8 @@ public:
 	virtual void destroy() = 0;
 	virtual void compute() = 0;
 
+	double get_time() { return time; }
+
 #ifdef HAVE_EPETRA
 	virtual Epetra_Operator *get_obj() = 0;
 
@@ -62,6 +64,9 @@ public:
 	virtual const Epetra_Map &OperatorDomainMap() const = 0;
 	virtual const Epetra_Map &OperatorRangeMap() const = 0;
 #endif
+
+protected:
+	double time;
 };
 
 #endif /* _PRECOND_H_ */

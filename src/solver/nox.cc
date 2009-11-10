@@ -76,6 +76,9 @@ public:
 	EpetraMatrix jacobian;		// jacobian (optional)
 	Precond *precond;			// preconditiner (optional)
 
+	double precond_time;
+	double assembly_time;
+
 	void prealloc_jacobian();
 
 };
@@ -97,6 +100,11 @@ NoxProblemInterface::~NoxProblemInterface()
 {
 	_F_
 }
+
+
+inline double NoxSolver::get_assembly_time() { return interface->assembly_time; }
+
+inline double NoxSolver::get_precond_time() { return interface->precond_time; }
 
 void NoxProblemInterface::prealloc_jacobian()
 {
@@ -129,8 +137,15 @@ bool NoxProblemInterface::computeF(const Epetra_Vector &x, Epetra_Vector &f, Fil
 	EpetraVector xx(x);			// wrap our structures around core Epetra objects
 	EpetraVector rhs(f);
 
+	Timer tmr;
+	tmr.start();
+
 	rhs.zero();
 	fep.assemble(&xx, &rhs, NULL);
+
+	tmr.stop();
+	assembly_time += tmr.get_seconds();
+
 	return true;
 }
 
@@ -143,9 +158,15 @@ bool NoxProblemInterface::computeJacobian(const Epetra_Vector &x, Epetra_Operato
 	EpetraVector xx(x);			// wrap our structures around core Epetra objects
 	EpetraMatrix jacobian(*jac);
 
+	Timer tmr;
+	tmr.start();
+
 	jacobian.zero();
 	fep.assemble(&xx, NULL, &jacobian);
 	jacobian.finish();
+
+	tmr.stop();
+	assembly_time += tmr.get_seconds();
 
 	return true;
 }
@@ -159,13 +180,23 @@ bool NoxProblemInterface::computePreconditioner(const Epetra_Vector &x, Epetra_O
 	assert(precond != NULL);
 	EpetraVector xx(x);			// wrap our structures around core Epetra objects
 
+	Timer tmr;
+	tmr.start();
+
 	jacobian.zero();
 	fep.assemble(&xx, NULL, &jacobian);
 	jacobian.finish();
 
+	tmr.stop();
+	assembly_time += tmr.get_seconds();
+	tmr.start(true);
+
 	precond->create(&jacobian);
 	precond->compute();
 	m = *precond->get_obj();
+
+	tmr.stop();
+	precond_time += tmr.get_seconds();
 
 	return true;
 }
@@ -252,6 +283,9 @@ bool NoxSolver::solve()
 	_F_
 #ifdef HAVE_NOX
 	if (interface->fep.get_num_dofs() == 0) return false;
+
+	Timer tmr;
+	tmr.start();
 
 	// start from the initial solution
 	NOX::Epetra::Vector nox_sln(*interface->get_init_sln()->vec);
@@ -370,6 +404,9 @@ bool NoxSolver::solve()
 
 	if (!interface->fep.is_matrix_free())
 		jac_mat.release();	// release the ownership (we take care of jac_mat by ourselves)
+
+	tmr.stop();
+	time = tmr.get_seconds();
 
 	if (status == NOX::StatusTest::Converged) {
 		num_iters = solver->getNumIterations();

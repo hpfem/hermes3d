@@ -26,6 +26,7 @@
 #include "traverse.h"
 #include <common/error.h>
 #include <common/callstack.h>
+#include <common/timer.h>
 
 
 LinProblem::LinProblem(WeakForm *wf)
@@ -77,6 +78,8 @@ scalar **LinProblem::get_matrix_buffer(int n)
 void LinProblem::assemble(Matrix *matrix, Vector *rhs)
 {
 	_F_
+	Timer tmr;
+	tmr.start();
 
 	create(matrix, rhs);
 	if (ndofs == 0) return;
@@ -286,6 +289,9 @@ void LinProblem::assemble(Matrix *matrix, Vector *rhs)
 	delete [] matrix_buffer;
 	matrix_buffer = NULL;
 	matrix_buffer_dim = 0;
+
+	tmr.stop();
+	time = tmr.get_seconds();
 }
 
 void LinProblem::create(Matrix *matrix, Vector *rhs)

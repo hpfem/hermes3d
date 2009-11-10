@@ -23,6 +23,7 @@
 #include "../h3dconfig.h"
 #include "amesos.h"
 #include <common/callstack.h>
+#include <common/timer.h>
 
 #ifdef HAVE_AMESOS
 #include <Amesos_ConfigDefs.h>
@@ -88,6 +89,9 @@ bool AmesosSolver::solve()
 #ifdef HAVE_AMESOS
 	assert(m.size == rhs.size);
 
+	Timer tmr;
+	tmr.start();
+
 	Epetra_Vector x(*rhs.std_map);
 
 	problem.SetOperator(m.mat);
@@ -97,6 +101,9 @@ bool AmesosSolver::solve()
 	if ((error = solver->SymbolicFactorization()) != 0) return false;
 	if ((error = solver->NumericFactorization()) != 0) return false;
 	if ((error = solver->Solve()) != 0) return false;
+
+	tmr.stop();
+	time = tmr.get_seconds();
 
 	delete [] sln;
 	sln = new scalar[m.size]; MEM_CHECK(sln);

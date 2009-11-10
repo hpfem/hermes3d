@@ -41,12 +41,15 @@ public:
 
 	void assemble(Matrix *matrix, Vector *rhs = NULL);
 
+	double get_time() { return time; }
+
 protected:
 	WeakForm *wf;
 
 	int ndofs;					/// number of DOFs
 	int *sp_seq;				/// sequence numbers of spaces
 	Space **spaces;
+	double time;				/// time of the assembling (in secs)
 
 	scalar **matrix_buffer;		/// buffer for holding square matrix (during assembling)
 	int matrix_buffer_dim;		/// dimension of the matrix held by 'matrix_buffer'

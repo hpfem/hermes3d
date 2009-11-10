@@ -72,6 +72,9 @@ public:
 
 	void set_precond(Precond *pc);
 
+	double get_assembly_time();
+	double get_precond_time();
+
 protected:
 #ifdef HAVE_NOX
 	Teuchos::RCP<NoxProblemInterface> interface;

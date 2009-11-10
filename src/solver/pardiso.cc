@@ -333,6 +333,9 @@ bool PardisoLinearSolver::solve() {
 		for (int i = 0; i < n + 1; i++) m.Ap[i] += 1;
 		for (int i = 0; i < nnz; i++) m.Ai[i] += 1;
 
+		Timer tmr;
+		tmr.start();
+
 		// Setup Pardiso control parameters.
 		PARDISOINIT(pt, &mtype, iparm);
 
@@ -366,6 +369,9 @@ bool PardisoLinearSolver::solve() {
 			// ERROR during solution: err
 			throw ERR_FAILURE;
 		}
+
+		tmr.stop();
+		time = tmr.get_seconds();
 
 		//  Convert matrix back to 0-based C-notation.
 		for (int i = 0; i < n + 1; i++) m.Ap[i] -= 1;

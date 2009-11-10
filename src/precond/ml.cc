@@ -24,6 +24,7 @@
 #include "ml.h"
 #include <common/callstack.h>
 #include <common/error.h>
+#include <common/timer.h>
 
 #define ML_NOT_COMPILED "hermes3d was not built with ML support."
 
@@ -31,6 +32,7 @@ MlPrecond::MlPrecond(const char *type)
 {
 	_F_
 #ifdef HAVE_ML
+	this->time = 0.0;
 	this->prec = NULL;
 	this->owner = true;
 	this->mat = NULL;
@@ -46,6 +48,7 @@ MlPrecond::MlPrecond(const char *type)
 MlPrecond::MlPrecond(ML_Epetra::MultiLevelPreconditioner *mpc)
 {
 	_F_
+	this->time = 0.0;
 	this->prec = mpc;
 	this->owner = false;
 	this->mat = NULL;			// FIXME: get the matrix from mpc
@@ -111,7 +114,11 @@ void MlPrecond::compute()
 	_F_
 #ifdef HAVE_ML
 	assert(prec != NULL);
+	Timer tmr;
+	tmr.start();
 	prec->ComputePreconditioner();
+	tmr.stop();
+	time = tmr.get_seconds();
 #endif
 }
 

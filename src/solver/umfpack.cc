@@ -34,6 +34,7 @@ extern "C" {
 #include <common/error.h>
 #include <common/utils.h>
 #include <common/callstack.h>
+#include <common/timer.h>
 
 UMFPackMatrix::UMFPackMatrix() {
 	_F_
@@ -322,6 +323,9 @@ bool UMFPackLinearSolver::solve() {
 #ifdef WITH_UMFPACK
 	assert(m.size == rhs.size);
 
+	Timer tmr;
+	tmr.start();
+
 	void *symbolic, *numeric;
 	int status;
 
@@ -349,6 +353,9 @@ bool UMFPackLinearSolver::solve() {
 		check_status("umfpack_di_solve", status);
 		return false;
 	}
+
+	tmr.stop();
+	time = tmr.get_seconds();
 
 	umfpack_free_symbolic(&symbolic);
 	umfpack_free_numeric(&numeric);

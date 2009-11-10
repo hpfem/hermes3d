@@ -39,17 +39,19 @@
 /// @ingroup solvers
 class Solver {
 public:
-	Solver() { sln = NULL; }
+	Solver() { sln = NULL; time = -1.0; }
 	virtual ~Solver() { delete [] sln; }
 
 	virtual bool solve() = 0;
 	scalar *get_solution() { return sln; }
 
 	int get_error() { return error; }
+	double get_time() { return time; }
 
 protected:
 	scalar *sln;
 	int error;
+	double time;			/// time spent on solving (in secs)
 };
 
 #endif

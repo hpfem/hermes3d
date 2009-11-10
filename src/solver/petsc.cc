@@ -260,6 +260,9 @@ bool PetscLinearSolver::solve() {
 	KSP ksp;
 	Vec x;
 
+	Timer tmr;
+	tmr.start();
+
 	KSPCreate(PETSC_COMM_WORLD, &ksp);
 
 	KSPSetOperators(ksp, m.matrix, m.matrix, DIFFERENT_NONZERO_PATTERN);
@@ -268,6 +271,9 @@ bool PetscLinearSolver::solve() {
 
 	ec = KSPSolve(ksp, rhs.vec, x);
 	if (ec) return false;
+
+	tmr.stop();
+	time = tmr.get_seconds();
 
 	// allocate memory for solution vector
 	delete [] sln;

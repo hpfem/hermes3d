@@ -23,6 +23,7 @@
 #include "../h3dconfig.h"
 #include "aztecoo.h"
 #include <common/callstack.h>
+#include <common/timer.h>
 
 #define AZTECOO_NOT_COMPILED "hermes3d was not built with AztecOO support."
 
@@ -86,6 +87,9 @@ bool AztecOOSolver::solve()
 #ifdef HAVE_AZTECOO
 	assert(m.size == rhs.size);
 
+	Timer tmr;
+	tmr.start();
+
 	// no output
 	aztec.SetAztecOption(AZ_output, AZ_none);	// AZ_all | AZ_warnings | AZ_last | AZ_summary
 
@@ -103,6 +107,9 @@ bool AztecOOSolver::solve()
 
 	// solve it
 	aztec.Iterate(max_iters, tolerance);
+
+	tmr.stop();
+	time = tmr.get_seconds();
 
 	delete [] sln;
 	sln = new scalar[m.size];
