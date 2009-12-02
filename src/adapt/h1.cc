@@ -28,97 +28,108 @@
 #include "../matrix.h"
 #include "../traverse.h"
 #include "../norm.h"
+#include "../forms.h"
 #include "h1.h"
 #include "h1proj.h"
 #include <common/timer.h>
 #include <common/callstack.h>
 
-// enable this to save refinements into a file
-#undef SAVE_REFTS
-
 #define PRINTF(...)
 //#define PRINTF			printf
 
-//
-
-inline double int_h1_error(Solution *fu, Solution *fv, RefMap *ru, RefMap *rv) {
-	_F_
-	Quad3D *quad = get_quadrature(fv->get_active_element()->get_mode());
-
-	order3_t o = fu->get_fn_order() + fv->get_fn_order() + ru->get_inv_ref_order();
-	o.limit();
-	QuadPt3D *pt = quad->get_points(o);
-	int np = quad->get_num_points(o);
-
-	fu->precalculate(np, pt, FN_DEFAULT);
-	fv->precalculate(np, pt, FN_DEFAULT);
-
-	scalar *uval = fu->get_fn_values();
-	scalar *vval = fv->get_fn_values();
-	scalar *dudx, *dudy, *dudz, *dvdx, *dvdy, *dvdz;
-	fu->get_dx_dy_dz_values(dudx, dudy, dudz);
-	fv->get_dx_dy_dz_values(dvdx, dvdy, dvdz);
-
-	double *jac = ru->get_jacobian(np, pt, true);
-	double result = 0.0;
-	for (int i = 0; i < np; i++)
-		result += jac[i] * (sqr(uval[i] - vval[i]) + sqr(dudx[i] - dvdx[i]) + sqr(dudy[i] - dvdy[i]) + sqr(dudz[i] - dvdz[i]));
-	delete [] jac;
-	return result;
-}
-
-inline double int_h1_norm(Solution *fu, RefMap *ru) {
-	_F_
-	Quad3D *quad = get_quadrature(fu->get_active_element()->get_mode());
-
-	order3_t o = fu->get_fn_order() + ru->get_inv_ref_order();
-	o.limit();
-
-	QuadPt3D *pt = quad->get_points(o);
-	int np = quad->get_num_points(o);
-
-	fu->precalculate(np, pt, FN_DEFAULT);
-
-	scalar *uval = fu->get_fn_values();
-	scalar *dudx, *dudy, *dudz;
-	fu->get_dx_dy_dz_values(dudx, dudy, dudz);
-
-	double *jac = ru->get_jacobian(np, pt, true);
-	double result = 0.0;
-	for (int i = 0; i < np; i++)
-		result += jac[i] * (sqr(uval[i]) + sqr(dudx[i]) + sqr(dudy[i]) + sqr(dudz[i]));
-	delete [] jac;
+template<typename f_t, typename res_t>
+res_t h1_form(int n, double *wt, fn_t<res_t> *u, fn_t<res_t> *v, geom_t<f_t> *e,
+              user_data_t<res_t> *ext)
+{
+	res_t result = 0;
+	for (int i = 0; i < n; i++)
+		result += wt[i] * (
+				u->fn[i] * CONJ(v->fn[i]) +
+				u->dx[i] * CONJ(v->dx[i]) +
+				u->dy[i] * CONJ(v->dy[i]) +
+				u->dz[i] * CONJ(v->dz[i]));
 	return result;
 }
 
 // H1 adapt ///////////////////////////////////////////////////////////////////////////////////////
 
-H1Adapt::H1Adapt(int num, ...) {
+H1Adapt::H1Adapt(int num, ...)
+{
 	_F_
 	this->num = num;
 
 	va_list ap;
 	va_start(ap, num);
+	this->spaces = new Space *[num];
 	for (int i = 0; i < num; i++)
 		spaces[i] = va_arg(ap, Space *);
 	va_end(ap);
 
-	memset(errors, 0, sizeof(errors));
+	this->sln = new Solution *[num];
+	this->rsln = new Solution *[num];
+	this->errors = new double *[num];
+	this->norms = new double [num];
+	for (int i = 0; i < num; i++) {
+		this->sln[i] = NULL;
+		this->rsln[i] = NULL;
+		this->errors[i] = NULL;
+		this->norms[i] = 0.0;
+	}
+
+	form = new_matrix<biform_val_t>(num, num);
+	ord = new_matrix<biform_ord_t>(num, num);
+	for (int i = 0; i < num; i++)
+		for (int j = 0; j < num; j++) {
+			if (i == j) {
+				form[i][j] = h1_form<double, scalar>;
+				ord[i][j]  = h1_form<ord_t, ord_t>;
+			}
+			else {
+				form[i][j] = NULL;
+				ord[i][j]  = NULL;
+			}
+		}
+
 	esort = NULL;
 	have_errors = false;
+
+	// default parameters
+	h_only = false;
+	strategy = 0;
+	max_order = MAX_ELEMENT_ORDER;
+	aniso = false;			// FIXME: when implementing aniso, change this to true
+
+	log_file = NULL;
 }
 
-H1Adapt::~H1Adapt() {
+H1Adapt::~H1Adapt()
+{
 	_F_
 	for (int i = 0; i < num; i++)
-		if (errors[i] != NULL)
-			delete [] errors[i];
+		delete [] errors[i];
+	delete [] sln;
+	delete [] rsln;
+	delete [] errors;
+	delete [] norms;
+	delete [] spaces;
+	delete [] form;
+	delete [] ord;
 
-	if (esort != NULL)
-		delete [] esort;
+	delete [] esort;
 }
 
-double H1Adapt::get_projection_error(Element *e, int split, int son, order3_t order, Solution *rsln, Shapeset *ss) {
+void H1Adapt::set_biform(int i, int j, biform_val_t bi_form, biform_ord_t bi_ord)
+{
+	if (i < 0 || i >= num || j < 0 || j >= num)
+		die("Invalid equation number.");
+
+	form[i][j] = bi_form;
+	ord[i][j] = bi_ord;
+}
+
+double H1Adapt::get_projection_error(Element *e, int split, int son, order3_t order, Solution *rsln,
+                                     Shapeset *ss)
+{
 	_F_
 	ProjKey key(split, son, order);
 	double err;
@@ -136,31 +147,37 @@ double H1Adapt::get_projection_error(Element *e, int split, int son, order3_t or
 
 //// optimal refinement search /////////////////////////////////////////////////////////////////////
 
-static inline int ndofs_elem(order3_t order) {
+static inline int ndofs_elem(order3_t order)
+{
 	assert(order.type == MODE_HEXAHEDRON);
 	return (order.x + 1) * (order.y + 1) * (order.z + 1);
 }
 
-static inline int ndofs_bubble(order3_t order) {
+static inline int ndofs_bubble(order3_t order)
+{
 	return (order.x - 1) * (order.y - 1) * (order.z - 1);
 }
 
-static inline int ndofs_face(int face, order3_t order1, order3_t order2) {
+static inline int ndofs_face(int face, order3_t order1, order3_t order2)
+{
 	order2_t forder[] = { order1.get_face_order(face), order2.get_face_order(face) };
 	return (
 		(std::min(forder[0].x, forder[1].x) - 1) *
 		(std::min(forder[0].y, forder[1].y) - 1));
 }
 
-static inline int ndofs_edge(int edge, order3_t o) {
+static inline int ndofs_edge(int edge, order3_t o)
+{
 	return o.get_edge_order(edge) - 1;
 }
 
-static inline int ndofs_edge(int edge, order3_t o1, order3_t o2) {
+static inline int ndofs_edge(int edge, order3_t o1, order3_t o2)
+{
 	return std::min(o1.get_edge_order(edge), o2.get_edge_order(edge)) - 1;
 }
 
-static inline int ndofs_edge(int edge, order3_t o1, order3_t o2, order3_t o3, order3_t o4) {
+static inline int ndofs_edge(int edge, order3_t o1, order3_t o2, order3_t o3, order3_t o4)
+{
 	return
 		std::min(
 			std::min(o1.get_edge_order(edge), o2.get_edge_order(edge)),
@@ -168,7 +185,8 @@ static inline int ndofs_edge(int edge, order3_t o1, order3_t o2, order3_t o3, or
 		) - 1;
 }
 
-int H1Adapt::get_dof_count(int split, order3_t order[]) {
+int H1Adapt::get_dof_count(int split, order3_t order[])
+{
 	_F_
 	int dofs = 0;
 	switch (split) {
@@ -201,7 +219,8 @@ int H1Adapt::get_dof_count(int split, order3_t order[]) {
 			break;
 
 		case REFT_HEX_XY:
-			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2]) + ndofs_elem(order[3]);
+			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2])
+				+ ndofs_elem(order[3]);
 			dofs -= ndofs_face(1, order[0], order[1]);			// faces
 			dofs -= ndofs_face(3, order[1], order[2]);
 			dofs -= ndofs_face(0, order[2], order[3]);
@@ -213,7 +232,8 @@ int H1Adapt::get_dof_count(int split, order3_t order[]) {
 			break;
 
 		case REFT_HEX_XZ:
-			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2]) + ndofs_elem(order[3]);
+			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2])
+				+ ndofs_elem(order[3]);
 			dofs -= ndofs_face(1, order[0], order[1]);			// faces
 			dofs -= ndofs_face(5, order[1], order[2]);
 			dofs -= ndofs_face(0, order[2], order[3]);
@@ -225,7 +245,8 @@ int H1Adapt::get_dof_count(int split, order3_t order[]) {
 			break;
 
 		case REFT_HEX_YZ:
-			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2]) + ndofs_elem(order[3]);
+			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2])
+				+ ndofs_elem(order[3]);
 			dofs -= ndofs_face(3, order[0], order[1]);			// faces
 			dofs -= ndofs_face(5, order[1], order[2]);
 			dofs -= ndofs_face(2, order[2], order[3]);
@@ -239,14 +260,20 @@ int H1Adapt::get_dof_count(int split, order3_t order[]) {
 		case REFT_HEX_XYZ:
 			for (int i = 0; i < 8; i++) dofs += ndofs_elem(order[i]);
 			dofs -= 15;			// vertex fns
-			dofs -= ndofs_edge(0, order[0], order[4]) + ndofs_edge(0, order[3], order[7]) + ndofs_edge(0, order[0], order[3], order[4], order[7]);
-			dofs -= ndofs_edge(0, order[1], order[5]) + ndofs_edge(0, order[2], order[6]) + ndofs_edge(0, order[1], order[2], order[5], order[6]);
+			dofs -= ndofs_edge(0, order[0], order[4]) + ndofs_edge(0, order[3], order[7])
+				+ ndofs_edge(0, order[0], order[3], order[4], order[7]);
+			dofs -= ndofs_edge(0, order[1], order[5]) + ndofs_edge(0, order[2], order[6])
+				+ ndofs_edge(0, order[1], order[2], order[5], order[6]);
 
-			dofs -= ndofs_edge(1, order[0], order[4]) + ndofs_edge(1, order[1], order[5]) + ndofs_edge(1, order[0], order[1], order[4], order[5]);
-			dofs -= ndofs_edge(1, order[3], order[7]) + ndofs_edge(1, order[2], order[6]) + ndofs_edge(1, order[2], order[3], order[6], order[7]);
+			dofs -= ndofs_edge(1, order[0], order[4]) + ndofs_edge(1, order[1], order[5])
+				+ ndofs_edge(1, order[0], order[1], order[4], order[5]);
+			dofs -= ndofs_edge(1, order[3], order[7]) + ndofs_edge(1, order[2], order[6])
+				+ ndofs_edge(1, order[2], order[3], order[6], order[7]);
 
-			dofs -= ndofs_edge(4, order[0], order[1]) + ndofs_edge(4, order[2], order[3]) + ndofs_edge(4, order[0], order[1], order[2], order[3]);
-			dofs -= ndofs_edge(4, order[4], order[5]) + ndofs_edge(4, order[6], order[7]) + ndofs_edge(4, order[4], order[5], order[6], order[7]);
+			dofs -= ndofs_edge(4, order[0], order[1]) + ndofs_edge(4, order[2], order[3])
+				+ ndofs_edge(4, order[0], order[1], order[2], order[3]);
+			dofs -= ndofs_edge(4, order[4], order[5]) + ndofs_edge(4, order[6], order[7])
+				+ ndofs_edge(4, order[4], order[5], order[6], order[7]);
 
 			dofs -= ndofs_edge(4, order[0], order[3]) + ndofs_edge(4, order[4], order[7]);
 			dofs -= ndofs_edge(4, order[1], order[2]) + ndofs_edge(4, order[5], order[6]);
@@ -274,12 +301,12 @@ int H1Adapt::get_dof_count(int split, order3_t order[]) {
 	return dofs;
 }
 
-void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Solution *rsln, Shapeset *ss, int &split, order3_t p[8], bool aniso, bool h_adapt) {
+void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Solution *rsln,
+                                     Shapeset *ss, int &split, order3_t p[8])
+{
 	_F_
 	int i, k, n = 0;
 	const int MAX_CAND = 5000;
-
-	int max_order = MAX_ELEMENT_ORDER;					// FIXME: will be diferent for curv. elements
 
 	struct Cand {
 		double error;
@@ -298,7 +325,8 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 #define MAKE_P_CAND(q) { \
     assert(n < MAX_CAND);   \
     cand[n].split = REFT_HEX_NONE; \
-    cand[n].p[1] = cand[n].p[2] = cand[n].p[3] = cand[n].p[4] = cand[n].p[5] = cand[n].p[6] = cand[n].p[7] = 0; \
+    cand[n].p[1] = cand[n].p[2] = cand[n].p[3] = cand[n].p[4] =\
+    cand[n].p[5] = cand[n].p[6] = cand[n].p[7] = 0; \
     cand[n].p[0] = (q); \
     n++; }
 
@@ -319,7 +347,8 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 	if (mesh->can_refine_element(e->id, s)) {\
 		assert(n < MAX_CAND);  \
 		cand[n].split = s; \
-		cand[n].p[2] = cand[n].p[3] = cand[n].p[4] = cand[n].p[5] = cand[n].p[6] = cand[n].p[7] = 0; \
+		cand[n].p[2] = cand[n].p[3] = cand[n].p[4] = cand[n].p[5] = cand[n].p[6] =\
+		cand[n].p[7] = 0; \
 		cand[n].p[0] = (q0); \
 		cand[n].p[1] = (q1); \
 		n++; }}
@@ -349,7 +378,9 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 		order3_t pp[] = {
 			order3_t(dord[0], dord[1], dord[2]),
 			order3_t((dord[0] + 1) / 2, (dord[1] + 1) / 2, (dord[2] + 1) / 2),
-			order3_t(std::min(((dord[0] + 1) / 2) + 1, max_order), std::min(((dord[1] + 1) / 2) + 1, max_order), std::min(((dord[2] + 1) / 2) + 1, max_order))
+			order3_t(std::min(((dord[0] + 1) / 2) + 1, max_order),
+			         std::min(((dord[1] + 1) / 2) + 1, max_order),
+			         std::min(((dord[2] + 1) / 2) + 1, max_order))
 		};
 
 		for (int q0 = 1; q0 < 3; q0++)
@@ -360,7 +391,8 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 							for (int q5 = 1; q5 < 3; q5++)
 								for (int q6 = 1; q6 < 3; q6++)
 									for (int q7 = 1; q7 < 3; q7++)
-										MAKE_HP_CAND(pp[q0], pp[q1], pp[q2], pp[q3], pp[q4], pp[q5], pp[q6], pp[q7]);
+										MAKE_HP_CAND(pp[q0], pp[q1], pp[q2], pp[q3],
+										             pp[q4], pp[q5], pp[q6], pp[q7]);
 	}
 
 #ifdef DEBUG_PRINT
@@ -443,13 +475,11 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 	int imax = 0;
 	double score, maxscore = 0.0;
 	for (i = 1; i < n; i++) {
-		if ((log10(cand[i].error) < avg + dev) && (cand[i].dofs > cand[0].dofs)) {
-			score = (log10(cand[0].error) - log10(cand[i].error)) / (cand[i].dofs - cand[0].dofs);
+		score = (log10(cand[0].error) - log10(cand[i].error)) / (cand[i].dofs - cand[0].dofs);
 
-			if (score > maxscore) {
-				maxscore = score;
-				imax = i;
-			}
+		if (score > maxscore) {
+			maxscore = score;
+			imax = i;
 		}
 	}
 
@@ -468,22 +498,22 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 
 //// adapt /////////////////////////////////////////////////////////////////////////////////////////
 
-void H1Adapt::adapt(double thr, bool h_only, int strat) {
+void H1Adapt::adapt(double thr)
+{
 	_F_
 	if (!have_errors)
 		EXIT("Element errors have to be calculated first, see calc_error().");
 
-	Mesh *mesh[NUM];
+	Timer tmr;
+	tmr.start();
+
+	Mesh *mesh[num];
 	for (int j = 0; j < num; j++) {
 		mesh[j] = spaces[j]->get_mesh();
 		rsln[j]->enable_transform(false);
 	}
 
-#ifdef SAVE_REFTS
-	// save the reft to the file
-	FILE *file = fopen("adapt", "a");
-	fprintf(file, "--\n");
-#endif
+	if (log_file != NULL) fprintf(log_file, "--\n");
 
 	double err0 = 1000.0;
 	double processed_error = 0.0;
@@ -491,17 +521,18 @@ void H1Adapt::adapt(double thr, bool h_only, int strat) {
 	for (i = 0; i < nact; i++) {
 		int comp = esort[i][1];
 		int id = esort[i][0];
-		double err = errors[comp][id];
+		double err = errors[comp][id - 1];
 
 		// first refinement strategy:
 		// refine elements until prescribed amount of error is processed
 		// if more elements have similar error refine all to keep the mesh symmetric
-		if ((strat == 0) && (processed_error > sqrt(thr) * total_err) && fabs((err - err0) / err0) > 1e-3)
+		if ((strategy == 0) && (processed_error > sqrt(thr) * total_err) &&
+				fabs((err - err0) / err0) > 1e-3)
 			break;
 
 		// second refinement strategy:
 		// refine all elements whose error is bigger than some portion of maximal error
-		if ((strat == 1) && (err < thr * errors[esort[0][1]][esort[0][0]]))
+		if ((strategy == 1) && (err < thr * errors[esort[0][1]][esort[0][0] - 1]))
 			break;
 
 		assert(mesh[comp]->elements.exists(id));
@@ -523,12 +554,13 @@ void H1Adapt::adapt(double thr, bool h_only, int strat) {
 #endif
 		}
 		else
-			get_optimal_refinement(mesh[comp], e, cur_order, rsln[comp], spaces[comp]->get_shapeset(), split, p);
+			get_optimal_refinement(mesh[comp], e, cur_order, rsln[comp],
+			                       spaces[comp]->get_shapeset(), split, p);
 
-#ifdef SAVE_REFTS
-		fprintf(file, "%ld %d %d %d %d %d %d %d %d %d\n", e->id, split, p[0].get_idx(), p[1].get_idx(), p[2].get_idx(), p[3].get_idx(),
+		if (log_file != NULL)
+			fprintf(log_file, "%ld %d %d %d %d %d %d %d %d %d\n", e->id, split,
+				p[0].get_idx(), p[1].get_idx(), p[2].get_idx(), p[3].get_idx(),
 				p[4].get_idx(), p[5].get_idx(), p[6].get_idx(), p[7].get_idx());
-#endif
 
 		switch (split) {
 			case REFT_HEX_NONE:
@@ -537,7 +569,7 @@ void H1Adapt::adapt(double thr, bool h_only, int strat) {
 
 			case REFT_HEX_XYZ:
 				mesh[comp]->refine_element(id, REFT_HEX_XYZ);
-				for (int j = 0; j < Hex::NUM_SONS; j++)			// FIXME: hex specific
+				for (int j = 0; j < Hex::NUM_SONS; j++)
 					spaces[comp]->set_element_order(e->get_son(j), p[j]);
 				break;
 
@@ -573,9 +605,8 @@ void H1Adapt::adapt(double thr, bool h_only, int strat) {
 
 	reft_elems = i;
 
-#ifdef SAVE_REFTS
-	fclose(file);
-#endif
+	tmr.stop();
+	adapt_time = tmr.get_seconds();
 }
 
 //// Unrefinements /////////////////////////////////////////////////////////////////////////////////
@@ -585,17 +616,126 @@ void H1Adapt::adapt(double thr, bool h_only, int strat) {
 //// error calculation /////////////////////////////////////////////////////////////////////////////
 
 static double **cmp_err;
-static int compare(const void* p1, const void* p2) {
+static int compare(const void* p1, const void* p2)
+{
 	const int2 (*e1) = ((const int2 *) p1);
 	const int2 (*e2) = ((const int2 *) p2);
-	return cmp_err[(*e1)[1]][(*e1)[0]] < cmp_err[(*e2)[1]][(*e2)[0]] ? 1 : -1;
+	return cmp_err[(*e1)[1]][(*e1)[0] - 1] < cmp_err[(*e2)[1]][(*e2)[0] - 1] ? 1 : -1;
 }
 
-double H1Adapt::calc_error_n(int n, ...) {
+order3_t H1Adapt::get_form_order(int marker, const order3_t &ordu, const order3_t &ordv, RefMap *ru,
+                                 biform_ord_t bf_ord)
+{
+	_F_
+	// determine the integration order
+	fn_t<ord_t> ou = init_fn(ordu);
+	fn_t<ord_t> ov = init_fn(ordv);
+
+	double fake_wt = 1.0;
+	geom_t<ord_t> fake_e = init_geom(marker);
+	ord_t o = bf_ord(1, &fake_wt, &ou, &ov, &fake_e, NULL);
+	order3_t order = ru->get_inv_ref_order();
+	switch (order.type) {
+		case MODE_TETRAHEDRON: order += order3_t(o.get_order()); break;
+		case MODE_HEXAHEDRON: order += order3_t(o.get_order(), o.get_order(), o.get_order()); break;
+	}
+	order.limit();
+
+	free_fn(&ou);
+	free_fn(&ov);
+
+	return order;
+}
+
+scalar H1Adapt::eval_error(int marker, biform_val_t bi_fn, biform_ord_t bi_ord, MeshFunction *sln1,
+                           MeshFunction *sln2, MeshFunction *rsln1, MeshFunction *rsln2)
+{
+	_F_
+	RefMap *rv1 = sln1->get_refmap();
+	RefMap *rv2 = sln1->get_refmap();
+	RefMap *rrv1 = rsln1->get_refmap();
+	RefMap *rrv2 = rsln1->get_refmap();
+
+	order3_t order = get_form_order(marker, rsln1->get_fn_order(), rsln2->get_fn_order(), rrv1,
+	                                bi_ord);
+
+	// eval the form
+	Quad3D *quad = get_quadrature(MODE_HEXAHEDRON);		// FIXME: hex-specific
+	QuadPt3D *pt = quad->get_points(order);
+	int np = quad->get_num_points(order);
+
+	double *jwt = rrv1->get_jacobian(np, pt);
+	geom_t<double> e = init_geom(marker, rrv1, np, pt);
+
+	fn_t<scalar> *err1 = init_fn(sln1, rv1, np, pt);
+	fn_t<scalar> *err2 = init_fn(sln2, rv2, np, pt);
+	fn_t<scalar> *v1 = init_fn(rsln1, rrv1, np, pt);
+	fn_t<scalar> *v2 = init_fn(rsln2, rrv2, np, pt);
+
+	for (int i = 0; i < np; i++) {
+		err1->fn[i] = err1->fn[i] - v1->fn[i];
+		err1->dx[i] = err1->dx[i] - v1->dx[i];
+		err1->dy[i] = err1->dy[i] - v1->dy[i];
+		err1->dz[i] = err1->dz[i] - v1->dz[i];
+		err2->fn[i] = err2->fn[i] - v2->fn[i];
+		err2->dx[i] = err2->dx[i] - v2->dx[i];
+		err2->dy[i] = err2->dy[i] - v2->dy[i];
+		err2->dz[i] = err2->dz[i] - v2->dz[i];
+	}
+
+	scalar res = bi_fn(np, jwt, err1, err2, &e, NULL);
+
+	delete [] jwt;
+	free_geom(&e);
+	free_fn(err1);
+	free_fn(err2);
+	free_fn(v1);
+	free_fn(v2);
+
+	return res;
+}
+
+
+scalar H1Adapt::eval_norm(int marker, biform_val_t bi_fn, biform_ord_t bi_ord, MeshFunction *rsln1,
+                          MeshFunction *rsln2)
+{
+	_F_
+	RefMap *rv1 = rsln1->get_refmap();
+	RefMap *rv2 = rsln1->get_refmap();
+
+	order3_t order = get_form_order(marker, rsln1->get_fn_order(), rsln2->get_fn_order(), rv1,
+	                                bi_ord);
+
+	// eval the form
+	Quad3D *quad = get_quadrature(MODE_HEXAHEDRON); 	// FIXME: hex_specific
+	QuadPt3D *pt = quad->get_points(order);
+	int np = quad->get_num_points(order);
+
+	double *jwt = rv1->get_jacobian(np, pt);
+	geom_t<double> e = init_geom(marker, rv1, np, pt);
+
+	mfn_t *v1 = init_fn(rsln1, rv1, np, pt);
+	mfn_t *v2 = init_fn(rsln2, rv2, np, pt);
+
+	scalar res = bi_fn(np, jwt, v1, v2, &e, NULL);
+
+	delete [] jwt;
+	free_geom(&e);
+	free_fn(v1);
+	free_fn(v2);
+
+	return res;
+}
+
+double H1Adapt::calc_error_n(int n, ...)
+{
 	_F_
 	int i, j, k;
 
 	if (n != num) EXIT("Wrong number of solutions.");
+
+	Timer tmr;
+	tmr.start();
 
 	va_list ap;
 	va_start(ap, n);
@@ -609,93 +749,84 @@ double H1Adapt::calc_error_n(int n, ...) {
 	}
 	va_end(ap);
 
+	// prepare multi-mesh traversal and error arrays
+	Mesh *meshes[2 * num];
+	Transformable *tr[2 * num];
+	Traverse trav;
 	nact = 0;
-	for (j = 0; j < num; j++)
-		nact += sln[j]->get_mesh()->get_num_active_elements();
+	for (i = 0; i < num; i++) {
+		meshes[i] = sln[i]->get_mesh();
+		meshes[i + num] = rsln[i]->get_mesh();
+		tr[i] = sln[i];
+		tr[i + num] = rsln[i];
+
+		nact += sln[i]->get_mesh()->get_num_active_elements();
+
+		int max = meshes[i]->get_max_element_id();
+		if (errors[i] != NULL) delete [] errors[i];
+		errors[i] = new double[max];
+		memset(errors[i], 0, sizeof(double) * max);
+	}
+
+	double total_norm = 0.0;
+	double norms[num];
+	memset(norms, 0, num * sizeof(double));
+	double total_error = 0.0;
 	if (esort != NULL) delete [] esort;
 	esort = new int2[nact];
 	MEM_CHECK(esort);
 
-	double total_error = 0.0, total_norm = 0.0;
+	Element **ee;
+	trav.begin(2 * num, meshes, tr);
+	while ((ee = trav.get_next_state(NULL, NULL)) != NULL) {
+		Element *e0 = NULL;
+		for (i = 0; i < 2 * num; i++)
+			if ((e0 = ee[i]) != NULL) break;
+		assert(e0 != NULL);
 
-	double norms[n];
-	memset(norms, 0, n * sizeof(double));
-	for (i = 0; i < n; i++)
-		norms[i] = sqr(h1_norm(rsln[i]));
+		for (i = 0; i < num; i++) {
+			for (j = 0; j < num; j++) {
+				if (form[i][j] != NULL) {
+					double err, nrm;
+#ifndef COMPLEX
+					err = fabs(eval_error(e0->marker, form[i][j], ord[i][j], sln[i], sln[j], rsln[i], rsln[j]));
+					nrm = fabs(eval_norm(e0->marker, form[i][j], ord[i][j], rsln[i], rsln[j]));
+#else
+					err = std::abs(eval_error(e0->marker, form[i][j], ord[i][j], sln[i], sln[j], rsln[i], rsln[j]));
+					nrm = std::abs(eval_norm(e0->marker, form[i][j], ord[i][j], rsln[i], rsln[j]));
+#endif
+					norms[i] += nrm;
+					total_norm  += nrm;
+					total_error += err;
+					errors[i][ee[i]->id - 1] += err;
+				}
 
-	for (j = k = 0; j < num; j++) {
-		Mesh *cmesh = sln[j]->get_mesh();
-		Mesh *fmesh = rsln[j]->get_mesh();
-
-		int max = cmesh->get_max_element_id() + 1;
-		if (errors[j] != NULL)
-			delete [] errors[j];
-		errors[j] = new double[max];
-		MEM_CHECK(errors[j]);
-		memset(errors[j], 0, sizeof(double) * max);
-
-		FOR_ALL_ACTIVE_ELEMENTS(eid, cmesh) {
-			Element *e = cmesh->elements[eid];
-			EMode3D mode = e->get_mode();
-			assert(mode == MODE_HEXAHEDRON);
-
-			sln[j]->set_active_element(e);
-
-			// prepare transformations (hex specific)
-			int ns = 8;									// number of sons
-			int trf[] = { 0, 1, 2, 3, 4, 5, 6, 7 };		// transformations corresponding to sons
-
-			for (i = 0; i < ns; i++) {
-				sln[j]->push_transform(trf[i]);
-
-				assert(fmesh->elements.exists(e->id));
-				Element *fe = fmesh->elements[e->id];
-				assert(fe != NULL);
-				Word_t son_idx = fe->get_son(i);
-				if (fe->active || son_idx == INVALID_IDX) EXIT("Bad reference solution.");
-				assert(fmesh->elements.exists(son_idx));
-				Element *son = fmesh->elements[son_idx];
-				assert(son != NULL);
-				if (!son->active) EXIT("Bad reference solution (son not active).");
-				assert(son->get_mode() == mode);
-
-				rsln[j]->set_active_element(son);
-
-				RefMap *crm = sln[j]->get_refmap();
-				RefMap *frm = rsln[j]->get_refmap();
-
-		        double err = int_h1_error(sln[j], rsln[j], crm, frm);
-		        total_norm += int_h1_norm (rsln[j], frm);
-
-		        errors[j][e->id] += err / norms[j];
-		        total_error += err;
-
-				sln[j]->pop_transform();
 			}
-
-			esort[k][0] = e->id;
-			esort[k++][1] = j;
-		}
-
-		FOR_ALL_INACTIVE_ELEMENTS(eid, cmesh) {
-			Element *e = cmesh->elements[eid];
-			errors[j][e->id] = -1.0;
 		}
 	}
+	trav.finish();
+
+	k = 0;
+	for (i = 0; i < num; i++)
+		FOR_ALL_ACTIVE_ELEMENTS(eid, meshes[i]) {
+			Element *e = meshes[i]->elements[eid];
+			esort[k][0] = e->id;
+			esort[k++][1] = i;
+			// FIXME: when norms of 2 components are very different it can help (microwave heating)
+			// navier-stokes on different meshes work only without it
+			errors[i][e->id - 1] /= norms[i];
+		}
 
 	assert(k == nact);
 	cmp_err = errors;
 	qsort(esort, nact, sizeof(int2), compare);
 
-#ifdef DEBUG_PRINT
-	Mesh *cmesh = sln[0]->get_mesh();
-	for (int i = 0; i < std::min(10, (int) cmesh->elements.count()); i++) {
-		printf("  - elem #% 3d: err = % e\n", esort[i][0], errors[0][esort[i][0]]);
-	}
-#endif
-
 	have_errors = true;
-	total_err = total_error / total_norm;
+
+	total_err = total_error / total_norm;		// FIXME: comment out the denominator when
+												// commenting out the above fixme
+	tmr.stop();
+	error_time = tmr.get_seconds();
 
 	return sqrt(total_error / total_norm);
 }
