@@ -71,7 +71,14 @@ inline ord_t operator-(const ord_t &a) { return a; }
 inline ord_t pow(const ord_t &a, const double &b) { return ord_t((int) ceil(fabs(b)) * a.get_order()); }
 inline ord_t sqrt(const ord_t &a) { return a; }
 inline ord_t sqr(const ord_t &a) { return ord_t(2 * a.get_order()); }
-inline ord_t conj(ord_t a) {  return a; }
+inline ord_t conj(const ord_t &a) { return a; }
+
+#ifdef COMPLEX
+namespace std {
+	inline ord_t conj(const ord_t &a) { return a; }
+	inline ord_t abs(const ord_t &a) { return a; }
+};
+#endif
 
 inline ord_t atan2(const ord_t &a, const ord_t &b) { return ord_t(a.get_max_order()); }
 inline ord_t atan(const ord_t &a) { return ord_t(a.get_max_order()); }

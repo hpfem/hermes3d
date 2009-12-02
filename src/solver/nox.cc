@@ -412,11 +412,12 @@ bool NoxSolver::solve()
 		num_iters = solver->getNumIterations();
 
 		// Get the Epetra_Vector with the final solution from the solver
+#ifndef COMPLEX
 		const NOX::Epetra::Group &f_grp =
 			dynamic_cast<const NOX::Epetra::Group &>(solver->getSolutionGroup());
 		const Epetra_Vector &f_sln =
 			(dynamic_cast<const NOX::Epetra::Vector &>(f_grp.getX())).getEpetraVector();
-
+#endif
 		// extract solution
 		int n = interface->fep.get_num_dofs();
 		delete [] sln;

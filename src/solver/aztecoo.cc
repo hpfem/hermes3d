@@ -24,6 +24,9 @@
 #include "aztecoo.h"
 #include <common/callstack.h>
 #include <common/timer.h>
+#ifdef HAVE_KOMPLEX
+#include <Komplex_LinearProblem.h>
+#endif
 
 #define AZTECOO_NOT_COMPILED "hermes3d was not built with AztecOO support."
 
@@ -93,6 +96,7 @@ bool AztecOOSolver::solve()
 	// no output
 	aztec.SetAztecOption(AZ_output, AZ_none);	// AZ_all | AZ_warnings | AZ_last | AZ_summary
 
+#ifndef COMPLEX
 	// setup the problem
 	aztec.SetUserMatrix(m.mat);
 	aztec.SetRHS(rhs.vec);
@@ -118,7 +122,30 @@ bool AztecOOSolver::solve()
 
 	// copy the solution into sln vector
 	for (int i = 0; i < m.size; i++) sln[i] = x[i];
+#else
+	double c0r = 1.0, c0i = 0.0;
+	double c1r = 0.0, c1i = 1.0;
 
+	Epetra_Vector xr(*rhs.std_map);
+	Epetra_Vector xi(*rhs.std_map);
+
+	Komplex_LinearProblem kp(c0r, c0i, *m.mat, c1r, c1i, *m.mat_im, xr, xi, *rhs.vec, *rhs.vec_im);
+	Epetra_LinearProblem *lp = kp.KomplexProblem();
+	aztec.SetProblem(*lp);
+
+	// solve it
+	aztec.Iterate(max_iters, tolerance);
+
+	kp.ExtractSolution(xr, xi);
+
+	delete [] sln;
+	sln = new scalar[m.size];
+	MEM_CHECK(sln);
+	memset(sln, 0, m.size * sizeof(scalar));
+
+	// copy the solution into sln vector
+	for (int i = 0; i < m.size; i++) sln[i] = scalar(xr[i], xi[i]);
+#endif
 	return true;
 #else
 	return false;

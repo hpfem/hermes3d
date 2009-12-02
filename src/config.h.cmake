@@ -13,6 +13,7 @@
 #cmakedefine HAVE_IFPACK
 #cmakedefine HAVE_ML
 #cmakedefine HAVE_NOX
+#cmakedefine HAVE_KOMPLEX
 
 #cmakedefine TRACING
 #cmakedefine DEBUG
