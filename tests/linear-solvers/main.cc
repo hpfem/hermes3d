@@ -42,14 +42,14 @@
 
 struct MatrixEntry {
 	MatrixEntry() { }
-	MatrixEntry(int m, int n, double value) {
+	MatrixEntry(int m, int n, scalar value) {
 		this->m = m;
 		this->n = n;
 		this->value = value;
 	}
 
 	int m, n;			// position
-	double value;
+	scalar value;
 };
 
 // helpers ////////////////////////////////////////////////////////////////////
@@ -83,8 +83,9 @@ bool read_n_nums(char *row, int n, double values[])
 	return (i == n);
 }
 
-int read_matrix_and_rhs(char *file_name, int &n, Array<MatrixEntry> &mat, Array<double> &rhs)
+int read_matrix_and_rhs(char *file_name, int &n, Array<MatrixEntry> &mat, Array<scalar> &rhs)
 {
+#ifndef COMPLEX
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) return ERR_FAILURE;
 
@@ -122,11 +123,20 @@ int read_matrix_and_rhs(char *file_name, int &n, Array<MatrixEntry> &mat, Array<
 	}
 
 	fclose(file);
+#else
+	n = 3;
+	mat.add(MatrixEntry(0, 0, scalar(1, 2)));
+	mat.add(MatrixEntry(1, 1, scalar(1, 4)));
+	mat.add(MatrixEntry(2, 2, scalar(1, 6)));
 
+	rhs[0] = scalar(2, 1);
+	rhs[1] = scalar(4, 1);
+	rhs[2] = scalar(6, 2);
+#endif
 	return ERR_SUCCESS;
 }
 
-void build_matrix(int n, Array<MatrixEntry> &ar_mat, Array<double> &ar_rhs, SparseMatrix *mat,
+void build_matrix(int n, Array<MatrixEntry> &ar_mat, Array<scalar> &ar_rhs, SparseMatrix *mat,
                   Vector *rhs)
 {
 	// matrix
@@ -151,7 +161,7 @@ void build_matrix(int n, Array<MatrixEntry> &ar_mat, Array<double> &ar_rhs, Spar
 	rhs->finish();
 }
 
-void build_matrix_block(int n, Array<MatrixEntry> &ar_mat, Array<double> &ar_rhs,
+void build_matrix_block(int n, Array<MatrixEntry> &ar_mat, Array<scalar> &ar_rhs,
                         SparseMatrix *matrix, Vector *rhs)
 {
 	// matrix
@@ -162,7 +172,7 @@ void build_matrix_block(int n, Array<MatrixEntry> &ar_mat, Array<double> &ar_rhs
 	}
 
 	matrix->alloc();
-	double **mat = new_matrix<double>(n, n);
+	scalar **mat = new_matrix<scalar>(n, n);
 	int *cols = new int[n];
 	int *rows = new int[n];
 	for (int i = 0; i < n; i++) {
@@ -178,7 +188,7 @@ void build_matrix_block(int n, Array<MatrixEntry> &ar_mat, Array<double> &ar_rhs
 
 	// rhs
 	rhs->alloc(n);
-	double *rs = new double[n];
+	scalar *rs = new scalar[n];
 	for (Word_t i = ar_rhs.first(); i != INVALID_IDX; i = ar_rhs.next(i)) {
 		rs[i] = ar_rhs[i];
 	}
@@ -193,9 +203,9 @@ void build_matrix_block(int n, Array<MatrixEntry> &ar_mat, Array<double> &ar_rhs
 void solve(Solver &solver, int n)
 {
 	if (solver.solve()) {
-		double *sln = solver.get_solution();
+		scalar *sln = solver.get_solution();
 		for (int i = 0; i < n; i++) {
-			printf("%lf\n", sln[i]);
+			printf(SCALAR_FMT"\n", SCALAR(sln[i]));
 		}
 	}
 	else {
@@ -214,11 +224,15 @@ int main(int argc, char *argv[])
 	PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL);
 #endif
 
+#ifndef COMPLEX
 	if (argc < 3) die("Not enough parameters");
+#else
+	if (argc < 2) die("Not enough parameters");
+#endif
 
 	int n;
 	Array<MatrixEntry> ar_mat;
-	Array<double> ar_rhs;
+	Array<scalar> ar_rhs;
 
 	if (read_matrix_and_rhs(argv[2], n, ar_mat, ar_rhs) != ERR_SUCCESS)
 		die("Failed to read the matrix and rhs.");
