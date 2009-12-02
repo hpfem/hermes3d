@@ -23,8 +23,6 @@
 #ifndef _ADAPT_H1_PROJECTION_H_
 #define _ADAPT_H1_PROJECTION_H_
 
-#ifndef COMPLEX
-
 #include "proj.h"
 
 /// H1 projection
@@ -48,7 +46,5 @@ protected:
 	static double mdy[8];
 	static double mdz[8];
 };
-
-#endif
 
 #endif

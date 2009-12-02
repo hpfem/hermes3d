@@ -39,8 +39,6 @@
 #define PRINTF(...)
 //#define PRINTF			printf
 
-#ifndef COMPLEX
-
 //
 
 inline double int_h1_error(Solution *fu, Solution *fv, RefMap *ru, RefMap *rv) {
@@ -701,5 +699,3 @@ double H1Adapt::calc_error_n(int n, ...) {
 
 	return sqrt(total_error / total_norm);
 }
-
-#endif

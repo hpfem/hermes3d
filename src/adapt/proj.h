@@ -49,7 +49,7 @@ protected:
 	ShapeFunction *fv;
 
 	struct ProjItem {
-		double coef;				// coef of the projection
+		scalar coef;				// coef of the projection
 		int idx;					// index of the shape function
 	};
 

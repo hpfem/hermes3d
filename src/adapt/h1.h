@@ -23,8 +23,6 @@
 #ifndef _ADAPT_H1_H_
 #define _ADAPT_H1_H_
 
-#ifndef COMPLEX
-
 /// hp-Adaptivity module for H1 space
 ///
 /// TODO
@@ -102,7 +100,5 @@ protected:
 	};
 	Map<ProjKey, double> proj_err;				// cache for projection errors
 };
-
-#endif
 
 #endif
