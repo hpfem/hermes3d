@@ -4159,7 +4159,7 @@ QuadStdTetra::QuadStdTetra() {
 	mode = MODE_TETRAHEDRON;
 
 	max_order = MAX_QUAD_ORDER_TETRA;
-	max_edge_order = MAX_QUAD_ORDER;
+	max_edge_order = MAX_QUAD_ORDER_TETRA;
 	max_face_order = MAX_QUAD_ORDER_TRI;
 
 	for (int i = 0; i <= MAX_QUAD_ORDER_TETRA; i++) {
