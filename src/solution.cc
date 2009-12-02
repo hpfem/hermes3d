@@ -765,16 +765,38 @@ void Solution::precalculate_exact(const int np, const QuadPt3D *pt, int mask) {
 
 	// evaluate the exact solution
 	if (num_components == 1) {
-		for (int i = 0; i < np; i++) {
-			scalar val, dx = 0.0, dy = 0.0, dz = 0.0;
-			val = exact_fn(x[i], y[i], z[i], dx, dy, dz);
-			node->values[0][FN][i] = val;
-			node->values[0][DX][i] = dx;
-			node->values[0][DY][i] = dy;
-			node->values[0][DZ][i] = dz;
+		if (transform) {
+			for (int i = 0; i < np; i++) {
+				scalar val, dx = 0.0, dy = 0.0, dz = 0.0;
+				val = exact_fn(x[i], y[i], z[i], dx, dy, dz);
+				node->values[0][FN][i] = val;
+				node->values[0][DX][i] = dx;
+				node->values[0][DY][i] = dy;
+				node->values[0][DZ][i] = dz;
+			}
+		}
+		else {
+			// untransform values
+			double3x3 *mat = NULL, *m;
+			mat = refmap->get_ref_map(np, pt);
+
+			int i;
+			for (i = 0, m = mat; i < np; i++, m++) {
+				scalar val, dx = 0.0, dy = 0.0, dz = 0.0;
+				val = exact_fn(x[i], y[i], z[i], dx, dy, dz);
+
+				node->values[0][FN][i] = val;
+				node->values[0][DX][i] = ((*m)[0][0]*dx + (*m)[0][1]*dy + (*m)[0][2]*dz);
+				node->values[0][DY][i] = ((*m)[1][0]*dx + (*m)[1][1]*dy + (*m)[1][2]*dz);
+				node->values[0][DZ][i] = ((*m)[2][0]*dx + (*m)[2][1]*dy + (*m)[2][2]*dz);
+			}
+
+			delete [] mat;
 		}
 	}
 	else if (num_components == 3) {
+		// TODO: untransform Hcurl and vector-valued functions
+		assert(transform == true);
 		for (int i = 0; i < np; i++) {
 			scalar3  dx = { 0.0, 0.0, 0.0 };
 			scalar3  dy = { 0.0, 0.0, 0.0 };
