@@ -829,7 +829,7 @@ order3_t Solution::get_order()
 			switch (type) {
 				case SLN: return elem_orders[element->id];
 				case EXACT: return order3_t(10, 10, 10);
-				case CONST: return order3_t(0);
+				case CONST: return order3_t(0, 0, 0);
 				default: EXIT("WTF?");
 			}
 			break;
