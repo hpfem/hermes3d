@@ -58,6 +58,7 @@ public:
 	virtual void add(int m, int n, scalar **mat, int *rows, int *cols);
 	virtual bool dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt = DF_MATLAB_SPARSE);
 	virtual int get_matrix_size() const;
+	virtual double get_fill_in() const;
 
 protected:
 #ifdef HAVE_EPETRA

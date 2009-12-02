@@ -161,6 +161,11 @@ int UMFPackMatrix::get_matrix_size() const {
 	return (sizeof(int) + sizeof(scalar)) * (Ap[size] + size);
 }
 
+double UMFPackMatrix::get_fill_in() const {
+	_F_
+	return Ap[size] / (double) (size * size);
+}
+
 void UMFPackMatrix::insert_value(int *Ai, scalar *Ax, int Alen, int idx, scalar value) {
 	_F_
 	if (idx >= 0) {

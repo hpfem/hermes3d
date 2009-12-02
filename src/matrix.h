@@ -246,6 +246,8 @@ public:
 	/// @param[out] idxs - extracted global row indices for the corresponding values.
 	virtual void extract_col_copy(int col, int len, int &n_entries, double *vals, int *idxs) { }
 
+	virtual double get_fill_in() const = 0;
+
 	unsigned row_storage:1;
 	unsigned col_storage:1;
 
