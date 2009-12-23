@@ -10,4 +10,5 @@ This is a list of examples which show what you can do with hermes3d.
 
    examples/heat-conduction
    examples/fichera-corner
-   
+   examples/layer
+
