@@ -28,7 +28,7 @@ Exact solution is:
 .. literalinclude:: ../../examples/heat-conduction/main.cc
    :language: c
    :linenos:
-   :lines: 19-
+   :lines: 22-
 
 .. seealso::
   
