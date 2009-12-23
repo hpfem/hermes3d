@@ -8,6 +8,28 @@ Fichera Corner
    single: problem; elliptic
 
 
-This example shows how to implement a adaptivity loop.
+This example shows how to implement the adaptivity loop.
 
 PDE solved:
+
+.. math::
+   :nowrap:
+
+   \begin{eqnarray*}
+   - \Delta u &= f &\hbox{ in }\Omega \\
+            u &= g &\hbox{ on }\partial\Omega
+   \end{eqnarray*}
+
+Exact solution is:
+
+.. math:: u = (x^2 + y^2 + z^2)^{0.25}
+
+
+.. literalinclude:: ../../examples/fichera/fichera.cc
+   :language: c
+   :linenos:
+   :lines: 30-
+
+.. seealso::
+
+   :ref:`example-heat-conduction`
