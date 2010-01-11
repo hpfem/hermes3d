@@ -4,29 +4,35 @@ cmake_minimum_required(VERSION 2.6)
 
 # default values
 
-set(DEBUG       NO)
+option(DEBUG         "Build debug version" NO)
 set(DEBUG_ORDER NO)
 set(PROFILING   NO)
 
 # real/complex version of the library
-set(REAL        YES)
-set(COMPLEX     NO)
+option(REAL          "Build real (double precision) version of Hermes3D" YES)
+option(COMPLEX       "Build complex version of Hermes3D" NO)
 # supported element types
-set(WITH_TETRA  YES)
-set(WITH_HEX    YES)
-set(WITH_PRISM  NO)
+option(WITH_TETRA    "Enable tetrahedral elements" YES)
+option(WITH_HEX      "Enable hexahedral elements" YES)
+option(WITH_PRISM    "Enable prism elements" NO)
 
-set(WITH_UMFPACK YES)
-set(WITH_PETSC   NO)
-set(WITH_PARDISO NO)
-set(WITH_TRILINOS NO)
+option(WITH_UMFPACK  "Enable support for UMFPACK" YES)
+option(WITH_PETSC    "Enable support for PETSc" NO)
+option(WITH_PARDISO  "Enable support for PARDISO" NO)
+option(WITH_TRILINOS "Enable support for Trilinos solvers" NO)
 
-set(WITH_EXODUSII NO)
+option(WITH_EXODUSII "Enable support for EXODUSII mesh format" NO)
+option(WITH_HDF5     "Enable support for HDF5" NO)
 
-set(WITH_TESTS  YES)
+option(WITH_OPENMP   "Build with OpenMP support" NO)
+
+option(WITH_EXAMPLES "Build examples" NO)
+option(WITH_TESTS    "Build tests" NO)
 set(WITH_TOOLS  NO)
 
-set(WITH_PYTHON NO)
+option(WITH_PYTHON   "Enable support for Python" NO)
+
+set(OUTPUT_DIR "" CACHE STRING "Directory were the output will be written")
 
 set(DEV_TESTS NO)
 
