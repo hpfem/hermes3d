@@ -43,9 +43,11 @@ Hermes3D is quite modular and can be build with several options. All configurati
   * ``WITH_UMFPACK`` -- build with support for UMFPACK solver.
   * ``WITH_PETSC`` -- build with support for PETSc solver.
   * ``WITH_PARDISO`` -- build with support for PARDISO solver.
+  * ``WITH_MUMPS`` -- build with support for MUMPS solver.
+  * ``WITH_TRILINOS`` -- build with Trilinos support (AztecOO, Epetra, ML, Ifpack, NOX, Amesos).
   * ``WITH_METIS`` -- build with METIS support.
   * ``WITH_OPENMP`` -- build with OpenMP support.
-  * ``WITH_MPI`` -- build with MPI support.
+  * ``WITH_MPI`` -- build with MPI support (currently no effect).
 
   If you have problems with CMake not finding your packages, you might want to check 
   ``cmake/FindXYZ.cmake`` files for further details and configuration options.
@@ -61,7 +63,13 @@ Hermes3D is quite modular and can be build with several options. All configurati
     against in case you have some more requirements to fulfill. For example, if your PETSc is
     compiled with X11 support you need to link against X11 libs. Then you list all the libraries
     here.
+  * ``OUTPUT_DIR`` -- set this to a directory that will contain the output files like solutions,
+    convergence graphs, etc. Setting this to ``"."`` will write these files into the current
+    directory.
 
+Another way how to configure the build process is to use ``ccmake``. Then the most of the options
+listed above can be set via textual UI. The paths where your packages sit have to be specified in
+``CMake.vars`` the same way as mentioned above.
 
 Notes
 -----
@@ -79,3 +87,12 @@ Notes
 
 * When building the complex version of Hermes3D with PETSc support, you will need PETSc build with
   C++ support (i.e. ``--with-clanguage=C++`` when building PETSc)
+
+* **Warning:** if you try to build the release version of Hermes3D on 64 bit machine using gcc 4.4.x
+  you will get an error. This seems to be a problem in gcc, not in Hermes3D. To workaround this
+  issue, build the debug version, if you cannot use different compiler or different version of gcc.   
+ 
+* **Trilinos** can be build using our howto_.
+
+
+.. _howto: http://hpfem.org/main/howto/howto.html
