@@ -132,15 +132,15 @@ int main(int argc, char **argv) {
 #if defined WITH_UMFPACK
 	UMFPackMatrix mat;
 	UMFPackVector rhs;
-	UMFPackLinearSolver solver(mat, rhs);
+	UMFPackLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PARDISO
 	PardisoMatrix mat;
 	PardisoVector rhs;
-	PardisoSolver solver(mat, rhs);
+	PardisoSolver solver(&mat, &rhs);
 #elif defined WITH_PETSC
 	PetscMatrix mat;
 	PetscVector rhs;
-	PetscLinearSolver solver(mat, rhs);
+	PetscLinearSolver solver(&mat, &rhs);
 #endif
 
 	WeakForm wf(1);

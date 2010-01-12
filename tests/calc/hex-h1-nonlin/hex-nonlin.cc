@@ -276,7 +276,7 @@ int main(int argc, char **argv)
 	UMFPackVector v;
 	lp.assemble(&m, &v);
 
-	UMFPackLinearSolver sl(m, v);
+	UMFPackLinearSolver sl(&m, &v);
 	sl.solve();
 
 	double *ps = sl.get_solution();

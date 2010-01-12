@@ -78,16 +78,17 @@ protected:
 /// Encapsulation of PARDISO linear solver
 ///
 /// @ingroup solvers
-class PardisoLinearSolver : public Solver {
+class PardisoLinearSolver : public LinearSolver {
 public:
-	PardisoLinearSolver(PardisoMatrix &m, PardisoVector &rhs);
+	PardisoLinearSolver(PardisoMatrix *m, PardisoVector *rhs);
+	PardisoLinearSolver(LinProblem *lp);
 	virtual ~PardisoLinearSolver();
 
 	virtual bool solve();
 
 protected:
-	PardisoMatrix &m;
-	PardisoVector &rhs;
+	PardisoMatrix *m;
+	PardisoVector *rhs;
 };
 
 #endif /* _PARDISO_SOLVER_H_*/

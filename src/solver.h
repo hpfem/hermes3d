@@ -26,6 +26,9 @@
 
 #include "common.h"
 
+class LinProblem;
+class FeProblem;
+
 /// @defgroup solvers Solvers
 ///
 /// TODO: description
@@ -52,6 +55,35 @@ protected:
 	scalar *sln;
 	int error;
 	double time;			/// time spent on solving (in secs)
+};
+
+
+/// Abstract class for defining interface for LinearSolvers
+///
+///
+/// @ingroup solvers
+class LinearSolver : public Solver {
+public:
+	LinearSolver() : Solver() { lp = NULL; }
+	LinearSolver(LinProblem *lp) : Solver() { this->lp = lp; }
+
+protected:
+	LinProblem *lp;        // linear problem being solved (not NULL in case of using
+	                       // LinearProblem(LinProblem *) ctor
+};
+
+/// Abstract class for defining interface for LinearSolvers
+///
+///
+/// @ingroup solvers
+class NonlinearSolver : public Solver {
+public:
+	NonlinearSolver() : Solver() { fp = NULL; }
+	NonlinearSolver(FeProblem *fp) : Solver() { this->fp = fp; }
+
+protected:
+	FeProblem *fp;        // FE problem being solved (not NULL in case of using
+	                      // NonlinearProblem(FeProblem *) ctor
 };
 
 #endif

@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
 		PetscVector rhs;
 		build_matrix(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		PetscLinearSolver solver(mat, rhs);
+		PetscLinearSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
 		UMFPackVector rhs;
 		build_matrix(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		UMFPackLinearSolver solver(mat, rhs);
+		UMFPackLinearSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
 		UMFPackVector rhs;
 		build_matrix_block(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		UMFPackLinearSolver solver(mat, rhs);
+		UMFPackLinearSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
 		PardisoVector rhs;
 		build_matrix(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		PardisoLinearSolver solver(mat, rhs);
+		PardisoLinearSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
 		PardisoVector rhs;
 		build_matrix_block(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		PardisoLinearSolver solver(mat, rhs);
+		PardisoLinearSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
 		EpetraVector rhs;
 		build_matrix(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		AztecOOSolver solver(mat, rhs);
+		AztecOOSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
 		EpetraVector rhs;
 		build_matrix_block(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		AztecOOSolver solver(mat, rhs);
+		AztecOOSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
 		build_matrix(n, ar_mat, ar_rhs, &mat, &rhs);
 
 		if (AmesosSolver::is_available("Klu")) {
-			AmesosSolver solver("Klu", mat, rhs);
+			AmesosSolver solver("Klu", &mat, &rhs);
 			solve(solver, n);
 		}
 #endif
@@ -335,7 +335,7 @@ int main(int argc, char *argv[])
 		build_matrix_block(n, ar_mat, ar_rhs, &mat, &rhs);
 
 		if (AmesosSolver::is_available("Klu")) {
-			AmesosSolver solver("Klu", mat, rhs);
+			AmesosSolver solver("Klu", &mat, &rhs);
 			solve(solver, n);
 		}
 #endif
@@ -346,7 +346,7 @@ int main(int argc, char *argv[])
 		MumpsVector rhs;
 		build_matrix(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		MumpsSolver solver(mat, rhs);
+		MumpsSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}
@@ -356,7 +356,7 @@ int main(int argc, char *argv[])
 		MumpsVector rhs;
 		build_matrix_block(n, ar_mat, ar_rhs, &mat, &rhs);
 
-		MumpsSolver solver(mat, rhs);
+		MumpsSolver solver(&mat, &rhs);
 		solve(solver, n);
 #endif
 	}

@@ -30,6 +30,7 @@ extern "C" {
 #endif
 
 #include "umfpack.h"
+#include "../linproblem.h"
 #include <common/trace.h>
 #include <common/error.h>
 #include <common/utils.h>
@@ -285,8 +286,8 @@ bool UMFPackVector::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt
 #endif
 
 
-UMFPackLinearSolver::UMFPackLinearSolver(UMFPackMatrix &m, UMFPackVector &rhs)
-	: Solver(), m(m), rhs(rhs)
+UMFPackLinearSolver::UMFPackLinearSolver(UMFPackMatrix *m, UMFPackVector *rhs)
+	: LinearSolver(), m(m), rhs(rhs)
 {
 	_F_
 #ifdef WITH_UMFPACK
@@ -295,9 +296,25 @@ UMFPackLinearSolver::UMFPackLinearSolver(UMFPackMatrix &m, UMFPackVector &rhs)
 #endif
 }
 
+UMFPackLinearSolver::UMFPackLinearSolver(LinProblem *lp)
+	: LinearSolver(lp)
+{
+	_F_
+#ifdef WITH_UMFPACK
+	m = new UMFPackMatrix;
+	rhs = new UMFPackVector;
+#else
+	die("hermes3d was not built with UMFPACK support.");
+#endif
+}
+
 UMFPackLinearSolver::~UMFPackLinearSolver() {
 	_F_
 #ifdef WITH_UMFPACK
+	if (lp != NULL) {
+		delete m;
+		delete rhs;
+	}
 #endif
 }
 
@@ -326,7 +343,12 @@ static void check_status(const char *fn_name, int status) {
 bool UMFPackLinearSolver::solve() {
 	_F_
 #ifdef WITH_UMFPACK
-	assert(m.size == rhs.size);
+	assert(m != NULL);
+	assert(rhs != NULL);
+
+	if (lp != NULL)
+		lp->assemble(m, rhs);
+	assert(m->size == rhs->size);
 
 	Timer tmr;
 	tmr.start();
@@ -334,14 +356,14 @@ bool UMFPackLinearSolver::solve() {
 	void *symbolic, *numeric;
 	int status;
 
-	status = umfpack_symbolic(m.size, m.size, m.Ap, m.Ai, m.Ax, &symbolic, NULL, NULL);
+	status = umfpack_symbolic(m->size, m->size, m->Ap, m->Ai, m->Ax, &symbolic, NULL, NULL);
 	if (status != UMFPACK_OK) {
 		check_status("umfpack_di_symbolic", status);
 		return false;
 	}
 	if (symbolic == NULL) EXIT("umfpack_di_symbolic error: symbolic == NULL");
 
-	status = umfpack_numeric(m.Ap, m.Ai, m.Ax, symbolic, &numeric, NULL, NULL);
+	status = umfpack_numeric(m->Ap, m->Ai, m->Ax, symbolic, &numeric, NULL, NULL);
 	if (status != UMFPACK_OK) {
 		check_status("umfpack_di_numeric", status);
 		return false;
@@ -349,11 +371,11 @@ bool UMFPackLinearSolver::solve() {
 	if (numeric == NULL) EXIT("umfpack_di_numeric error: numeric == NULL");
 
 	delete [] sln;
-	sln = new scalar[m.size];
+	sln = new scalar[m->size];
 	MEM_CHECK(sln);
-	memset(sln, 0, m.size * sizeof(scalar));
+	memset(sln, 0, m->size * sizeof(scalar));
 
-	status = umfpack_solve(UMFPACK_A, m.Ap, m.Ai, m.Ax, sln, rhs.v, numeric, NULL, NULL);
+	status = umfpack_solve(UMFPACK_A, m->Ap, m->Ai, m->Ax, sln, rhs->v, numeric, NULL, NULL);
 	if (status != UMFPACK_OK) {
 		check_status("umfpack_di_solve", status);
 		return false;

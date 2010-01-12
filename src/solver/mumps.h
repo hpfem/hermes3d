@@ -107,16 +107,17 @@ protected:
 /// Encapsulation of MUMPS linear solver
 ///
 /// @ingroup solvers
-class MumpsSolver : public Solver {
+class MumpsSolver : public LinearSolver {
 public:
-	MumpsSolver(MumpsMatrix &m, MumpsVector &rhs);
+	MumpsSolver(MumpsMatrix *m, MumpsVector *rhs);
+	MumpsSolver(LinProblem *lp);
 	virtual ~MumpsSolver();
 
 	virtual bool solve();
 
 protected:
-	MumpsMatrix &m;
-	MumpsVector &rhs;
+	MumpsMatrix *m;
+	MumpsVector *rhs;
 };
 
 #endif

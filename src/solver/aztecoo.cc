@@ -22,6 +22,7 @@
 
 #include "../h3dconfig.h"
 #include "aztecoo.h"
+#include "../linproblem.h"
 #include <common/callstack.h>
 #include <common/timer.h>
 #ifdef HAVE_KOMPLEX
@@ -32,8 +33,8 @@
 
 // AztecOO solver //////////////////////////////////////////////////////////////////////////////////
 
-AztecOOSolver::AztecOOSolver(EpetraMatrix &m, EpetraVector &rhs)
-	: Solver(), m(m), rhs(rhs)
+AztecOOSolver::AztecOOSolver(EpetraMatrix *m, EpetraVector *rhs)
+	: LinearSolver(), m(m), rhs(rhs)
 {
 	_F_
 #ifdef HAVE_AZTECOO
@@ -46,10 +47,32 @@ AztecOOSolver::AztecOOSolver(EpetraMatrix &m, EpetraVector &rhs)
 #endif
 }
 
+AztecOOSolver::AztecOOSolver(LinProblem *lp)
+	: LinearSolver(lp)
+{
+	_F_
+#ifdef HAVE_AZTECOO
+	m = new EpetraMatrix;
+	rhs = new EpetraVector;
+
+	// set default values
+	max_iters = 10000;
+	tolerance = 10e-8;
+	pc = NULL;
+#else
+	die(AZTECOO_NOT_COMPILED);
+#endif
+}
+
+
 AztecOOSolver::~AztecOOSolver()
 {
 	_F_
 #ifdef HAVE_AZTECOO
+	if (lp != NULL) {
+		delete m;
+		delete rhs;
+	}
 #endif
 }
 
@@ -88,7 +111,12 @@ bool AztecOOSolver::solve()
 {
 	_F_
 #ifdef HAVE_AZTECOO
-	assert(m.size == rhs.size);
+	assert(m != NULL);
+	assert(rhs != NULL);
+
+	if (lp != NULL)
+		lp->assemble(m, rhs);
+	assert(m->size == rhs->size);
 
 	Timer tmr;
 	tmr.start();
@@ -98,9 +126,9 @@ bool AztecOOSolver::solve()
 
 #ifndef COMPLEX
 	// setup the problem
-	aztec.SetUserMatrix(m.mat);
-	aztec.SetRHS(rhs.vec);
-	Epetra_Vector x(*rhs.std_map);
+	aztec.SetUserMatrix(m->mat);
+	aztec.SetRHS(rhs->vec);
+	Epetra_Vector x(*rhs->std_map);
 	aztec.SetLHS(&x);
 
 	if (pc != NULL) {
@@ -116,20 +144,20 @@ bool AztecOOSolver::solve()
 	time = tmr.get_seconds();
 
 	delete [] sln;
-	sln = new scalar[m.size];
+	sln = new scalar[m->size];
 	MEM_CHECK(sln);
-	memset(sln, 0, m.size * sizeof(scalar));
+	memset(sln, 0, m->size * sizeof(scalar));
 
 	// copy the solution into sln vector
-	for (int i = 0; i < m.size; i++) sln[i] = x[i];
+	for (int i = 0; i < m->size; i++) sln[i] = x[i];
 #else
 	double c0r = 1.0, c0i = 0.0;
 	double c1r = 0.0, c1i = 1.0;
 
-	Epetra_Vector xr(*rhs.std_map);
-	Epetra_Vector xi(*rhs.std_map);
+	Epetra_Vector xr(*rhs->std_map);
+	Epetra_Vector xi(*rhs->std_map);
 
-	Komplex_LinearProblem kp(c0r, c0i, *m.mat, c1r, c1i, *m.mat_im, xr, xi, *rhs.vec, *rhs.vec_im);
+	Komplex_LinearProblem kp(c0r, c0i, *m->mat, c1r, c1i, *m->mat_im, xr, xi, *rhs->vec, *rhs->vec_im);
 	Epetra_LinearProblem *lp = kp.KomplexProblem();
 	aztec.SetProblem(*lp);
 
@@ -139,12 +167,12 @@ bool AztecOOSolver::solve()
 	kp.ExtractSolution(xr, xi);
 
 	delete [] sln;
-	sln = new scalar[m.size];
+	sln = new scalar[m->size];
 	MEM_CHECK(sln);
-	memset(sln, 0, m.size * sizeof(scalar));
+	memset(sln, 0, m->size * sizeof(scalar));
 
 	// copy the solution into sln vector
-	for (int i = 0; i < m.size; i++) sln[i] = scalar(xr[i], xi[i]);
+	for (int i = 0; i < m->size; i++) sln[i] = scalar(xr[i], xi[i]);
 #endif
 	return true;
 #else

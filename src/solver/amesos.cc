@@ -22,6 +22,7 @@
 
 #include "../h3dconfig.h"
 #include "amesos.h"
+#include "../linproblem.h"
 #include <common/callstack.h>
 #include <common/timer.h>
 
@@ -35,8 +36,8 @@ Amesos AmesosSolver::factory;
 
 // Amesos solver ///////////////////////////////////////////////////////////////////////////////////
 
-AmesosSolver::AmesosSolver(const char *solver_type, EpetraMatrix &m, EpetraVector &rhs)
-	: Solver(), m(m), rhs(rhs)
+AmesosSolver::AmesosSolver(const char *solver_type, EpetraMatrix *m, EpetraVector *rhs)
+	: LinearSolver(), m(m), rhs(rhs)
 {
 	_F_
 #ifdef HAVE_AMESOS
@@ -47,10 +48,28 @@ AmesosSolver::AmesosSolver(const char *solver_type, EpetraMatrix &m, EpetraVecto
 #endif
 }
 
+AmesosSolver::AmesosSolver(const char *solver_type, LinProblem *lp)
+	: LinearSolver(lp)
+{
+	_F_
+#ifdef HAVE_AMESOS
+	solver = factory.Create(solver_type, problem);
+	assert(solver != NULL);
+	m = new EpetraMatrix;
+	rhs = new EpetraVector;
+#else
+	die("hermes3d was not built with AMESOS support.");
+#endif
+}
+
 AmesosSolver::~AmesosSolver()
 {
 	_F_
 #ifdef HAVE_AMESOS
+	if (lp != NULL) {
+		delete m;
+		delete rhs;
+	}
 	delete solver;
 #endif
 }
@@ -87,15 +106,20 @@ bool AmesosSolver::solve()
 {
 	_F_
 #ifdef HAVE_AMESOS
-	assert(m.size == rhs.size);
+	assert(m != NULL);
+	assert(rhs != NULL);
+
+	if (lp != NULL)
+		lp->assemble(m, rhs);
+	assert(m->size == rhs->size);
 
 	Timer tmr;
 	tmr.start();
 
-	Epetra_Vector x(*rhs.std_map);
+	Epetra_Vector x(*rhs->std_map);
 
-	problem.SetOperator(m.mat);
-	problem.SetRHS(rhs.vec);
+	problem.SetOperator(m->mat);
+	problem.SetRHS(rhs->vec);
 	problem.SetLHS(&x);
 
 	if ((error = solver->SymbolicFactorization()) != 0) return false;
@@ -106,10 +130,10 @@ bool AmesosSolver::solve()
 	time = tmr.get_seconds();
 
 	delete [] sln;
-	sln = new scalar[m.size]; MEM_CHECK(sln);
+	sln = new scalar[m->size]; MEM_CHECK(sln);
 	// copy the solution into sln vector
-	memset(sln, 0, m.size * sizeof(scalar));
-	for (int i = 0; i < m.size; i++) sln[i] = x[i];
+	memset(sln, 0, m->size * sizeof(scalar));
+	for (int i = 0; i < m->size; i++) sln[i] = x[i];
 
 	return true;
 #else

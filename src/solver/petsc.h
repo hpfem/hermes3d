@@ -73,6 +73,7 @@ public:
 	virtual void free();
 	virtual void finish();
 	virtual scalar get(int idx);
+	virtual void extract(scalar *v) const;
 	virtual void zero();
 	virtual void set(int idx, scalar y);
 	virtual void add(int idx, scalar y);
@@ -91,16 +92,17 @@ protected:
 /// Encapsulation of PETSc linear solver
 ///
 /// @ingroup solvers
-class PetscLinearSolver : public Solver {
+class PetscLinearSolver : public LinearSolver {
 public:
-	PetscLinearSolver(PetscMatrix &mat, PetscVector &rhs);
+	PetscLinearSolver(PetscMatrix *mat, PetscVector *rhs);
+	PetscLinearSolver(LinProblem *lp);
 	virtual ~PetscLinearSolver();
 
 	virtual bool solve();
 
 protected:
-	PetscMatrix &m;
-	PetscVector &rhs;
+	PetscMatrix *m;
+	PetscVector *rhs;
 };
 
 #endif

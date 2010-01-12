@@ -34,9 +34,10 @@
 /// Encapsulation of AztecOO linear solver
 ///
 /// @ingroup solvers
-class AztecOOSolver : public Solver {
+class AztecOOSolver : public LinearSolver {
 public:
-	AztecOOSolver(EpetraMatrix &m, EpetraVector &rhs);
+	AztecOOSolver(EpetraMatrix *m, EpetraVector *rhs);
+	AztecOOSolver(LinProblem *lp);
 	virtual ~AztecOOSolver();
 
 	virtual bool solve();
@@ -65,8 +66,8 @@ protected:
 #ifdef WITH_TRILINOS
 	AztecOO aztec;					/// instance of aztec solver
 #endif
-	EpetraMatrix &m;
-	EpetraVector &rhs;
+	EpetraMatrix *m;
+	EpetraVector *rhs;
 	Precond *pc;
 
 	int max_iters;					/// maximum number of iterations

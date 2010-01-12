@@ -22,6 +22,7 @@
 
 #include "../h3dconfig.h"
 #include "mumps.h"
+#include "../linproblem.h"
 #include <common/trace.h>
 #include <common/error.h>
 #include <common/utils.h>
@@ -345,11 +346,23 @@ bool MumpsVector::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt)
 
 // MUMPS solver ////////////////////////////////////////////////////////////////////////////////////
 
-MumpsSolver::MumpsSolver(MumpsMatrix &m, MumpsVector &rhs) :
-	Solver(), m(m), rhs(rhs)
+MumpsSolver::MumpsSolver(MumpsMatrix *m, MumpsVector *rhs) :
+	LinearSolver(), m(m), rhs(rhs)
 {
 	_F_
 #ifdef WITH_MUMPS
+#else
+	EXIT(ERR_MUMPS_NOT_COMPILED);
+#endif
+}
+
+MumpsSolver::MumpsSolver(LinProblem *lp)
+	: LinearSolver(lp)
+{
+	_F_
+#ifdef WITH_MUMPS
+	m = new MumpsMatrix;
+	rhs = new MumpsVector;
 #else
 	EXIT(ERR_MUMPS_NOT_COMPILED);
 #endif
@@ -359,6 +372,10 @@ MumpsSolver::~MumpsSolver()
 {
 	_F_
 #ifdef WITH_MUMPS
+	if (lp != NULL) {
+		delete m;
+		delete rhs;
+	}
 #endif
 }
 
@@ -391,7 +408,12 @@ bool MumpsSolver::solve()
 	_F_
 #ifdef WITH_MUMPS
 	bool ret = false;
-	assert(m.size == rhs.size);
+	assert(m != NULL);
+	assert(rhs != NULL);
+
+	if (lp != NULL)
+		lp->assemble(m, rhs);
+	assert(m->size == rhs->size);
 
 	Timer tmr;
 	tmr.start();
@@ -406,19 +428,19 @@ bool MumpsSolver::solve()
 	check_status(&id);
 
 	// matrix
-	id.n = m.size;
-	id.nz = m.nnz;
-	id.irn = m.irn;
-	id.jcn = m.jcn;
-	id.a = m.a;
+	id.n = m->size;
+	id.nz = m->nnz;
+	id.irn = m->irn;
+	id.jcn = m->jcn;
+	id.a = m->a;
 
 	// right-hand side
 #ifndef COMPLEX
-	id.rhs = new double[m.size];
-	memcpy(id.rhs, rhs.v, m.size * sizeof(double));
+	id.rhs = new double[m->size];
+	memcpy(id.rhs, rhs->v, m->size * sizeof(double));
 #else
-	id.rhs = new ZMUMPS_COMPLEX[m.size];
-	memcpy(id.rhs, rhs.v, m.size * sizeof(ZMUMPS_COMPLEX));
+	id.rhs = new ZMUMPS_COMPLEX[m->size];
+	memcpy(id.rhs, rhs->v, m->size * sizeof(ZMUMPS_COMPLEX));
 #endif
 
 	// No printings
@@ -438,12 +460,12 @@ bool MumpsSolver::solve()
 
 	if (ret) {
 		delete [] sln;
-		sln = new scalar[m.size];
+		sln = new scalar[m->size];
 #ifndef COMPLEX
-		for (int i = 0; i < rhs.size; i++)
+		for (int i = 0; i < rhs->size; i++)
 			sln[i] = id.rhs[i];
 #else
-		for (int i = 0; i < rhs.size; i++)
+		for (int i = 0; i < rhs->size; i++)
 			sln[i] = complex(id.rhs[i].r, id.rhs[i].i);
 #endif
 	}

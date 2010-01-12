@@ -78,16 +78,17 @@ protected:
 /// Encapsulation of UMFPACK linear solver
 ///
 /// @ingroup solvers
-class UMFPackLinearSolver : public Solver {
+class UMFPackLinearSolver : public LinearSolver {
 public:
-	UMFPackLinearSolver(UMFPackMatrix &m, UMFPackVector &rhs);
+	UMFPackLinearSolver(UMFPackMatrix *m, UMFPackVector *rhs);
+	UMFPackLinearSolver(LinProblem *lp);
 	virtual ~UMFPackLinearSolver();
 
 	virtual bool solve();
 
 protected:
-	UMFPackMatrix &m;
-	UMFPackVector &rhs;
+	UMFPackMatrix *m;
+	UMFPackVector *rhs;
 };
 
 #endif

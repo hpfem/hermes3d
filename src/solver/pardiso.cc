@@ -23,6 +23,7 @@
 
 #include "../h3dconfig.h"
 #include "pardiso.h"
+#include "../linproblem.h"
 
 #include <common/trace.h>
 #include <common/error.h>
@@ -281,8 +282,8 @@ bool PardisoVector::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt
 
 // PARDISO solver //////
 
-PardisoLinearSolver::PardisoLinearSolver(PardisoMatrix &m, PardisoVector &rhs)
-	: Solver(), m(m), rhs(rhs)
+PardisoLinearSolver::PardisoLinearSolver(PardisoMatrix *m, PardisoVector *rhs)
+	: LinearSolver(), m(m), rhs(rhs)
 {
 	_F_
 #ifdef WITH_PARDISO
@@ -291,19 +292,40 @@ PardisoLinearSolver::PardisoLinearSolver(PardisoMatrix &m, PardisoVector &rhs)
 #endif
 }
 
+PardisoLinearSolver::PardisoLinearSolver(LinProblem *lp)
+	: LinearSolver(lp)
+{
+	_F_
+#ifdef WITH_PARDISO
+	m = new PardisoMatrix;
+	rhs = new PardisoVector;
+#else
+	die("hermes3d was not built with Pardiso support.");
+#endif
+}
+
 PardisoLinearSolver::~PardisoLinearSolver() {
 	_F_
 #ifdef WITH_PARDISO
+	if (lp != NULL) {
+		delete m;
+		delete rhs;
+	}
 #endif
 }
 
 bool PardisoLinearSolver::solve() {
 	_F_
 #ifdef WITH_PARDISO
-	assert(m.size == rhs.size);
+	assert(m != NULL);
+	assert(rhs != NULL);
+
+	if (lp != NULL)
+		lp->assemble(m, rhs);
+	assert(m->size == rhs->size);
 
 	bool res = true;
-	int n = m.size;
+	int n = m->size;
 
 	try {
 		// Numbers of processors, value of OMP_NUM_THREADS
@@ -314,7 +336,7 @@ bool PardisoLinearSolver::solve() {
 
 		int mtype = 11;		// Real unsymmetric matrix
 		int nrhs = 1;		// Number of right hand sides
-		int nnz = m.Ap[n];	// The number of nonzero elements
+		int nnz = m->Ap[n];	// The number of nonzero elements
 
 		// Internal solver memory pointer pt,
 		// 32-bit: int pt[64]; 64-bit: long int pt[64]
@@ -335,8 +357,8 @@ bool PardisoLinearSolver::solve() {
 		err = 0;		// Initialize error flag
 
 		// Convert matrix from 0-based C-notation to Fortran 1-based notation.
-		for (int i = 0; i < n + 1; i++) m.Ap[i] += 1;
-		for (int i = 0; i < nnz; i++) m.Ai[i] += 1;
+		for (int i = 0; i < n + 1; i++) m->Ap[i] += 1;
+		for (int i = 0; i < nnz; i++) m->Ai[i] += 1;
 
 		Timer tmr;
 		tmr.start();
@@ -347,7 +369,7 @@ bool PardisoLinearSolver::solve() {
 		// .. Reordering and Symbolic Factorization. This step also allocates
 		// all memory that is necessary for the factorization.
 		phase = 11;
-		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, m.Ax, m.Ap, m.Ai, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &err);
+		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, m->Ax, m->Ap, m->Ai, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &err);
 		if (err != 0) {
 			// ERROR during symbolic factorization: err
 			throw ERR_FAILURE;
@@ -355,7 +377,7 @@ bool PardisoLinearSolver::solve() {
 
 		// .. Numerical factorization.
 		phase = 22;
-		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, m.Ax, m.Ap, m.Ai, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &err);
+		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, m->Ax, m->Ap, m->Ai, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &err);
 		if (err != 0) {
 			// ERROR during numerical factorization: err
 			throw ERR_FAILURE;
@@ -363,13 +385,13 @@ bool PardisoLinearSolver::solve() {
 
 		// .. Back substitution and iterative refinement.
 		delete [] sln;
-		sln = new scalar[m.size];
+		sln = new scalar[m->size];
 		MEM_CHECK(sln);
-		memset(sln, 0, (m.size) * sizeof(scalar));
+		memset(sln, 0, (m->size) * sizeof(scalar));
 
 		phase = 33;
 		iparm[7] = 1; // Max numbers of iterative refinement steps.
-		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, m.Ax, m.Ap, m.Ai, &idum, &nrhs, iparm, &msglvl, rhs.v, sln, &err);
+		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, m->Ax, m->Ap, m->Ai, &idum, &nrhs, iparm, &msglvl, rhs->v, sln, &err);
 		if (err != 0) {
 			// ERROR during solution: err
 			throw ERR_FAILURE;
@@ -379,12 +401,12 @@ bool PardisoLinearSolver::solve() {
 		time = tmr.get_seconds();
 
 		//  Convert matrix back to 0-based C-notation.
-		for (int i = 0; i < n + 1; i++) m.Ap[i] -= 1;
-		for (int i = 0; i < nnz; i++) m.Ai[i] -= 1;
+		for (int i = 0; i < n + 1; i++) m->Ap[i] -= 1;
+		for (int i = 0; i < nnz; i++) m->Ai[i] -= 1;
 
 		// .. Termination and release of memory.
 		phase = -1; // Release internal memory.
-		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, &ddum, m.Ap, m.Ai, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &err);
+		PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, &ddum, m->Ap, m->Ai, &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &err);
 	}
 	catch (int e) {
 		error = e;

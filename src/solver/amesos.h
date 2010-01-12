@@ -34,9 +34,10 @@
 /// Encapsulation of Amesos linear solver
 ///
 /// @ingroup solvers
-class AmesosSolver : public Solver {
+class AmesosSolver : public LinearSolver {
 public:
-	AmesosSolver(const char *solver_type, EpetraMatrix &m, EpetraVector &rhs);
+	AmesosSolver(const char *solver_type, EpetraMatrix *m, EpetraVector *rhs);
+	AmesosSolver(const char *solver_type, LinProblem *lp);
 	virtual ~AmesosSolver();
 
 	static bool is_available(const char *name);
@@ -53,8 +54,8 @@ protected:
 	Amesos_BaseSolver *solver;
 	Epetra_LinearProblem problem;
 #endif
-	EpetraMatrix &m;
-	EpetraVector &rhs;
+	EpetraMatrix *m;
+	EpetraVector *rhs;
 };
 
 #endif

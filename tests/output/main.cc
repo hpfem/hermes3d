@@ -137,16 +137,16 @@ void test_mat(Mesh *mesh, StiffMatrix &mat)
 {
 #if defined WITH_UMFPACK
 	UMFPackVector rhs;
-	UMFPackLinearSolver solver(mat, rhs);
+	UMFPackLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PARDISO
 	PardisoVector rhs;
-	PardisoLinearSolver solver(mat, rhs);
+	PardisoLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PETSC
 	PetscVector rhs;
-	PetscLinearSolver solver(mat, rhs);
+	PetscLinearSolver solver(&mat, &rhs);
 #elif defined WITH_TRILINOS
 	EpetraVector rhs;
-	AztecOOSolver solver(mat, rhs);
+	AztecOOSolver solver(&mat, &rhs);
 #endif
 
 	H1ShapesetLobattoHex shapeset;

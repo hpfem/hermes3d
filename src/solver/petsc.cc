@@ -23,9 +23,11 @@
 
 
 #include "petsc.h"
+#include "../linproblem.h"
 #include <common/trace.h>
 #include <common/error.h>
 #include <common/callstack.h>
+#include <common/timer.h>
 
 #define PETSC_NOT_COMPILED	"hermes3d was not built with PETSc support."
 
@@ -100,7 +102,7 @@ scalar PetscMatrix::get(int m, int n)
 	_F_
 	scalar v = 0.0;
 #ifdef WITH_PETSC
-	MatGetValue(matrix, 1, &m, 1, &n, &v);
+	MatGetValues(matrix, 1, &m, 1, &n, &v);
 #endif
 	return v;
 }
@@ -200,6 +202,16 @@ scalar PetscVector::get(int idx) {
 	return y;
 }
 
+void PetscVector::extract(scalar *v) const {
+	_F_
+#ifdef WITH_PETSC
+	int *idx = new int [size];
+	for (int i = 0; i < size; i++) idx[i] = i;
+	VecGetValues(vec, size, idx, (PetscScalar *) v);
+	delete [] idx;
+#endif
+}
+
 void PetscVector::zero() {
 	_F_
 #ifdef WITH_PETSC
@@ -238,11 +250,22 @@ bool PetscVector::dump(FILE *file, const char *var_name, EMatrixDumpFormat) {
 
 // PETSc linear solver ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-PetscLinearSolver::PetscLinearSolver(PetscMatrix &mat, PetscVector &rhs)
-	: Solver(), m(mat), rhs(rhs)
+PetscLinearSolver::PetscLinearSolver(PetscMatrix *mat, PetscVector *rhs)
+	: LinearSolver(), m(mat), rhs(rhs)
 {
 	_F_
 #ifdef WITH_PETSC
+#else
+	die(PETSC_NOT_COMPILED);
+#endif
+}
+
+PetscLinearSolver::PetscLinearSolver(LinProblem *lp)
+	: LinearSolver(lp)
+{
+#ifdef WITH_PETSC
+	m = new PetscMatrix;
+	rhs = new PetscVector;
 #else
 	die(PETSC_NOT_COMPILED);
 #endif
@@ -252,13 +275,22 @@ PetscLinearSolver::PetscLinearSolver(PetscMatrix &mat, PetscVector &rhs)
 PetscLinearSolver::~PetscLinearSolver() {
 	_F_
 #ifdef WITH_PETSC
+	if (lp != NULL) {
+		delete m;
+		delete rhs;
+	}
 #endif
 }
 
 bool PetscLinearSolver::solve() {
 	_F_
 #ifdef WITH_PETSC
-	assert(m.size == rhs.size);
+	assert(m != NULL);
+	assert(rhs != NULL);
+
+	if (lp != NULL)
+		lp->assemble(m, rhs);
+	assert(m->size == rhs->size);
 
 	PetscErrorCode ec;
 	KSP ksp;
@@ -269,11 +301,11 @@ bool PetscLinearSolver::solve() {
 
 	KSPCreate(PETSC_COMM_WORLD, &ksp);
 
-	KSPSetOperators(ksp, m.matrix, m.matrix, DIFFERENT_NONZERO_PATTERN);
+	KSPSetOperators(ksp, m->matrix, m->matrix, DIFFERENT_NONZERO_PATTERN);
 	KSPSetFromOptions(ksp);
-	VecDuplicate(rhs.vec, &x);
+	VecDuplicate(rhs->vec, &x);
 
-	ec = KSPSolve(ksp, rhs.vec, x);
+	ec = KSPSolve(ksp, rhs->vec, x);
 	if (ec) return false;
 
 	tmr.stop();
@@ -281,17 +313,17 @@ bool PetscLinearSolver::solve() {
 
 	// allocate memory for solution vector
 	delete [] sln;
-	sln = new scalar [m.size];
+	sln = new scalar [m->size];
 	MEM_CHECK(sln);
-	memset(sln, 0, m.size * sizeof(scalar));
+	memset(sln, 0, m->size * sizeof(scalar));
 
 	// index map vector (basic serial code uses the map sln[i] = x[i] for all dofs.
-	int *idx = new int [m.size];
+	int *idx = new int [m->size];
 	MEM_CHECK(idx);
-	for (int i = 0; i < m.size; i++) idx[i] = i;
+	for (int i = 0; i < m->size; i++) idx[i] = i;
 
 	// copy solution to the output solution vector
-	VecGetValues(x, m.size, idx, (PetscScalar *) sln);
+	VecGetValues(x, m->size, idx, (PetscScalar *) sln);
 	delete [] idx;
 
 	KSPDestroy(ksp);

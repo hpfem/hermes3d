@@ -139,15 +139,15 @@ int main(int argc, char **argv) {
 #if defined WITH_UMFPACK
 		UMFPackMatrix mat;
 		UMFPackVector rhs;
-		UMFPackLinearSolver solver(mat, rhs);
+		UMFPackLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PARDISO
 		PardisoMatrix mat;
 		PardisoVector rhs;
-		PardisoLinearSolver solver(mat, rhs);
+		PardisoLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PETSC
 		PetscMatrix mat;
 		PetscVector rhs;
-		PetscLinearSolver solver(mat, rhs);
+		PetscLinearSolver solver(&mat, &rhs);
 #endif
 
 		int ndofs = space.assign_dofs();
@@ -178,13 +178,13 @@ int main(int argc, char **argv) {
 		printf("Reference solution\n");
 
 #if defined WITH_UMFPACK
-		UMFPackLinearSolver rsolver(mat, rhs);
+		UMFPackLinearSolver rsolver(&mat, &rhs);
 #elif defined WITH_PARDISO
-		PardisoLinearSolver rsolver(mat, rhs);
+		PardisoLinearSolver rsolver(&mat, &rhs);
 #elif defined WITH_PETSC
-		PetscLinearSolver rsolver(mat, rhs);
+		PetscLinearSolver rsolver(&mat, &rhs);
 #elif defined WITH_HYPRE
-		HYPRE::BoomerAMG rsolver(mat, rhs);
+		HYPRE::BoomerAMG rsolver(&mat, &rhs);
 #endif
 
 		Mesh rmesh;
