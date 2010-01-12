@@ -166,10 +166,9 @@ void build_matrix_block(int n, Array<MatrixEntry> &ar_mat, Array<scalar> &ar_rhs
 {
 	// matrix
 	matrix->prealloc(n);
-	for (Word_t i = ar_mat.first(); i != INVALID_IDX; i = ar_mat.next(i)) {
-		MatrixEntry &me = ar_mat[i];
-		matrix->pre_add_ij(me.m, me.n);
-	}
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			matrix->pre_add_ij(i, j);
 
 	matrix->alloc();
 	scalar **mat = new_matrix<scalar>(n, n);
@@ -339,6 +338,26 @@ int main(int argc, char *argv[])
 			AmesosSolver solver("Klu", mat, rhs);
 			solve(solver, n);
 		}
+#endif
+	}
+	else if (strcasecmp(argv[1], "mumps") == 0) {
+#ifdef WITH_MUMPS
+		MumpsMatrix mat;
+		MumpsVector rhs;
+		build_matrix(n, ar_mat, ar_rhs, &mat, &rhs);
+
+		MumpsSolver solver(mat, rhs);
+		solve(solver, n);
+#endif
+	}
+	else if (strcasecmp(argv[1], "mumps-block") == 0) {
+#ifdef WITH_MUMPS
+		MumpsMatrix mat;
+		MumpsVector rhs;
+		build_matrix_block(n, ar_mat, ar_rhs, &mat, &rhs);
+
+		MumpsSolver solver(mat, rhs);
+		solve(solver, n);
 #endif
 	}
 	else

@@ -94,6 +94,7 @@
 #include "solver/amesos.h"
 #include "solver/aztecoo.h"
 #include "solver/nox.h"
+#include "solver/mumps.h"
 
 // preconditioners
 #include "precond.h"

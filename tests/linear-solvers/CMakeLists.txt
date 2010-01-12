@@ -84,6 +84,18 @@ if(WITH_TRILINOS)
 	add_test(amesos-solver-b-3 sh -c "${BIN} amesos-block ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-3 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-3")
 endif(WITH_TRILINOS)
 
+if(WITH_MUMPS)
+	add_test(mumps-solver-1 sh -c "${BIN} mumps ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-1 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-1")
+	add_test(mumps-solver-2 sh -c "${BIN} mumps ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-2 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-2")
+	add_test(mumps-solver-3 sh -c "${BIN} mumps ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-3 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-3")
+	add_test(mumps-solver-4 sh -c "${BIN} mumps ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-singular | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-singular")
+	
+	add_test(mumps-solver-b-1 sh -c "${BIN} mumps-block ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-1 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-1")
+	add_test(mumps-solver-b-2 sh -c "${BIN} mumps-block ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-2 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-2")
+	add_test(mumps-solver-b-3 sh -c "${BIN} mumps-block ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-3 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-3")
+	add_test(mumps-solver-b-4 sh -c "${BIN} mumps-block ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-singular | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-singular")
+endif(WITH_MUMPS)
+
 endif(REAL)
 
 if(COMPLEX)
@@ -99,5 +111,10 @@ if(WITH_TRILINOS)
 	add_test(aztecoo-solver-cplx-1 sh -c "${BIN} aztecoo | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-cplx-1")
 	add_test(aztecoo-solver-cplx-b-1 sh -c "${BIN} aztecoo-block | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-cplx-1")
 endif(WITH_TRILINOS)
+
+if(WITH_MUMPS)
+	add_test(mumps-solver-cplx-1 sh -c "${BIN} mumps | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-cplx-1")
+	add_test(mumps-solver-cplx-b-1 sh -c "${BIN} mumps-block | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-cplx-1")
+endif(WITH_MUMPS)
 
 endif(COMPLEX)

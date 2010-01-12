@@ -19,6 +19,7 @@ option(WITH_PRISM    "Enable prism elements" NO)
 option(WITH_UMFPACK  "Enable support for UMFPACK" YES)
 option(WITH_PETSC    "Enable support for PETSc" NO)
 option(WITH_PARDISO  "Enable support for PARDISO" NO)
+option(WITH_MUMPS    "Enable support for MUMPS solver" NO)
 option(WITH_TRILINOS "Enable support for Trilinos solvers" NO)
 
 option(WITH_EXODUSII "Enable support for EXODUSII mesh format" NO)
@@ -104,10 +105,10 @@ else(DEBUG)
 endif(DEBUG)
 
 # If using PETSc or UMFPack, we need to enable Fortran support and look for BLAS and LAPACK
-if(WITH_PETSC OR WITH_UMFPACK OR WITH_PARDISO)
+if(WITH_PETSC OR WITH_UMFPACK OR WITH_PARDISO OR WITH_MUMPS)
 	enable_language(Fortran)
 	find_package(LAPACK REQUIRED)
-endif(WITH_PETSC OR WITH_UMFPACK OR WITH_PARDISO)
+endif(WITH_PETSC OR WITH_UMFPACK OR WITH_PARDISO OR WITH_MUMPS)
 
 
 # find necessary packages
@@ -127,6 +128,11 @@ endif(WITH_UMFPACK)
 if(WITH_PARDISO)
 	find_package(PARDISO REQUIRED)
 endif(WITH_PARDISO)
+
+if(WITH_MUMPS)
+    find_package(Threads REQUIRED)			# needs pthread
+    find_package(MUMPS REQUIRED)
+endif(WITH_MUMPS)
 
 if(WITH_TRILINOS)
 	find_package(LAPACK REQUIRED)			# trilinos needs LAPACK

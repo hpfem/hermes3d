@@ -49,6 +49,7 @@ set(SRC
 	solver/amesos.cc
 	solver/aztecoo.cc
 	solver/nox.cc
+	solver/mumps.cc
 	adapt/h1.cc
 	adapt/proj.cc
 	adapt/h1proj.cc
@@ -79,6 +80,12 @@ macro(LIBRARY_SETTINGS BIN)
 		target_link_libraries(${BIN} ${PARDISO_LIBRARY})
 		target_link_libraries(${BIN} ${LAPACK_LIBRARIES})
 	endif(WITH_PARDISO)
+
+	if(WITH_MUMPS)
+		include_directories(${MUMPS_INCLUDE_DIR})
+		target_link_libraries(${BIN} ${MUMPS_LIBRARIES})
+		target_link_libraries(${BIN} ${LAPACK_LIBRARIES})
+	endif(WITH_MUMPS)
 
 	if(WITH_TRILINOS)
 		include_directories(${TRILINOS_INCLUDE_DIR})
