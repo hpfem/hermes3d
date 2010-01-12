@@ -25,6 +25,22 @@ Exact solution is:
 .. math:: u = (x^2 + y^2 + z^2)^{0.25}
 
 
+Convergence graphs:
+
+.. image:: fichera-conv.png
+
+.. image:: fichera-conv-time.png
+
+
+Solution and hp-mesh:
+
+.. image:: fichera-sln.png
+
+.. image:: fichera-order.png
+
+
+Source code:
+
 .. literalinclude:: ../../examples/fichera/fichera.cc
    :language: c
    :linenos:
