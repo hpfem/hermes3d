@@ -70,8 +70,8 @@ Point3D vtcs[] = {
 };
 
 // mesh
-Word_t hex[2][48][8] = {
-	// hex 1
+Word_t hexs[2][48][8] = {
+	// hexs 1
 	{
 		{  0,  1,  2,  3,  4,  5,  6,  7 },
 		{  1,  2,  3,  0,  5,  6,  7,  4 },
@@ -133,7 +133,7 @@ Word_t hex[2][48][8] = {
 		{  4,  5,  1,  0,  7,  6,  2,  3 },
 		{  0,  4,  5,  1,  3,  7,  6,  2 }
 	},
-	// hex 2
+	// hexs 2
 	{
 		{  1,  8,  9,  2,  5, 10, 11,  6 },
 		{  8,  9,  2,  1, 10, 11,  6,  5 },
@@ -481,12 +481,12 @@ bool test_continuity(Shapeset *shapeset) {
 			for (Word_t k = 0; k < countof(vtcs); k++)
 				mesh.add_vertex(vtcs[k].x, vtcs[k].y, vtcs[k].z);
 			Word_t h1[] = {
-					hex[0][i][0] + 1, hex[0][i][1] + 1, hex[0][i][2] + 1, hex[0][i][3] + 1,
-					hex[0][i][4] + 1, hex[0][i][5] + 1, hex[0][i][6] + 1, hex[0][i][7] + 1 };
+					hexs[0][i][0] + 1, hexs[0][i][1] + 1, hexs[0][i][2] + 1, hexs[0][i][3] + 1,
+					hexs[0][i][4] + 1, hexs[0][i][5] + 1, hexs[0][i][6] + 1, hexs[0][i][7] + 1 };
 			mesh.add_hex(h1);
 			Word_t h2[] = {
-					hex[1][j][0] + 1, hex[1][j][1] + 1, hex[1][j][2] + 1, hex[1][j][3] + 1,
-					hex[1][j][4] + 1, hex[1][j][5] + 1, hex[1][j][6] + 1, hex[1][j][7] + 1 };
+					hexs[1][j][0] + 1, hexs[1][j][1] + 1, hexs[1][j][2] + 1, hexs[1][j][3] + 1,
+					hexs[1][j][4] + 1, hexs[1][j][5] + 1, hexs[1][j][6] + 1, hexs[1][j][7] + 1 };
 			mesh.add_hex(h2);
 			// bc
 			for (Word_t k = 0; k < countof(bnd); k++) {

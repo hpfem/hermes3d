@@ -71,7 +71,7 @@ bool test_lin_indep(Shapeset *shapeset) {
 
 	UMFPackMatrix mat;
 	UMFPackVector rhs;
-	UMFPackLinearSolver solver(mat, rhs);
+	UMFPackLinearSolver solver(&mat, &rhs);
 
 	ShapeFunction pss_u(shapeset), pss_v(shapeset);
 	int n = Hex::NUM_EDGES * shapeset->get_num_edge_fns(MAX_ELEMENT_ORDER)

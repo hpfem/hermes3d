@@ -64,7 +64,7 @@ bool test_lin_indep(Shapeset *shapeset) {
 
 	UMFPackMatrix mat;
 	UMFPackVector rhs;
-	UMFPackLinearSolver solver(mat, rhs);
+	UMFPackLinearSolver solver(&mat, &rhs);
 
 	ShapeFunction fu(shapeset), fv(shapeset);
 
