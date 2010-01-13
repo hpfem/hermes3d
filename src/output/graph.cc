@@ -34,6 +34,7 @@ Graph::Graph(const char *title, const char *x_axis_name, const char *y_axis_name
 	set_captions(title, x_axis_name, y_axis_name);
 	logx = logy = false;
 	legend = grid = true;
+	key = NULL;
 }
 
 void Graph::set_captions(const char *title, const char *x_axis_name, const char *y_axis_name) {
@@ -217,6 +218,8 @@ void GnuplotGraph::save(const char *filename)
 		fprintf(f, "set logscale x\n");
 		fprintf(f, "set logscale y\n");
 	}
+
+	if (key != NULL) fprintf(f, "set key %s\n", key);
 
 	if (title.length()) fprintf(f, "set title '%s'\n", title.c_str());
 	if (xname.length()) fprintf(f, "set xlabel '%s'\n", xname.c_str());

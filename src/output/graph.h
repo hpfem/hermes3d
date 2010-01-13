@@ -43,6 +43,8 @@ public:
 
 	void set_captions(const char *title = NULL, const char *x_axis_name = NULL, const char *y_axis_name = NULL);
 
+	void set_key(const char *key) { this->key = key; }
+
 	void set_log_x(bool log = true) { logx = log; }
 	void set_log_y(bool log = true) { logy = log; }
 
@@ -64,6 +66,7 @@ public:
 protected:
 	std::string title, xname, yname;
 	bool logx, logy, legend, grid;
+	const char *key;
 
 	struct Values {
 		double x, y;
