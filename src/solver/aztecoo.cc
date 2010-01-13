@@ -107,6 +107,22 @@ void AztecOOSolver::set_precond(const char *name)
 #endif
 }
 
+void AztecOOSolver::set_option(int option, int value)
+{
+	_F_
+#ifdef HAVE_AZTECOO
+	aztec.SetAztecOption(option, value);
+#endif
+}
+
+void AztecOOSolver::set_param(int param, double value)
+{
+	_F_
+#ifdef HAVE_AZTECOO
+	aztec.SetAztecParam(param, value);
+#endif
+}
+
 bool AztecOOSolver::solve()
 {
 	_F_

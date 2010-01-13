@@ -62,6 +62,12 @@ public:
 	/// @param[in] pc - IFPACK preconditioner
 	void set_precond(Precond *pc) { this->pc = pc; }
 
+	/// Option setting function
+	void set_option(int option, int value);
+
+	/// Parameter setting function
+	void set_param(int param, double value);
+
 protected:
 #ifdef WITH_TRILINOS
 	AztecOO aztec;					/// instance of aztec solver
