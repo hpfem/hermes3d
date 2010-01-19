@@ -86,9 +86,7 @@ T rhs(T x, T y, T z)
 	T v = 2 * pow(k, 3) * (t - M_PI/3) / (t2 * sqr(u));
 	T w = k / (pow(t2, 1.5) * u);
 
-	return (3 * k) / (t * u)
-		- w * sqr(z + 0.25) - w * sqr(y + 0.25) - w * sqr(x + 0.25)
-		- v * sqr(z + 0.25) - v * sqr(y + 0.25) - v * sqr(x + 0.25);
+	return (3 * k) / (t * u) - t2 * (v + w);
 }
 
 template<typename f_t, typename res_t>
