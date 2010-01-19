@@ -159,11 +159,11 @@ int main(int argc, char **args) {
 #if defined WITH_UMFPACK
 	UMFPackMatrix mat;
 	UMFPackVector rhs;
-	UMFPackLinearSolver solver(mat, rhs);
+	UMFPackLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PETSC
 	PetscMatrix mat;
 	PetscVector rhs;
-	PetscLinearSolver solver(mat, rhs);
+	PetscLinearSolver solver(&mat, &rhs);
 #endif
 
 	// Graphs
@@ -223,9 +223,9 @@ int main(int argc, char **args) {
 		printf("Reference solution\n");
 
 #if defined WITH_UMFPACK
-		UMFPackLinearSolver rsolver(mat, rhs);
+		UMFPackLinearSolver rsolver(&mat, &rhs);
 #elif defined WITH_PETSC
-		PetscLinearSolver rsolver(mat, rhs);
+		PetscLinearSolver rsolver(&mat, &rhs);
 #endif
 
 		// construct the mesh for reference solution

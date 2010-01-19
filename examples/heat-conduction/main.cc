@@ -150,15 +150,15 @@ int main(int argc, char **argv) {
 #if defined WITH_UMFPACK
 	UMFPackMatrix mat;
 	UMFPackVector rhs;
-	UMFPackLinearSolver solver(mat, rhs);
+	UMFPackLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PARDISO
 	PardisoMatrix mat;
 	PardisoVector rhs;
-	PardisoLinearSolver solver(mat, rhs);
+	PardisoLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PETSC
 	PetscMatrix mat;
 	PetscVector rhs;
-	PetscLinearSolver solver(mat, rhs);
+	PetscLinearSolver solver(&mat, &rhs);
 #endif
 
 	// main loop
