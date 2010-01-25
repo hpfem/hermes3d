@@ -142,6 +142,10 @@ int main(int argc, char **args) {
 	PetscMatrix mat;
 	PetscVector rhs;
 	PetscLinearSolver solver(&mat, &rhs);
+#elif defined WITH_MUMPS
+	MumpsMatrix mat;
+	MumpsVector rhs;
+	MumpsSolver solver(&mat, &rhs);
 #endif
 
 	// Graphs
@@ -211,6 +215,8 @@ int main(int argc, char **args) {
 		UMFPackLinearSolver rsolver(&mat, &rhs);
 #elif defined WITH_PETSC
 		PetscLinearSolver rsolver(&mat, &rhs);
+#elif defined WITH_MUMPS
+		MumpsSolver rsolver(&mat, &rhs);
 #endif
 
 		// construct the mesh for reference solution

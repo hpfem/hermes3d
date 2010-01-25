@@ -148,6 +148,10 @@ int main(int argc, char **argv) {
 		PetscMatrix mat;
 		PetscVector rhs;
 		PetscLinearSolver solver(&mat, &rhs);
+#elif defined WITH_MUMPS
+		MumpsMatrix mat;
+		MumpsVector rhs;
+		MumpsSolver solver(&mat, &rhs);
 #endif
 
 		int ndofs = space.assign_dofs();
@@ -183,8 +187,8 @@ int main(int argc, char **argv) {
 		PardisoLinearSolver rsolver(&mat, &rhs);
 #elif defined WITH_PETSC
 		PetscLinearSolver rsolver(&mat, &rhs);
-#elif defined WITH_HYPRE
-		HYPRE::BoomerAMG rsolver(&mat, &rhs);
+#elif defined WITH_MUMPS
+		MumpsSolver rsolver(&mat, &rhs);
 #endif
 
 		Mesh rmesh;

@@ -129,6 +129,8 @@ res_t linear_form(int n, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<r
 #define StiffMatrix		PardisoMatrix
 #elif defined WITH_PETSC
 #define StiffMatrix		PetscMatrix
+#elif defined WITH_MUMPS
+#define StiffMatrix		MumpsMatrix
 #elif defined WITH_TRILINOS
 #define StiffMatrix		EpetraMatrix
 #endif
@@ -144,6 +146,9 @@ void test_mat(Mesh *mesh, StiffMatrix &mat)
 #elif defined WITH_PETSC
 	PetscVector rhs;
 	PetscLinearSolver solver(&mat, &rhs);
+#elif defined WITH_MUMPS
+	MumpsVector rhs;
+	MumpsSolver solver(&mat, &rhs);
 #elif defined WITH_TRILINOS
 	EpetraVector rhs;
 	AztecOOSolver solver(&mat, &rhs);

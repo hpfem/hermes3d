@@ -103,7 +103,9 @@ add_test(${PROJECT_NAME}-vtk-bc-5 sh -c "${BIN} bc ${MESHES_DIR}/mesh3d/hex27.me
 add_test(${PROJECT_NAME}-vtk-bc-6 sh -c "${BIN} bc ${MESHES_DIR}/mesh3d/fichera-corner.mesh3d | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/vtk-bc-fichera-corner")
 
 # mat
+if(WITH_UMFPACK)	
 add_test(${PROJECT_NAME}-vtk-mat-1 sh -c "${BIN} mat ${MESHES_DIR}/mesh3d/fichera-corner.mesh3d | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/vtk-mat-fichera-corner")
+endif(WITH_UMFPACK)	
 
 # multi-mesh
 add_test(${PROJECT_NAME}-vtk-mm-1 sh -c "${BIN} mm ${MESHES_DIR}/mesh3d/hex1.mesh3d | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/vtk-mm-1")

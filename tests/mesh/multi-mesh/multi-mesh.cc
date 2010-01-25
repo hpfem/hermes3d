@@ -503,6 +503,10 @@ int main(int argc, char **args)
 	PetscMatrix mat;
 	PetscVector rhs;
 	PetscLinearSolver solver(&mat, &rhs);
+#elif defined WITH_MUMPS
+	MumpsMatrix mat;
+	MumpsVector rhs;
+	MumpsSolver solver(&mat, &rhs);
 #endif
 
 #ifdef RHS2

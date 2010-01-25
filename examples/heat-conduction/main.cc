@@ -159,6 +159,10 @@ int main(int argc, char **argv) {
 	PetscMatrix mat;
 	PetscVector rhs;
 	PetscLinearSolver solver(&mat, &rhs);
+#elif defined WITH_MUMPS
+	MumpsMatrix mat;
+	MumpsVector rhs;
+	MumpsSolver solver(&mat, &rhs);
 #endif
 
 	// main loop

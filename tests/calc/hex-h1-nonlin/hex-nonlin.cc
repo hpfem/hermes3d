@@ -272,11 +272,16 @@ int main(int argc, char **argv)
 	LinProblem lp(&proj_wf);
 	lp.set_spaces(1, &space);
 
+#ifdef WITH_UMFPACK
 	UMFPackMatrix m;
 	UMFPackVector v;
-	lp.assemble(&m, &v);
-
 	UMFPackLinearSolver sl(&m, &v);
+#elif defined WITH_MUMPS
+	MumpsMatrix m;
+	MumpsVector v;
+	MumpsSolver sl(&m, &v);
+#endif
+	lp.assemble(&m, &v);
 	sl.solve();
 
 	double *ps = sl.get_solution();
