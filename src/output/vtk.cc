@@ -64,13 +64,13 @@ namespace Vtk {
 /// @ingroup visualization
 class OutputQuad : public Quad3D {
 public:
-	virtual QuadPt3D *get_points(order3_t order) {
+	virtual QuadPt3D *get_points(const order3_t &order) {
 		_F_
 		if (!tables.exists(order.get_idx())) calculate_view_points(order);
 		return tables[order.get_idx()];
 	}
 
-	virtual int get_num_points(order3_t order) {
+	virtual int get_num_points(const order3_t &order) {
 		_F_
 		if (!np.exists(order.get_idx())) calculate_view_points(order);
 		return np[order.get_idx()];

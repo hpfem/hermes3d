@@ -50,13 +50,13 @@ namespace Gmsh {
 /// @ingroup visualization
 class OutputQuad : public Quad3D {
 public:
-	virtual QuadPt3D *get_points(order3_t order) {
+	virtual QuadPt3D *get_points(const order3_t &order) {
 		_F_
 		if (!tables.exists(order.get_idx())) calculate_view_points(order);
 		return tables[order.get_idx()];
 	}
 
-	virtual int get_num_points(order3_t order) {
+	virtual int get_num_points(const order3_t &order) {
 		_F_
 		if (!np.exists(order.get_idx())) calculate_view_points(order);
 		return np[order.get_idx()];
@@ -74,7 +74,7 @@ public:
 		return subdiv_num[order.get_idx()];
 	}
 
-	virtual QuadPt3D *get_face_points(int face, order2_t order) {
+	virtual QuadPt3D *get_face_points(int face, const order2_t &order) {
 		_F_
 		EXIT(ERR_NOT_IMPLEMENTED);
 		return NULL;
@@ -874,9 +874,7 @@ void GmshOutputEngine::out_orders(Space *space, const char *name) {
 	fprintf(this->out_file, "%ld\n", mesh->get_num_active_elements() * Hex::NUM_EDGES);
 	id = 1;
 	FOR_ALL_ACTIVE_ELEMENTS(idx, mesh) {
-		Element *element = mesh->elements[idx];
-		int mode = element->get_mode();
-		assert(mode == MODE_HEXAHEDRON);			// HEX-specific
+		assert(mesh->elements[idx]->get_mode() == MODE_HEXAHEDRON);			// HEX-specific
 		// get order from the space
 		order3_t order = space->get_element_order(idx);
 

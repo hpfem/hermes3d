@@ -379,7 +379,7 @@ struct order3_t {
 		return order3_t(-1);
 	}
 
-	order1_t get_edge_order(int edge) {
+	order1_t get_edge_order(int edge) const {
 		switch (type) {
 			case MODE_TETRAHEDRON: return this->order;
 			case MODE_HEXAHEDRON:
@@ -394,7 +394,7 @@ struct order3_t {
 		return -1;
 	}
 
-	order2_t get_face_order(int face) {
+	order2_t get_face_order(int face) const {
 		switch (type) {
 			case MODE_TETRAHEDRON: return this->order;
 			case MODE_HEXAHEDRON:
