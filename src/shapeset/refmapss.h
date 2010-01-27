@@ -85,6 +85,8 @@ public:
 		return order3_t(1);
 	}
 
+	virtual order3_t get_dcmp(int index) const { return order3_t(-1); }
+
 	virtual int get_shape_type(int index) const {
 		EXIT(ERR_NOT_IMPLEMENTED);
 		return 0;
@@ -170,6 +172,8 @@ public:
 	virtual order3_t get_order(int index) const {
 		return order3_t(1, 1, 1);
 	}
+
+	virtual order3_t get_dcmp(int index) const { return order3_t(-1); }
 
 	virtual int get_shape_type(int index) const {
 		EXIT(ERR_NOT_IMPLEMENTED);

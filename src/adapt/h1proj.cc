@@ -28,6 +28,8 @@
 #include "../quad.h"
 #include "../refdomain.h"
 #include "../transform.h"
+#include "../shapeset/common.h"
+#include "../shapeset/lobatto.h"
 #include <common/callstack.h>
 
 #ifdef DEBUG
@@ -36,8 +38,57 @@
 	#define PRINTF(...)
 #endif
 
+bool H1Projection::has_prods = false;
+double H1Projection::prod_fn[N_FNS][N_FNS];
+double H1Projection::prod_dx[N_FNS][N_FNS];
+
+void H1Projection::precalc_fn_prods(double fn[N_FNS][N_FNS])
+{
+	Quad1D *quad_1d = get_quadrature_1d();
+
+	int order = MAX_QUAD_ORDER;
+	QuadPt1D *pt = quad_1d->get_points(order);
+	int np = quad_1d->get_num_points(order);
+
+	for (int i = 0; i < N_FNS; i++) {
+		shape_fn_1d_t fni = lobatto_fn_tab_1d[i];
+		for (int j = 0; j < N_FNS; j++) {
+			shape_fn_1d_t fnj = lobatto_fn_tab_1d[j];
+			double val = 0.0;
+			for (int k = 0; k < np; k++)
+				val += pt[k].w * fni(pt[k].x) * fnj(pt[k].x);
+			fn[i][j] = val;
+		}
+	}
+}
+
+void H1Projection::precalc_dx_prods(double dx[N_FNS][N_FNS])
+{
+	Quad1D *quad_1d = get_quadrature_1d();
+
+	int order = MAX_QUAD_ORDER;
+	QuadPt1D *pt = quad_1d->get_points(order);
+	int np = quad_1d->get_num_points(order);
+
+	for (int i = 0; i < N_FNS; i++) {
+		shape_fn_1d_t fni = lobatto_der_tab_1d[i];
+		for (int j = 0; j < N_FNS; j++) {
+			shape_fn_1d_t fnj = lobatto_der_tab_1d[j];
+			double val = 0.0;
+			for (int k = 0; k < np; k++)
+				val += pt[k].w * fni(pt[k].x) * fnj(pt[k].x);
+			dx[i][j] = val;
+		}
+	}
+}
+
 H1Projection::H1Projection(Solution *afn, Element *e, Shapeset *ss) : Projection(afn, e, ss)
 {
+	if (!has_prods) {
+		precalc_fn_prods(prod_fn);
+		precalc_dx_prods(prod_dx);
+		has_prods = true;
+	}
 }
 
 double H1Projection::get_error(int split, int son, const order3_t &order)
@@ -161,31 +212,17 @@ void H1Projection::calc_projection(int split, int son, const order3_t &order)
 	// proj matrix
 	for (int i = 0; i < n_fns; i++) {
 		int iidx = fn_idx[i];
-		fu->set_active_shape(iidx);
+		order3_t oi = ss->get_dcmp(iidx);
+
 		for (int j = 0; j < n_fns; j++) {
 			int jidx = fn_idx[j];
-			fv->set_active_shape(jidx);
 
-			order3_t o = ss->get_order(iidx) + ss->get_order(jidx);
-			QuadPt3D *pt = quad->get_points(o);
-			int np = quad->get_num_points(o);
-
-			fu->precalculate(np, pt, FN_DEFAULT);
-			fv->precalculate(np, pt, FN_DEFAULT);
-
-			double *uval = fu->get_fn_values();
-			double *vval = fv->get_fn_values();
-
-			double *dudx, *dudy, *dudz;
-			double *dvdx, *dvdy, *dvdz;
-
-			fu->get_dx_dy_dz_values(dudx, dudy, dudz);
-			fv->get_dx_dy_dz_values(dvdx, dvdy, dvdz);
-
-			double val = 0.0;
-			for (int k = 0; k < np; k++)
-				val += pt[k].w * (uval[k] * vval[k] + dudx[k] * dvdx[k] + dudy[k] * dvdy[k] + dudz[k] * dvdz[k]);
-
+			order3_t oj = ss->get_dcmp(jidx);
+			double val =
+				prod_fn[oi.x][oj.x] * prod_fn[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+				prod_dx[oi.x][oj.x] * prod_fn[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+				prod_fn[oi.x][oj.x] * prod_dx[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+				prod_fn[oi.x][oj.x] * prod_fn[oi.y][oj.y] * prod_dx[oi.z][oj.z];
 			proj_mat[i][j] += val;
 		}
 	}

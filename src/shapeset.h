@@ -186,6 +186,9 @@ public:
 
 	virtual order3_t get_order(int index) const = 0;
 
+	/// Get function decomposition for product shapesets
+	virtual order3_t get_dcmp(int index) const = 0;
+
 	/// Get index of a constrained edge function.
 	/// @return The index of a constrained edge function.
 	/// @param[in] edge The local number of an edge.

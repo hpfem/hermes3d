@@ -279,6 +279,17 @@ order3_t H1ShapesetLobattoHex::get_order(int index) const {
 #endif
 }
 
+order3_t H1ShapesetLobattoHex::get_dcmp(int index) const
+{
+	if (index >= 0) {
+		h1_hex_index_t idx(index);
+		order3_t ord(idx.x, idx.y, idx.z);
+		return ord;
+	}
+	else
+		return order3_t(-1);
+}
+
 int H1ShapesetLobattoHex::get_shape_type(int index) const
 {
 	_F_

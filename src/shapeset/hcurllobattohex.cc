@@ -275,6 +275,18 @@ order3_t HcurlShapesetLobattoHex::get_order(int index) const {
 #endif
 }
 
+order3_t HcurlShapesetLobattoHex::get_dcmp(int index) const
+{
+	if (index >= 0) {
+		hc_hex_index_t idx(index);
+		order3_t ord(idx.x, idx.y, idx.z);
+		return ord;
+	}
+	else
+		return order3_t(-1);
+}
+
+
 int HcurlShapesetLobattoHex::get_shape_type(int index) const
 {
 	_F_

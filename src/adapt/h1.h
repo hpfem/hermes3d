@@ -131,9 +131,9 @@ protected:
 
 	/// Used by adapt(). Can be utilized in specialized adaptivity
 	/// procedures, for which adapt() is not sufficient.
-	void get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Solution *rsln,
+	void get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &order, Solution *rsln,
 	                            Shapeset *ss, int &split, order3_t p[8]);
-	double get_projection_error(Element *e, int split, int son, order3_t order, Solution *rsln, Shapeset *ss);
+	double get_projection_error(Element *e, int split, int son, const order3_t &order, Solution *rsln, Shapeset *ss);
 	int get_dof_count(int split, order3_t order[]);
 
 	order3_t get_form_order(int marker, const order3_t &ordu, const order3_t &ordv, RefMap *ru,
@@ -148,7 +148,7 @@ protected:
 		int son;
 		order3_t order;			// element order
 
-		ProjKey(int t, int s, order3_t o) {
+		ProjKey(int t, int s, const order3_t &o) {
 			split = t;
 			son = s;
 			order = o;

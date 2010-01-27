@@ -24,6 +24,7 @@
 #include "../function.h"
 #include "../solution.h"
 #include "h1projipol.h"
+#include "h1proj.h"
 #include "../matrix.h"
 #include "../quad.h"
 #include "../refdomain.h"
@@ -38,8 +39,17 @@
 	#define PRINTF(...)
 #endif
 
+bool H1ProjectionIpol::has_prods = false;
+double H1ProjectionIpol::prod_fn[N_FNS][N_FNS];
+double H1ProjectionIpol::prod_dx[N_FNS][N_FNS];
+
 H1ProjectionIpol::H1ProjectionIpol(Solution *afn, Element *e, Shapeset *ss) : ProjectionIpol(afn, e, ss)
 {
+	if (!has_prods) {
+		H1Projection::precalc_fn_prods(prod_fn);
+		H1Projection::precalc_dx_prods(prod_dx);
+		has_prods = true;
+	}
 }
 
 double H1ProjectionIpol::get_error(int split, int son, const order3_t &order)
@@ -157,41 +167,22 @@ void H1ProjectionIpol::calc_edge_proj(int iedge, int split, int son, const order
 	int *edge_fn_idx = ss->get_edge_indices(iedge, 0, edge_order);	// indices of edge functions
 	for (int i = 0; i < edge_fns; i++) {
 		int iidx = edge_fn_idx[i];
-		fu->set_active_shape(iidx);
+		order3_t oi = ss->get_dcmp(iidx);
 		for (int j = 0; j < edge_fns; j++) {
 			int jidx = edge_fn_idx[j];
-			fv->set_active_shape(jidx);
-
-			order1_t ord = (ss->get_order(iidx) + ss->get_order(jidx)).get_edge_order(iedge);
-			QuadPt3D *pt = quad->get_edge_points(iedge, ord);
-			int np = quad->get_edge_num_points(iedge, ord);
-
-			fu->precalculate(np, pt, FN_DEFAULT);
-			fv->precalculate(np, pt, FN_DEFAULT);
-
-			double *uval = fu->get_fn_values();
-			double *vval = fv->get_fn_values();
-
-			double *du, *dv;
+			order3_t oj = ss->get_dcmp(jidx);
+			double val = 0.0;
 			if (iedge == 0 || iedge == 2 || iedge == 8 || iedge == 10) {
-				du = fu->get_dx_values();
-				dv = fv->get_dx_values();
+				val = prod_fn[oi.x][oj.x] + prod_dx[oi.x][oj.x];
 			}
 			else if (iedge == 1 || iedge == 3 || iedge == 9 || iedge == 11) {
-				du = fu->get_dy_values();
-				dv = fv->get_dy_values();
+				val = prod_fn[oi.y][oj.y] + prod_dx[oi.y][oj.y];
 			}
 			else if (iedge == 4 || iedge == 5 || iedge == 6 || iedge == 7) {
-				du = fu->get_dz_values();
-				dv = fv->get_dz_values();
+				val = prod_fn[oi.z][oj.z] + prod_dx[oi.z][oj.z];
 			}
 			else
 				EXIT("Local edge number out of range.");
-
-			double val = 0.0;
-			for (int k = 0; k < np; k++)
-				val += pt[k].w * (uval[k] * vval[k] + du[k] * dv[k]);
-
 			proj_mat[i][j] += val;
 		}
 	}
@@ -351,49 +342,31 @@ void H1ProjectionIpol::calc_face_proj(int iface, int split, int son, const order
 	int *face_fn_idx = ss->get_face_indices(iface, face_ori, face_order);
 	for (int i = 0; i < face_fns; i++) {
 		int iidx = face_fn_idx[i];
-		fu->set_active_shape(iidx);
+		order3_t oi = ss->get_dcmp(iidx);
 		for (int j = 0; j < face_fns; j++) {
 			int jidx = face_fn_idx[j];
-			fv->set_active_shape(jidx);
-
-			order2_t ord = (ss->get_order(iidx) + ss->get_order(jidx)).get_face_order(iface);
-			QuadPt3D *pt = quad->get_face_points(iface, ord);
-			int np = quad->get_face_num_points(iface, ord);
-
-			fu->precalculate(np, pt, FN_DEFAULT);
-			fv->precalculate(np, pt, FN_DEFAULT);
-
-			double *uval = fu->get_fn_values();
-			double *vval = fv->get_fn_values();
-
-			double *dudx, *dudy;
-			double *dvdx, *dvdy;
-
+			order3_t oj = ss->get_dcmp(jidx);
+			double val = 0.0;
 			if (iface == 0 || iface == 1) {
-				dudx = fu->get_dy_values();
-				dvdx = fv->get_dy_values();
-				dudy = fu->get_dz_values();
-				dvdy = fv->get_dz_values();
+				val =
+					prod_fn[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+					prod_dx[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+					prod_fn[oi.y][oj.y] * prod_dx[oi.z][oj.z];
 			}
 			else if (iface == 2 || iface == 3) {
-				dudx = fu->get_dx_values();
-				dvdx = fv->get_dx_values();
-				dudy = fu->get_dz_values();
-				dvdy = fv->get_dz_values();
+				val =
+					prod_fn[oi.x][oj.x] * prod_fn[oi.z][oj.z] +
+					prod_dx[oi.x][oj.x] * prod_fn[oi.z][oj.z] +
+					prod_fn[oi.x][oj.x] * prod_dx[oi.z][oj.z];
 			}
 			else if (iface == 4 || iface == 5) {
-				dudx = fu->get_dx_values();
-				dvdx = fv->get_dx_values();
-				dudy = fu->get_dy_values();
-				dvdy = fv->get_dy_values();
+				val =
+					prod_fn[oi.x][oj.x] * prod_fn[oi.y][oj.y] +
+					prod_dx[oi.x][oj.x] * prod_fn[oi.y][oj.y] +
+					prod_fn[oi.x][oj.x] * prod_dx[oi.y][oj.y];
 			}
 			else
 				EXIT("Local face number out of range.");
-
-			double val = 0.0;
-			for (int k = 0; k < np; k++)
-				val += pt[k].w * (uval[k] * vval[k] + dudx[k] * dvdx[k] + dudy[k] * dvdy[k]);
-
 			proj_mat[i][j] += val;
 		}
 	}
@@ -561,31 +534,15 @@ void H1ProjectionIpol::calc_bubble_proj(int split, int son, const order3_t &orde
 	int *bubble_fn_idx = ss->get_bubble_indices(order);
 	for (int i = 0; i < bubble_fns; i++) {
 		int iidx = bubble_fn_idx[i];
-		fu->set_active_shape(iidx);
+		order3_t oi = ss->get_dcmp(iidx);
 		for (int j = 0; j < bubble_fns; j++) {
 			int jidx = bubble_fn_idx[j];
-			fv->set_active_shape(jidx);
-
-			order3_t o = ss->get_order(iidx) + ss->get_order(jidx);
-			QuadPt3D *pt = quad->get_points(o);
-			int np = quad->get_num_points(o);
-
-			fu->precalculate(np, pt, FN_DEFAULT);
-			fv->precalculate(np, pt, FN_DEFAULT);
-
-			double *uval = fu->get_fn_values();
-			double *vval = fv->get_fn_values();
-
-			double *dudx, *dudy, *dudz;
-			double *dvdx, *dvdy, *dvdz;
-
-			fu->get_dx_dy_dz_values(dudx, dudy, dudz);
-			fv->get_dx_dy_dz_values(dvdx, dvdy, dvdz);
-
-			double val = 0.0;
-			for (int k = 0; k < np; k++)
-				val += pt[k].w * (uval[k] * vval[k] + dudx[k] * dvdx[k] + dudy[k] * dvdy[k] + dudz[k] * dvdz[k]);
-
+			order3_t oj = ss->get_dcmp(jidx);
+			double val =
+				prod_fn[oi.x][oj.x] * prod_fn[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+				prod_dx[oi.x][oj.x] * prod_fn[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+				prod_fn[oi.x][oj.x] * prod_dx[oi.y][oj.y] * prod_fn[oi.z][oj.z] +
+				prod_fn[oi.x][oj.x] * prod_fn[oi.y][oj.y] * prod_dx[oi.z][oj.z];
 			proj_mat[i][j] += val;
 		}
 	}

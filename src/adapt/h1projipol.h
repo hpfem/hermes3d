@@ -25,9 +25,6 @@
 
 #include "projipol.h"
 
-// Number of 1D functions
-#define N_FNS					11
-
 /// H1 projection
 ///
 /// FIXME: hex specific
@@ -44,6 +41,10 @@ protected:
 	virtual void calc_edge_proj(int edge, int split, int son, const order3_t &order);
 	virtual void calc_face_proj(int face, int split, int son, const order3_t &order);
 	virtual void calc_bubble_proj(int split, int son, const order3_t &order);
+
+	static double prod_fn[N_FNS][N_FNS];	// precalculated products of fn. values
+	static double prod_dx[N_FNS][N_FNS];	// precalculated products of derivatives
+	static bool has_prods;
 };
 
 #endif

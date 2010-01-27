@@ -74,6 +74,8 @@ public:
 
 	virtual order3_t get_order(int index) const;
 
+	virtual order3_t get_dcmp(int index) const;
+
 	virtual int get_shape_type(int index) const;
 
 	virtual void get_values(int n, int index, int np, QuadPt3D *pt, int component, double *vals) {

@@ -30,12 +30,11 @@
 #include "../norm.h"
 #include "../forms.h"
 #include "h1.h"
-#include "h1proj.h"
+#include "h1projipol.h"
 #include <common/timer.h>
 #include <common/callstack.h>
 
-#define PRINTF(...)
-//#define PRINTF			printf
+//#define DEBUG_PRINT
 
 template<typename f_t, typename res_t>
 res_t h1_form(int n, double *wt, fn_t<res_t> *u, fn_t<res_t> *v, geom_t<f_t> *e,
@@ -127,7 +126,7 @@ void H1Adapt::set_biform(int i, int j, biform_val_t bi_form, biform_ord_t bi_ord
 	ord[i][j] = bi_ord;
 }
 
-double H1Adapt::get_projection_error(Element *e, int split, int son, order3_t order, Solution *rsln,
+double H1Adapt::get_projection_error(Element *e, int split, int son, const order3_t &order, Solution *rsln,
                                      Shapeset *ss)
 {
 	_F_
@@ -136,7 +135,7 @@ double H1Adapt::get_projection_error(Element *e, int split, int son, order3_t or
 	if (proj_err.lookup(key, err))
 		return err;
 	else {
-		H1Projection proj(rsln, e, ss);
+		H1ProjectionIpol proj(rsln, e, ss);
 		err = proj.get_error(split, son, order);
 		proj_err.set(key, err);
 		return err;
@@ -147,18 +146,18 @@ double H1Adapt::get_projection_error(Element *e, int split, int son, order3_t or
 
 //// optimal refinement search /////////////////////////////////////////////////////////////////////
 
-static inline int ndofs_elem(order3_t order)
+static inline int ndofs_elem(const order3_t &order)
 {
 	assert(order.type == MODE_HEXAHEDRON);
 	return (order.x + 1) * (order.y + 1) * (order.z + 1);
 }
 
-static inline int ndofs_bubble(order3_t order)
+static inline int ndofs_bubble(const order3_t &order)
 {
 	return (order.x - 1) * (order.y - 1) * (order.z - 1);
 }
 
-static inline int ndofs_face(int face, order3_t order1, order3_t order2)
+static inline int ndofs_face(int face, const order3_t &order1, const order3_t &order2)
 {
 	order2_t forder[] = { order1.get_face_order(face), order2.get_face_order(face) };
 	return (
@@ -166,17 +165,18 @@ static inline int ndofs_face(int face, order3_t order1, order3_t order2)
 		(std::min(forder[0].y, forder[1].y) - 1));
 }
 
-static inline int ndofs_edge(int edge, order3_t o)
+static inline int ndofs_edge(int edge, const order3_t &o)
 {
 	return o.get_edge_order(edge) - 1;
 }
 
-static inline int ndofs_edge(int edge, order3_t o1, order3_t o2)
+static inline int ndofs_edge(int edge, const order3_t &o1, const order3_t &o2)
 {
 	return std::min(o1.get_edge_order(edge), o2.get_edge_order(edge)) - 1;
 }
 
-static inline int ndofs_edge(int edge, order3_t o1, order3_t o2, order3_t o3, order3_t o4)
+static inline int ndofs_edge(int edge, const order3_t &o1, const order3_t &o2, const order3_t &o3,
+                             const order3_t &o4)
 {
 	return
 		std::min(
@@ -301,7 +301,7 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 	return dofs;
 }
 
-void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Solution *rsln,
+void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &order, Solution *rsln,
                                      Shapeset *ss, int &split, order3_t p[8])
 {
 	_F_
@@ -402,8 +402,6 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 #endif
 
 	// calculate their errors
-	double avg = 0.0;
-	double dev = 0.0;
 	for (i = k = 0; i < n; i++) {
 		Cand *c = cand + i;
 
@@ -460,22 +458,35 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 		}
 		c->error = sqrt(c->error);
 		c->dofs = get_dof_count(c->split, c->p);
-
-		if (!i || c->error <= cand[0].error) {
-			avg += log10(c->error);
-			dev += sqr(log10(c->error));
-			k++;
-		}
 	}
-	avg /= k; // mean
-	dev /= k; // second moment
-	dev = sqrt(dev - sqr(avg)); // deviation is square root of variance
+
+#ifdef DEBUG_PRINT
+	printf("\n");
+	printf("- cand: #0: dofs = %d", cand[0].dofs);
+	printf(" | order = (%d, %d, %d)", order.x, order.y, order.z);
+	printf(" | err = % .15e", log10(cand[0].error));
+	printf("\n");
+#endif
 
 	// select an above-average candidate with the steepest error decrease
 	int imax = 0;
 	double score, maxscore = 0.0;
 	for (i = 1; i < n; i++) {
-		score = (log10(cand[0].error) - log10(cand[i].error)) / (cand[i].dofs - cand[0].dofs);
+		if (cand[i].dofs - cand[0].dofs != 0)
+			score = (log10(cand[0].error) - log10(cand[i].error)) / (cand[i].dofs - cand[0].dofs);
+		else
+			score = log10(cand[0].error) - log10(cand[i].error);
+
+#ifdef DEBUG_PRINT
+		printf("- cand: #%d, split = %s", i, split_str[cand[i].split]);
+		for (int ii = 0; ii < 8; ii++)
+			printf(", (%d, %d, %d)", cand[i].p[ii].x, cand[i].p[ii].y, cand[i].p[ii].z);
+		printf(" | dofs = %d", cand[i].dofs);
+		printf(" | err = % .15e", log10(cand[i].error));
+		printf(" | derr = % e", log10(cand[0].error) - log10(cand[i].error));
+		printf(" | score = % e ", score);
+		printf("\n");
+#endif
 
 		if (score > maxscore) {
 			maxscore = score;
@@ -491,7 +502,6 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, order3_t order, Sol
 	printf(": best cand: #%d, split = %s", imax, split_str[cand[imax].split]);
 	for (int i = 0; i < 8; i++)
 		printf(", (%d, %d, %d)", p[i].x, p[i].y, p[i].z);
-	printf(" | order = (%d, %d, %d)", order.x, order.y, order.z);
 	printf("\n");
 #endif
 }
@@ -774,7 +784,6 @@ double H1Adapt::calc_error_n(int n, ...)
 	double total_error = 0.0;
 	if (esort != NULL) delete [] esort;
 	esort = new int2[nact];
-	MEM_CHECK(esort);
 
 	Element **ee;
 	trav.begin(2 * num, meshes, tr);
@@ -827,6 +836,13 @@ double H1Adapt::calc_error_n(int n, ...)
 												// commenting out the above fixme
 	tmr.stop();
 	error_time = tmr.get_seconds();
+
+#ifdef DEBUG_PRINT
+	printf("\n");
+	for (int i = 0; i < std::min(10, nact); i++) {
+		printf("  - element error #%d = % e\n", esort[i][0], errors[0][esort[i][0] - 1]);
+	}
+#endif
 
 	return sqrt(total_error / total_norm);
 }

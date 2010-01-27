@@ -115,6 +115,28 @@ struct QuadPt3D {
 };
 
 
+/// Numerical quadrature in 1D
+///
+/// @ingroup quadratures
+class Quad1D {
+public:
+	QuadPt1D *get_points(int order) const { return tables[order]; }
+	inline int get_num_points(int order) const { return np[order]; };
+
+	int get_max_order() const { return max_order; }
+
+protected:
+	/// maximal order for integration
+	int max_order;
+	/// number of integration points
+	/// indexing: [order]
+	int *np;
+	/// tables with integration points
+	/// indexing: [order][point no.]
+	QuadPt1D **tables;
+};
+
+
 ///
 /// 2D quadratures
 ///
@@ -201,6 +223,7 @@ protected:
 
 // interface for getting quadratures - library wide ////////////////////////////////////////////////
 
+Quad1D *get_quadrature_1d();
 Quad3D *get_quadrature(EMode3D mode);
 
 

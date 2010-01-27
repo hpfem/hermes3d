@@ -25,6 +25,15 @@
 
 #include "quad.h"
 
+/// Numeric quadrature for 1D (Gauss points)
+///
+/// @ingroup quadrature
+class QuadStd1D : public Quad1D {
+public:
+	QuadStd1D();
+	~QuadStd1D();
+};
+
 
 /// Numeric quadrature for 2D triangle
 ///

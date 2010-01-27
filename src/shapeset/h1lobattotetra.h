@@ -73,6 +73,8 @@ public:
 
 	virtual order3_t get_order(int index) const;
 
+	virtual order3_t get_dcmp(int index) const { return order3_t(-1); }
+
 	virtual int get_shape_type(int index) const {
 		return -1;
 	}

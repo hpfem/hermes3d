@@ -25,9 +25,6 @@
 
 #include "proj.h"
 
-// Number of 1D functions
-#define N_FNS					11
-
 /// H1 projection
 ///
 /// FIXME: hex specific
@@ -41,6 +38,14 @@ public:
 
 protected:
 	virtual void calc_projection(int split, int son, const order3_t &order);
+
+	static void precalc_fn_prods(double fn[N_FNS][N_FNS]);
+	static void precalc_dx_prods(double dx[N_FNS][N_FNS]);
+	static double prod_fn[N_FNS][N_FNS];	// precalculated products of fn. values
+	static double prod_dx[N_FNS][N_FNS];	// precalculated products of derivatives
+	static bool has_prods;
+
+	friend class H1ProjectionIpol;
 };
 
 #endif

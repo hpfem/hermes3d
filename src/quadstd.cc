@@ -208,6 +208,19 @@ static int std_np_1d[] = {
 	sizeof(std_pts_24_1d) / sizeof(QuadPt1D)
 };
 
+QuadStd1D::QuadStd1D()
+{
+	max_order = MAX_QUAD_ORDER;
+	np = std_np_1d;
+	tables = std_tables_1d;
+}
+
+QuadStd1D::~QuadStd1D()
+{
+
+}
+
+static QuadStd1D   	g_quad_std_1d;
 
 //// 2D quadrature tables (triangle) ////////////////////////////////////////////////////////////
 
@@ -4531,6 +4544,7 @@ QuadStdPrism::~QuadStdPrism() {
 #endif
 }
 
+// quadrature access functions
 
 #ifdef WITH_TETRA
 	static QuadStdTetra			quad_std_tetra;
@@ -4557,3 +4571,4 @@ Quad3D *g_quad_3d[] = { QUAD_STD_TETRA, QUAD_STD_HEX, QUAD_STD_PRISM };
 
 Quad3D *get_quadrature(EMode3D mode) { return g_quad_3d[mode]; }
 
+Quad1D *get_quadrature_1d() { return &g_quad_std_1d; }

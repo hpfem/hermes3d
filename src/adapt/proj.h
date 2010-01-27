@@ -25,6 +25,8 @@
 
 /// @defgroup hp-adapt hp-Adaptivity
 
+// Number of 1D functions
+#define N_FNS					11
 
 /// Abstract class for projecting reference solution onto the coarse mesh
 ///
