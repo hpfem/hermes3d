@@ -20,10 +20,10 @@
 // along with Hermes3D; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef _ADAPT_H1_PROJECTION_H_
-#define _ADAPT_H1_PROJECTION_H_
+#ifndef _ADAPT_H1_PROJECTIONIPOL_H_
+#define _ADAPT_H1_PROJECTIONIPOL_H_
 
-#include "proj.h"
+#include "projipol.h"
 
 // Number of 1D functions
 #define N_FNS					11
@@ -33,14 +33,17 @@
 /// FIXME: hex specific
 ///
 /// @ingroup hp-adaptivity
-class H1Projection : public Projection {
+class H1ProjectionIpol : public ProjectionIpol {
 public:
-	H1Projection(Solution *afn, Element *e, Shapeset *ss);
+	H1ProjectionIpol(Solution *afn, Element *e, Shapeset *ss);
 
 	virtual double get_error(int split, int son, const order3_t &order);
 
 protected:
-	virtual void calc_projection(int split, int son, const order3_t &order);
+	virtual void calc_vertex_proj(int split, int son);
+	virtual void calc_edge_proj(int edge, int split, int son, const order3_t &order);
+	virtual void calc_face_proj(int face, int split, int son, const order3_t &order);
+	virtual void calc_bubble_proj(int split, int son, const order3_t &order);
 };
 
 #endif

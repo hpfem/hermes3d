@@ -104,5 +104,6 @@
 // adapt
 #include "adapt/h1.h"
 #include "adapt/h1proj.h"
+#include "adapt/h1projipol.h"
 
 #endif

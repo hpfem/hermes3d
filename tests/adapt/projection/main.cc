@@ -143,7 +143,8 @@ res_t linear_form(int n, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<r
 // main
 //
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	_F_
 	int ret = ERROR_SUCCESS;
 
@@ -152,7 +153,7 @@ int main(int argc, char *argv[]) {
 		return ERR_FAILURE;
 	}
 
-	if (strcmp(argv[1], "h1") != 0) {
+	if (strcmp(argv[1], "h1") != 0 && strcmp(argv[1], "h1-ipol")) {
 		fprintf(stderr, "ERROR: unknown type of the projection\n");
 		return ERR_FAILURE;
 	}
@@ -231,6 +232,7 @@ int main(int argc, char *argv[]) {
 
 		Projection *proj;
 		if (strcmp(argv[1], "h1") == 0) proj = new H1Projection(&sln, e, &shapeset);
+		else if (strcmp(argv[1], "h1-ipol") == 0) proj = new H1ProjectionIpol(&sln, e, &shapeset);
 		else return ERR_FAILURE;
 
 		//

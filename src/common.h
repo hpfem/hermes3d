@@ -263,5 +263,6 @@ inline double sqr(double x) { return x*x; }
 inline double sqr(complex x) { return std::norm(x); }
 #endif
 
+#define countof(a) (sizeof(a)/sizeof(a[0]))
 
 #endif

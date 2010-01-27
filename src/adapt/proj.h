@@ -26,7 +26,7 @@
 /// @defgroup hp-adapt hp-Adaptivity
 
 
-/// Abstract class for projecting reference solution to the coarse mesh
+/// Abstract class for projecting reference solution onto the coarse mesh
 ///
 /// NOTE: hex-specific
 ///
@@ -36,7 +36,7 @@ public:
 	Projection(Solution *afn, Element *e, Shapeset *ss);
 	virtual ~Projection();
 
-	virtual double get_error(int split, int son, order3_t order) = 0;
+	virtual double get_error(int split, int son, const order3_t &order) = 0;
 
 protected:
 	order3_t order;
@@ -48,26 +48,12 @@ protected:
 	ShapeFunction *fu;
 	ShapeFunction *fv;
 
-	struct ProjItem {
-		scalar coef;				// coef of the projection
-		int idx;					// index of the shape function
-	};
-
-	ProjItem *vertex_proj;			// vertex projection
-	ProjItem *edge_proj[12];		// edge projection
-	ProjItem *face_proj[6];			// face projection
-	ProjItem *bubble_proj;			// bubble projection
-
-	ProjItem **proj;				// projection
-	int proj_fns;					// number of funcions
+	int n_fns;						// number of functions
+	int *fn_idx;					// indices of shape functions
+	double *proj_coef;				// projection coefficients
 
 	Trf *get_trf(int trf);
-	void free_proj();
-	void calc_projection(int split, int son, order3_t order);
-	virtual void calc_vertex_proj(int split, int son) = 0;
-	virtual void calc_edge_proj(int edge, int split, int son, order3_t order) = 0;
-	virtual void calc_face_proj(int face, int split, int son, order3_t order) = 0;
-	virtual void calc_bubble_proj(int split, int son, order3_t order) = 0;
+	virtual void calc_projection(int split, int son, const order3_t &order) = 0;
 
 	// FIXME: Hex-specific
 	static const int NUM_TRF = 27;		// number of all possible transformations
@@ -84,6 +70,10 @@ protected:
 	static int edge_trf[8][Hex::NUM_EDGES][2];
 	static int face_trf[8][Hex::NUM_FACES][4];
 	static int int_trf[8][8];
+
+	static double mdx[8];
+	static double mdy[8];
+	static double mdz[8];
 };
 
 #endif

@@ -23,7 +23,6 @@
 #include "../h3dconfig.h"
 #include "../function.h"
 #include "../solution.h"
-//#include "../shapeset/h1sinhex.h"
 #include "proj.h"
 #include <common/callstack.h>
 
@@ -205,15 +204,21 @@ int Projection::int_trf[8][8] = {
 	{ -1, -1, -1, -1, -1, -1, -1, -1 }, // XYZ
 };
 
+double Projection::mdx[8] = { 2, 1, 2, 2, 1, 1, 2, 1 };
+double Projection::mdy[8] = { 2, 2, 1, 2, 1, 2, 1, 1 };
+double Projection::mdz[8] = { 2, 2, 2, 1, 2, 1, 1, 1 };
 
-Trf *Projection::get_trf(int trf) {
+
+Trf *Projection::get_trf(int trf)
+{
 	_F_
 	static Trf none = { { 1, 1, 1 }, { 0, 0, 0 } };
 	if (trf == -1) return &none;
 	else return Transformable::hex_trf + trf;			// FIXME: HEX-specific
 }
 
-Projection::Projection(Solution *afn, Element *e, Shapeset *ss) {
+Projection::Projection(Solution *afn, Element *e, Shapeset *ss)
+{
 	_F_
 	this->sln = afn;
 	this->ss = ss;
@@ -231,61 +236,12 @@ Projection::Projection(Solution *afn, Element *e, Shapeset *ss) {
 	fv->set_active_element(base_elem);
 
 	// null
-	vertex_proj = NULL;
-	for (int i = 0; i < Hex::NUM_EDGES; i++) edge_proj[i] = NULL;
-	for (int i = 0; i < Hex::NUM_FACES; i++) face_proj[i] = NULL;
-	bubble_proj = NULL;
-	proj = NULL;
-	proj_fns = 0;
+	n_fns = 0;
+	fn_idx = NULL;
+	proj_coef = NULL;
 }
 
-Projection::~Projection() {
+Projection::~Projection()
+{
 	_F_
-	delete fu;
-	delete fv;
-
-	free_proj();
-}
-
-void Projection::free_proj() {
-	_F_
-	delete [] vertex_proj;
-	for (int i = 0; i < Hex::NUM_EDGES; i++) delete [] edge_proj[i];
-	for (int i = 0; i < Hex::NUM_FACES; i++) delete [] face_proj[i];
-	delete [] bubble_proj;
-
-	delete [] proj;
-}
-
-void Projection::calc_projection(int split, int son, order3_t order) {
-	_F_
-	free_proj();
-	calc_vertex_proj(split, son + 1);
-	for (int iedge = 0; iedge < Hex::NUM_EDGES; iedge++)
-		calc_edge_proj(iedge, split, son + 1, order);
-	for (int iface = 0; iface < Hex::NUM_FACES; iface++)
-		calc_face_proj(iface, split, son + 1, order);
-	calc_bubble_proj(split, son + 1, order);
-
-	proj_fns = (order.x + 1) * (order.y + 1) * (order.z + 1);
-	proj = new ProjItem *[proj_fns];
-
-	int m = 0;
-	for (int i = 0; i < Hex::NUM_VERTICES; i++, m++)
-		proj[m] = vertex_proj + i;
-	for (int iedge = 0; iedge < Hex::NUM_EDGES; iedge++) {
-		order1_t edge_order = order.get_edge_order(iedge);
-		int edge_fns = edge_order - 1;
-		for (int i = 0; i < edge_fns; i++, m++)
-			proj[m] = edge_proj[iedge] + i;
-	}
-	for (int iface = 0; iface < Hex::NUM_FACES; iface++) {
-		order2_t face_order = order.get_face_order(iface);
-		int face_fns = (face_order.x - 1) * (face_order.y - 1);
-		for (int i = 0; i < face_fns; i++, m++)
-			proj[m] = face_proj[iface] + i;
-	}
-	int bubble_fns = (order.x - 1) * (order.y - 1) * (order.z - 1);
-	for (int i = 0; i < bubble_fns; i++, m++)
-		proj[m] = bubble_proj + i;
 }

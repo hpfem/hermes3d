@@ -52,7 +52,9 @@ set(SRC
 	solver/mumps.cc
 	adapt/h1.cc
 	adapt/proj.cc
+	adapt/projipol.cc
 	adapt/h1proj.cc
+	adapt/h1projipol.cc
 	${HERMES_COMMON_DIR}/callstack.cc
 	${HERMES_COMMON_DIR}/trace.cc
 	${HERMES_COMMON_DIR}/error.cc
