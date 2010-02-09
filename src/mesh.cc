@@ -658,7 +658,7 @@ Boundary::~Boundary() {
 
 // for debugging
 void Boundary::dump() {
-	printf("id = %d, marker = %d\n", id, marker);
+	printf("id = %ld, marker = %d\n", id, marker);
 }
 
 // BoundaryTri ////////////////////////////////////////////////////////////////
@@ -1063,7 +1063,7 @@ Boundary *Mesh::add_tri_boundary(Word_t vtcs[], int marker) {
 	if (facets.lookup(vtcs + 0, Tri::NUM_VERTICES, facet)) {
 		Boundary *bdr = new BoundaryTri(marker);
 		MEM_CHECK(bdr);
-		int pos = boundaries.count() + 1;
+		Word_t pos = boundaries.count() + 1;
 		boundaries.set(pos, bdr);
 		bdr->id = pos;
 
@@ -1082,7 +1082,7 @@ Boundary *Mesh::add_quad_boundary(Word_t vtcs[], int marker) {
 	if (facets.lookup(vtcs + 0, Quad::NUM_VERTICES, facet)) {
 		Boundary *bdr = new BoundaryQuad(marker);
 		MEM_CHECK(bdr);
-		int pos = boundaries.count() + 1;
+		Word_t pos = boundaries.count() + 1;
 		boundaries.set(pos, bdr);
 		bdr->id = pos;
 

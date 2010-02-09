@@ -494,7 +494,7 @@ public:
 	// for debugging
 	virtual void dump();
 
-	int id;										// boundary id
+	Word_t id;										// boundary id
 	int marker;
 };
 
