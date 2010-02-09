@@ -79,6 +79,10 @@ public:
 	/// @param[in] h_only - true if h-adaptivity should be performed
 	void set_type(int h_only) { this->h_only = h_only; }
 
+	/// Allow/disable aniso refinements
+	/// @param[in] aniso - set to true to allow aniso refts, false to disable them
+	void set_aniso(int aniso) { this->aniso = aniso; }
+
 	/// Set strategy type
 	/// @param[in] strat - type of the strategy
 	/// - 0 = adapt until the error drop below certain threshold

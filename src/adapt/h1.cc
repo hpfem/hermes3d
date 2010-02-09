@@ -364,35 +364,126 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 		cand[n].p[3] = (q3); \
 		n++; }}
 
-	// prepare p-candidates
-	int dord[3] = { order.x, order.y, order.z };
+	order3_t pp[] = {
+		order3_t(order.x, order.y, order.z),
+		order3_t(std::min(max_order, order.x + 1),
+				 std::min(max_order, order.y + 1),
+				 std::min(max_order, order.z + 1)),
+		order3_t(std::min(max_order, order.x + 2),
+				 std::min(max_order, order.y + 2),
+				 std::min(max_order, order.z + 2))
+	};
 
-	{
-		int q[] = { std::min(max_order, dord[0] + 1), std::min(max_order, dord[1] + 1), std::min(max_order, dord[2] + 1) };
+	if (h_only) {
+		MAKE_P_CAND(pp[0]);
+		MAKE_HP_CAND(pp[0], pp[0], pp[0], pp[0], pp[0], pp[0], pp[0], pp[0]);
 
-		MAKE_P_CAND(order);
-		MAKE_P_CAND(order3_t(q[0], q[1], q[2]));
+		if (aniso) {
+			MAKE_ANI2_CAND(REFT_HEX_X, pp[0], pp[0]);
+			MAKE_ANI2_CAND(REFT_HEX_Y, pp[0], pp[0]);
+			MAKE_ANI2_CAND(REFT_HEX_Z, pp[0], pp[0]);
+
+			MAKE_ANI4_CAND(REFT_HEX_XY, pp[0], pp[0], pp[0], pp[0]);
+			MAKE_ANI4_CAND(REFT_HEX_YZ, pp[0], pp[0], pp[0], pp[0]);
+			MAKE_ANI4_CAND(REFT_HEX_XZ, pp[0], pp[0], pp[0], pp[0]);
+		}
 	}
-	// prepare hp-candidates
-	{
-		order3_t pp[] = {
-			order3_t(dord[0], dord[1], dord[2]),
-			order3_t((dord[0] + 1) / 2, (dord[1] + 1) / 2, (dord[2] + 1) / 2),
-			order3_t(std::min(((dord[0] + 1) / 2) + 1, max_order),
-			         std::min(((dord[1] + 1) / 2) + 1, max_order),
-			         std::min(((dord[2] + 1) / 2) + 1, max_order))
-		};
+	else {
+		// prepare p-candidates
+		if (aniso) {
+			for (unsigned int q0 = 0; q0 < countof(pp); q0++)
+				for (unsigned int q1 = 0; q1 < countof(pp); q1++)
+					for (unsigned int q2 = 0; q2 < countof(pp); q2++)
+						MAKE_P_CAND(order3_t(pp[q0].x, pp[q1].y, pp[q2].z));
+		}
+		else {
+			MAKE_P_CAND(pp[0]);
+			MAKE_P_CAND(pp[1]);
+			MAKE_P_CAND(pp[2]);
+		}
 
-		for (int q0 = 1; q0 < 3; q0++)
-			for (int q1 = 1; q1 < 3; q1++)
-				for (int q2 = 1; q2 < 3; q2++)
-					for (int q3 = 1; q3 < 3; q3++)
-						for (int q4 = 1; q4 < 3; q4++)
-							for (int q5 = 1; q5 < 3; q5++)
-								for (int q6 = 1; q6 < 3; q6++)
-									for (int q7 = 1; q7 < 3; q7++)
-										MAKE_HP_CAND(pp[q0], pp[q1], pp[q2], pp[q3],
-										             pp[q4], pp[q5], pp[q6], pp[q7]);
+		// prepare hp-candidates
+		{
+			order3_t hpp[] = {
+				order3_t((order.x + 1) / 2, (order.y + 1) / 2, (order.z + 1) / 2),
+				order3_t(std::min(((order.x + 1) / 2) + 1, max_order),
+				         std::min(((order.y + 1) / 2) + 1, max_order),
+				         std::min(((order.z + 1) / 2) + 1, max_order))
+			};
+
+			for (unsigned int q0 = 0; q0 < countof(hpp); q0++)
+				for (unsigned int q1 = 0; q1 < countof(hpp); q1++)
+					for (unsigned int q2 = 0; q2 < countof(hpp); q2++)
+						for (unsigned int q3 = 0; q3 < countof(hpp); q3++)
+							for (unsigned int q4 = 0; q4 < countof(hpp); q4++)
+								for (unsigned int q5 = 0; q5 < countof(hpp); q5++)
+									for (unsigned int q6 = 0; q6 < countof(hpp); q6++)
+										for (unsigned int q7 = 0; q7 < countof(hpp); q7++)
+											MAKE_HP_CAND(hpp[q0], hpp[q1], hpp[q2], hpp[q3],
+											             hpp[q4], hpp[q5], hpp[q6], hpp[q7]);
+
+		}
+
+		if (aniso) {
+			// X
+			order3_t ppx[] = {
+				order3_t((order.x + 1) / 2, order.y, order.z),
+				order3_t(std::min(((order.x + 1) / 2) + 1, max_order), order.y, order.z),
+			};
+			for (unsigned int q0 = 0; q0 < countof(ppx); q0++)
+				for (unsigned int q1 = 0; q1 < countof(ppx); q1++)
+					MAKE_ANI2_CAND(REFT_HEX_X, ppx[q0], ppx[q1]);
+			// Y
+			order3_t ppy[] = {
+				order3_t(order.x, (order.y + 1) / 2, order.z),
+				order3_t(order.x, std::min(((order.y + 1) / 2) + 1, max_order), order.z),
+			};
+			for (unsigned int q0 = 0; q0 < countof(ppy); q0++)
+				for (unsigned int q1 = 0; q1 < countof(ppy); q1++)
+					MAKE_ANI2_CAND(REFT_HEX_Y, ppy[q0], ppy[q1]);
+			// Z
+			order3_t ppz[] = {
+				order3_t(order.x, order.y, (order.z + 1) / 2),
+				order3_t(order.x, order.y, std::min(((order.z + 1) / 2) + 1, max_order)),
+			};
+			for (unsigned int q0 = 0; q0 < countof(ppz); q0++)
+				for (unsigned int q1 = 0; q1 < countof(ppz); q1++)
+					MAKE_ANI2_CAND(REFT_HEX_Z, ppz[q0], ppz[q1]);
+
+			// XY
+			order3_t ppxy[] = {
+				order3_t((order.x + 1) / 2, (order.y + 1) / 2, order.z),
+				order3_t(std::min(((order.x + 1) / 2) + 1, max_order),
+				         std::min(((order.y + 1) / 2) + 1, max_order), order.z),
+			};
+			for (unsigned int q0 = 0; q0 < countof(ppxy); q0++)
+				for (unsigned int q1 = 0; q1 < countof(ppxy); q1++)
+					for (unsigned int q2 = 0; q2 < countof(ppxy); q2++)
+						for (unsigned int q3 = 0; q3 < countof(ppxy); q3++)
+							MAKE_ANI4_CAND(REFT_HEX_XY, ppxy[q0], ppxy[q1], ppxy[q2], ppxy[q3]);
+			// YZ
+			order3_t ppyz[] = {
+					order3_t(order.x, (order.y + 1) / 2, (order.z + 1) / 2),
+					order3_t(order.x, std::min(((order.y + 1) / 2) + 1, max_order),
+					         std::min(((order.z + 1) / 2) + 1, max_order)),
+			};
+			for (unsigned int q0 = 0; q0 < countof(ppyz); q0++)
+				for (unsigned int q1 = 0; q1 < countof(ppyz); q1++)
+					for (unsigned int q2 = 0; q2 < countof(ppyz); q2++)
+						for (unsigned int q3 = 0; q3 < countof(ppyz); q3++)
+							MAKE_ANI4_CAND(REFT_HEX_YZ, ppyz[q0], ppyz[q1], ppyz[q2], ppyz[q3]);
+			// XZ
+			order3_t ppxz[] = {
+				order3_t((order.x + 1) / 2, order.y, (order.z + 1) / 2),
+				order3_t(std::min(((order.x + 1) / 2) + 1, max_order), order.y,
+				         std::min(((order.z + 1) / 2) + 1, max_order)),
+			};
+			for (unsigned int q0 = 0; q0 < countof(ppxz); q0++)
+				for (unsigned int q1 = 0; q1 < countof(ppxz); q1++)
+					for (unsigned int q2 = 0; q2 < countof(ppxz); q2++)
+						for (unsigned int q3 = 0; q3 < countof(ppxz); q3++)
+							MAKE_ANI4_CAND(REFT_HEX_XZ, ppxz[q0], ppxz[q1], ppxz[q2], ppxz[q3]);
+		}
 	}
 
 #ifdef DEBUG_PRINT
@@ -472,25 +563,24 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 	int imax = 0;
 	double score, maxscore = 0.0;
 	for (i = 1; i < n; i++) {
-		if (cand[i].dofs - cand[0].dofs != 0)
-			score = (log10(cand[0].error) - log10(cand[i].error)) / (cand[i].dofs - cand[0].dofs);
-		else
-			score = log10(cand[0].error) - log10(cand[i].error);
+		if (cand[i].dofs - cand[0].dofs > 0) {
+			score = (log10(cand[0].error) - log10(cand[i].error)) / cbrt(cand[i].dofs - cand[0].dofs);
 
 #ifdef DEBUG_PRINT
-		printf("- cand: #%d, split = %s", i, split_str[cand[i].split]);
-		for (int ii = 0; ii < 8; ii++)
-			printf(", (%d, %d, %d)", cand[i].p[ii].x, cand[i].p[ii].y, cand[i].p[ii].z);
-		printf(" | dofs = %d", cand[i].dofs);
-		printf(" | err = % .15e", log10(cand[i].error));
-		printf(" | derr = % e", log10(cand[0].error) - log10(cand[i].error));
-		printf(" | score = % e ", score);
-		printf("\n");
+			printf("- cand: #%d, split = %s", i, split_str[cand[i].split]);
+			for (int ii = 0; ii < 8; ii++)
+				printf(", (%d, %d, %d)", cand[i].p[ii].x, cand[i].p[ii].y, cand[i].p[ii].z);
+			printf(" | dofs = %d", cand[i].dofs);
+			printf(" | err = % .15e", log10(cand[i].error));
+			printf(" | derr = % e", log10(cand[0].error) - log10(cand[i].error));
+			printf(" | score = % e ", score);
+			printf("\n");
 #endif
 
-		if (score > maxscore) {
-			maxscore = score;
-			imax = i;
+			if (score > maxscore) {
+				maxscore = score;
+				imax = i;
+			}
 		}
 	}
 
@@ -556,7 +646,7 @@ void H1Adapt::adapt(double thr)
 		for (int k = 0; k < 8; k++) p[k] = order3_t(0, 0, 0);
 		order3_t cur_order = spaces[comp]->get_element_order(id);
 
-		if (h_only) {
+		if (h_only && !aniso) {
 			p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = p[6] = p[7] = cur_order;
 			split = REFT_HEX_XYZ;
 #ifdef DEBUG_PRINT
