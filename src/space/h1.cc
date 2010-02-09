@@ -300,6 +300,7 @@ void H1Space::calc_face_boundary_projection(Element *elem, int iface) {
 		Word_t edge_idx = mesh->get_edge_id(elem, local_face_edge[edge]);
 		EdgeData *enode = en_data[edge_idx];
 		if (enode->ced && enode->edge_ncomponents > 0 && enode->edge_baselist != NULL) {
+			assert(enode->edge_ncomponents > 0);
 			Word_t eid = enode->edge_baselist[0].edge_id;
 			num_fns += en_data[eid]->n;
 		}
@@ -333,6 +334,7 @@ void H1Space::calc_face_boundary_projection(Element *elem, int iface) {
 					for (int j = 0; j < cng_enode->n; j++, m++) {
 						int order = shapeset->get_order(indices[j]).get_edge_order(local_face_edge[edge]);
 						fn_idx[m] = shapeset->get_constrained_edge_index(local_face_edge[edge], ecomp->ori, order, ecomp->part);
+						assert(cng_enode->bc_proj != NULL);
 						coef[m] = cng_enode->bc_proj[j];
 					}
 				}
@@ -343,6 +345,7 @@ void H1Space::calc_face_boundary_projection(Element *elem, int iface) {
 				int *edge_fn_idx = shapeset->get_edge_indices(local_face_edge[edge], edge_ori, enode->order);
 
 				for (int i = 0; i < enode->n; i++, m++) {
+					assert(enode->bc_proj != NULL);
 					coef[m] = enode->bc_proj[i];
 					fn_idx[m] = edge_fn_idx[i];
 				}
