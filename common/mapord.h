@@ -93,7 +93,7 @@ public:
 	/// \return item at position \c iter
 	TYPE get(Word_t iter) const;
 
-	TYPE operator[](int idx) const;
+	TYPE operator[](Word_t idx) const;
 //	TYPE &operator[](int idx);
 
 	/// Add a new (key, item) pair into the map
@@ -223,7 +223,7 @@ TYPE MapOrd<TYPE>::get(Word_t iter) const {
 }
 
 template<class TYPE>
-TYPE MapOrd<TYPE>::operator[](int idx) const {
+TYPE MapOrd<TYPE>::operator[](Word_t idx) const {
 	return get(idx);
 }
 

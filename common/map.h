@@ -62,7 +62,7 @@ public:
 	/// \return item at position \c iter
 	TYPE get(Word_t iter) const;
 
-	TYPE operator[](int idx) const;
+	TYPE operator[](Word_t idx) const;
 
 	/// Add a new (key, item) pair into the Map
 	/// \param[in] key Pointer to the array-of-bytes.
@@ -185,7 +185,7 @@ TYPE Map<KEY, TYPE>::get(Word_t iter) const {
 }
 
 template<class KEY, class TYPE>
-TYPE Map<KEY, TYPE>::operator[](int idx) const {
+TYPE Map<KEY, TYPE>::operator[](Word_t idx) const {
 	return get(idx);
 }
 
