@@ -2185,16 +2185,14 @@ Word_t Mesh::get_facing_facet(Word_t fid, Word_t elem_id) {
 
 	if (facet != NULL) {
 		if (elem_id == facet->left) {
-			assert(facet->lactive);
-			while (!facet->ractive) {
+			while (!facet->ractive && facet->parent != INVALID_IDX) {
 				fid = facet->parent;
 				facet = facets[fid];
 			}
 			return fid;
 		}
 		else if (elem_id == facet->right) {
-			assert(facet->ractive);
-			while (!facet->lactive) {
+			while (!facet->lactive && facet->parent != INVALID_IDX) {
 				fid = facet->parent;
 				facet = facets[fid];
 			}

@@ -334,7 +334,8 @@ protected:
 	void update_constraints();
 
 	// find constraints
-
+	void find_constraints();
+	void fc_base(Word_t eid, int iface);
 	/// @param[in] eid - ID of the element
 	/// @param[in] iface - local number of the face on the element eid
 	void fc_face(Word_t eid, int iface, bool ced);
@@ -344,10 +345,13 @@ protected:
 	void fc_face_right(Word_t fid);
 	/// @param[in] idx - ID of the element
 	void fc_element(Word_t idx);
+	BitArray face_ced;
 
 	// update constraints
 	void uc_element(Word_t idx);
 	void uc_face(Word_t eid, int iface);
+	void uc_dep(Word_t eid);
+	BitArray uc_deps;
 
 	Array<FaceInfo *> fi_data;
 

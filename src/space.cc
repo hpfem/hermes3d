@@ -680,6 +680,9 @@ Space::FaceData *Space::create_face_node_data(Word_t fid, bool ced) {
 
 void Space::fc_face(Word_t eid, int iface, bool ced) {
 	_F_
+
+	if (eid == INVALID_IDX) return;
+
 	Element *elem = mesh->elements[eid];
 	// vertices
 	int nv = elem->get_num_face_vertices(iface);
@@ -688,6 +691,8 @@ void Space::fc_face(Word_t eid, int iface, bool ced) {
 
 	Word_t fid = mesh->get_facet_id(elem, iface);
 	Facet *facet = mesh->facets[fid];
+
+	if (ced) face_ced.set(fid);
 
 	// set CEDs
 	Word_t emp[4], fmp;
@@ -800,22 +805,144 @@ void Space::fc_element(Word_t idx) {
 		for (int ie = 0; ie < ne; ie++)
 			create_edge_node_data(mesh->get_edge_id(elem, edge_idx[ie]), false);
 
-		//
+		// face
 		create_face_node_data(fid, false);
 
 		// handle possible CEDs
 		if (facet->type == Facet::INNER) {
-			if ((facet->lactive && !facet->ractive) && (facet->right == idx && facet->right_face_num == iface))
+			if (facet->lactive && !facet->ractive) {
+				fc_face(facet->left, facet->left_face_num, true);
 				fc_face_right(fid);
-			else if ((!facet->lactive && facet->ractive) && (facet->left == idx && facet->left_face_num == iface))
+			}
+			else if (!facet->lactive && facet->ractive) {
+				fc_face(facet->right, facet->right_face_num, true);
 				fc_face_left(fid);
+			}
+			else if (!facet->lactive && !facet->ractive) {
+				// facet sons
+				for (int i = 0; i < Facet::MAX_SONS; i++) {
+					Word_t son = facet->sons[i];
+					if (son != INVALID_IDX) {
+						Facet *facet = mesh->facets[son];
+						if (son != INVALID_IDX) {
+							Facet *son_facet = mesh->facets[son];
+
+							if (son_facet->lactive && !son_facet->ractive) {
+								fc_face(facet->left, facet->left_face_num, true);
+							}
+							else if (!son_facet->lactive && son_facet->ractive) {
+								fc_face(facet->right, facet->right_face_num, true);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void Space::fc_base(Word_t eid, int iface)
+{
+	if (eid == INVALID_IDX) return;
+
+	Element *elem = mesh->elements[eid];
+
+	// vertices
+	int nv = elem->get_num_face_vertices(iface);
+	Word_t vtcs[nv];
+	elem->get_face_vertices(iface, vtcs);
+	for (int iv = 0; iv < nv; iv++)
+		create_vertex_node_data(vtcs[iv], false);
+	// edges
+	int ne = elem->get_num_face_edges(iface);
+	const int *edge_idx = elem->get_face_edges(iface);
+	for (int ie = 0; ie < ne; ie++)
+		create_edge_node_data(mesh->get_edge_id(elem, edge_idx[ie]), false);
+
+	//
+	Word_t fid = mesh->get_facet_id(elem, iface);
+	create_face_node_data(fid, false);
+
+}
+
+void Space::find_constraints()
+{
+	_F_
+	face_ced.free();
+
+	// modified breadth-first search
+	Array<Word_t> open;
+	BitArray elms;
+
+	// first include all base elements
+	FOR_ALL_BASE_ELEMENTS(eid, mesh) {
+		Element *e = mesh->elements[eid];
+		for (int iface = 0; iface < Hex::NUM_FACES; iface++) {
+			Word_t fid = mesh->get_facet_id(e, iface);
+			if (!elms.is_set(fid)) {
+				open.add(fid);
+				elms.set(fid);
+			}
 		}
 	}
 
-	// process child elements
-	for (int ich = 0; ich < elem->get_num_sons(); ich++) {
-		Word_t elem_id = elem->get_son(ich);
-		fc_element(elem_id);
+	for (Word_t idx = open.first(); idx != INVALID_IDX; idx = open.next(idx)) {
+		Word_t fid = open[idx];
+		Facet *facet = mesh->facets[fid];
+
+		if (facet->left != INVALID_IDX) {
+			Element *e = mesh->elements[facet->left];
+			for (int iface = 0; iface < e->get_num_faces(); iface++) {
+				Word_t fid = mesh->get_facet_id(e, iface);
+				if (!elms.is_set(fid)) {
+					open.add(fid);
+					elms.set(fid);
+				}
+			}
+		}
+
+		if (facet->type == Facet::INNER && facet->right != INVALID_IDX) {
+			Element *e = mesh->elements[facet->right];
+			for (int iface = 0; iface < e->get_num_faces(); iface++) {
+				Word_t fid = mesh->get_facet_id(e, iface);
+				if (!elms.is_set(fid)) {
+					open.add(fid);
+					elms.set(fid);
+				}
+			}
+		}
+
+		for (int i = 0; i < Facet::MAX_SONS; i++) {
+			Word_t son = facet->sons[i];
+			if (son != INVALID_IDX) {
+				if (!elms.is_set(son)) {
+					open.add(son);
+					elms.set(son);
+				}
+			}
+		}
+	}
+
+	for (Word_t idx = open.first(); idx != INVALID_IDX; idx = open.next(idx)) {
+		Word_t fid = open[idx];
+		Facet *facet = mesh->facets[fid];
+		assert(facet != NULL);
+
+		fc_base(facet->left, facet->left_face_num);
+		if (facet->type == Facet::INNER)
+			fc_base(facet->right, facet->right_face_num);
+
+		// handle possible CEDs
+		if (facet->type == Facet::INNER) {
+			if (facet->lactive && !facet->ractive) {
+				fc_face(facet->left, facet->left_face_num, true);
+				fc_face_right(fid);
+			}
+			else if (!facet->lactive && facet->ractive) {
+				fc_face(facet->right, facet->right_face_num, true);
+				fc_face_left(fid);
+			}
+		}
 	}
 }
 
@@ -1040,7 +1167,7 @@ void Space::calc_vertex_vertex_ced(Word_t vtx1, Word_t vtx2) {
 	VertexData *vd_mid = vn_data[mid_pt];
 	assert(vd_mid != NULL);
 
-    BaseVertexComponent *bl[2], dummy_bl[2];	// base lists of vtx1 and vtx2
+	BaseVertexComponent *bl[2], dummy_bl[2];	// base lists of vtx1 and vtx2
 	int nc[2] = { 0, 0 }; // number of components of bl[0] and bl[1]
 
 	// get baselists of vn[0] and vn[1] - pretend we have them even if they are unconstrained
@@ -1057,6 +1184,7 @@ void Space::calc_vertex_vertex_ced(Word_t vtx1, Word_t vtx2) {
 		}
 	}
 
+	assert(vd_mid->ced == 1);
 	::free(vd_mid->baselist);
 	int ncomp = 0;
 	vd_mid->baselist = merge_baselist(bl[0], nc[0], bl[1], nc[1], ncomp, false);
@@ -1509,6 +1637,7 @@ void Space::calc_edge_edge_ced(Word_t seid, Word_t eid, int ori, int epart, int 
 		baselist[0].part.part = part;
 		baselist[0].coef = 1.0;
 
+		assert(ed->ced == 1);
 		BaseEdgeComponent *tmp = ed->edge_baselist;
 		int ncomp = 0;
 		ed->edge_baselist = merge_baselist(ed->edge_baselist, ed->edge_ncomponents, baselist, nc, ncomp, false);
@@ -1698,7 +1827,7 @@ void Space::uc_face(Word_t eid, int iface) {
 	Element *big_elem = mesh->elements[fi->elem_id];
 
 	int cng_face_id = mesh->get_facet_id(big_elem, fi->face);
-	int cng_face_ori = big_elem->get_face_orientation(iface);
+	int cng_face_ori = big_elem->get_face_orientation(fi->face);
 
 	Word_t emp[4], fmp;		// four edge mid-points, one face mid-point
 	Word_t cng_edge_id;		// constraining edge id
@@ -1994,23 +2123,24 @@ void Space::uc_element(Word_t idx) {
 
 	Element *e = mesh->elements[idx];
 
-	// update constraints on element edges
-	for (int iedge = 0; iedge < e->get_num_edges(); iedge++) {
-		Word_t edge_id = mesh->get_edge_id(e, iedge);
-		Edge edg = mesh->edges[edge_id];
-
-		if (edg.is_active())
-			calc_edge_boundary_projection(e, iedge);
-	}
 
 	for (int iface = 0; iface < e->get_num_faces(); iface++) {
 		Word_t fid = mesh->get_facet_id(e, iface);
 		Facet *facet = mesh->facets[fid];
 
+		const int *edge = e->get_face_edges(iface);
+		for (int iedge = 0; iedge < e->get_num_face_edges(iface); iedge++) {
+			Word_t edge_id = mesh->get_edge_id(e, edge[iedge]);
+			Edge edg = mesh->edges[edge_id];
+
+			if (edg.is_active())
+				calc_edge_boundary_projection(e, edge[iedge]);
+		}
+
 		if (facet->ractive && facet->lactive && mesh->facets[fid]->type == Facet::OUTER)
 			calc_face_boundary_projection(e, iface);
 
-		if (facet->ced(idx, iface)) {
+		if (face_ced.is_set(fid)) {
 			if (!fi_data.exists(fid)) {
 				switch (facet->mode) {
 					case MODE_QUAD:
@@ -2059,8 +2189,7 @@ int Space::assign_dofs(int first_dof, int stride) {
 	fi_data.remove_all();
 
 	// find constraints
-	FOR_ALL_BASE_ELEMENTS(idx, mesh)
-		fc_element(idx);
+	find_constraints();
 
 	enforce_minimum_rule();
 	set_bc_information();
@@ -2075,10 +2204,83 @@ int Space::assign_dofs(int first_dof, int stride) {
 	return get_dof_count();
 }
 
-void Space::update_constraints() {
+
+void Space::uc_dep(Word_t eid)
+{
 	_F_
-	FOR_ALL_ACTIVE_ELEMENTS(elm_idx, mesh) {
-		Element *e = mesh->elements[elm_idx];
+	// find all direct dependencies and include them into deps array
+	// dependencies already solved are not included (flags are kept in uc_deps array)
+#define MAX_DEP				1000
+	Word_t deps[MAX_DEP];
+	int idep = 0;
+
+	Element *e = mesh->elements[eid];
+	for (int iface = 0; iface < e->get_num_faces(); iface++) {
+		Word_t fid = mesh->get_facet_id(e, iface);
+		Facet *facet = mesh->facets[fid];
+
+		if (facet->type == Facet::OUTER) {
+			Word_t parent_id = facet->parent;
+			if (parent_id != INVALID_IDX) {
+				Facet *parent = mesh->facets[parent_id];
+				if (!uc_deps.is_set(parent->left) && parent->left != INVALID_IDX) {
+					deps[idep++] = parent->left;
+					uc_deps.set(parent->left);
+				}
+			}
+		}
+		else {
+			Word_t parent_id = facet->parent;
+			if (parent_id != INVALID_IDX) {
+				Facet *parent = mesh->facets[parent_id];
+				if (parent->type == Facet::INNER && (parent->left == INVALID_IDX || parent->right == INVALID_IDX)) {
+					// CED -> take the value from the other side (i.e. constraining one)
+					if (facet->left == eid) {
+						if (!uc_deps.is_set(parent->right) && parent->right != INVALID_IDX) {
+							deps[idep++] = parent->right;
+							uc_deps.set(parent->right);
+						}
+					}
+					else {
+						if (!uc_deps.is_set(parent->left) && parent->left != INVALID_IDX) {
+							deps[idep++] = parent->left;
+							uc_deps.set(parent->left);
+						}
+					}
+				}
+				else {
+					// no CED, take tha parent element
+					if (facet->left == eid) {
+						if (!uc_deps.is_set(parent->left) && parent->left != INVALID_IDX) {
+							deps[idep++] = parent->left;
+							uc_deps.set(parent->left);
+						}
+					}
+					else {
+						if (!uc_deps.is_set(parent->right) && parent->right != INVALID_IDX) {
+							deps[idep++] = parent->right;
+							uc_deps.set(parent->right);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < idep; i++)
+		uc_dep(deps[i]);
+
+	uc_element(eid);
+	uc_deps.set(eid);
+}
+
+void Space::update_constraints()
+{
+	_F_
+	uc_deps.free();
+	// first calc BC projs in all vertices
+	FOR_ALL_ACTIVE_ELEMENTS(eid, mesh) {
+		Element *e = mesh->elements[eid];
 		for (int iface = 0; iface < e->get_num_faces(); iface++) {
 			Word_t fid = mesh->get_facet_id(e, iface);
 			Facet *facet = mesh->facets[fid];
@@ -2099,12 +2301,10 @@ void Space::update_constraints() {
 		}
 	}
 
-	for (Word_t i = fi_data.first(); i != INVALID_IDX; i = fi_data.next(i))
-		delete fi_data[i];
-	fi_data.remove_all();
-
-	FOR_ALL_ELEMENTS(idx, mesh)
-		uc_element(idx);
+	// update constrains recursively
+	FOR_ALL_ACTIVE_ELEMENTS(eid, mesh) {
+		uc_dep(eid);
+	}
 }
 
 //// BC stuff /////////////////////////////////////////////////////////////////////////////////////
