@@ -1151,6 +1151,11 @@ bool Mesh::is_compatible_quad_refinement(Facet *facet, int reft) const {
 		else
 			EXIT("Facet data corrupted or not a CED facet.");
 
+		if (eid == INVALID_IDX) {
+			// dunno what to do
+			return false;
+		}
+
 		Element *e = elements[eid];
 		int nv = e->get_num_face_vertices(face_num);
 		Word_t face_vtx[nv];
@@ -2028,6 +2033,8 @@ Facet *Mesh::add_quad_facet(Facet::Type type, Word_t left_elem, int left_iface, 
 		elem_id = right_elem;
 		iface = right_iface;
 	}
+	else
+		assert(false);
 
 	Word_t fidx = get_facet_id(elements[elem_id], iface);
 	Facet *facet = NULL;
