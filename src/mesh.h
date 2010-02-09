@@ -212,14 +212,7 @@ public:
 	/// @return TRUE if we have a constraint on the face
 	/// @param idx[in] - element ID
 	/// @param iface[in] - local face number on the element 'idx'
-	bool ced(Word_t idx, int iface) {
-		return type == Facet::INNER &&
-			((lactive && !ractive && right == idx && right_face_num == iface) ||
-			 (!lactive && ractive && left == idx && left_face_num == iface) ||
-			 (!lactive && !ractive &&
-				((left == INVALID_IDX && left_face_num == -1 && right == idx && right_face_num == iface) ||
-				 (left == idx && left_face_num == iface && right == INVALID_IDX && right_face_num == -1))));
-	}
+	bool ced(Word_t idx, int iface);
 
 	// for debugging
 	virtual void dump();

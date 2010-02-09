@@ -135,6 +135,13 @@ Facet *Facet::copy_base() {
 	return copy;
 }
 
+bool Facet::ced(Word_t idx, int iface)
+{
+	return type == Facet::INNER &&
+		((lactive && !ractive) ||
+		 (!lactive && ractive));
+}
+
 // for debugging
 void Facet::dump() {
 	_F_
