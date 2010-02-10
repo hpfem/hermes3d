@@ -375,10 +375,10 @@ int main(int argc, char **args) {
 #ifdef OUTPUT_DIR
 	BEGIN_BLOCK
 	// output the mesh
-		const char *of_name = OUTPUT_DIR "/ref.msh";
+		const char *of_name = OUTPUT_DIR "/mesh.vtk";
 		FILE *ofile = fopen(of_name, "w");
 		if (ofile != NULL) {
-			GmshOutputEngine output(ofile);
+			VtkOutputEngine output(ofile);
 			output.out(&mesh);
 			fclose(ofile);
 		}
@@ -471,7 +471,7 @@ int main(int argc, char **args) {
 
 		{
 			double *s = solver.get_solution();
-			for (int i = 0; i <= ndofs; i++)
+			for (int i = 0; i < ndofs; i++)
 				printf("x[% 3d] = % lf\n", i, s[i]);
 		}
 
@@ -641,10 +641,10 @@ int main(int argc, char **args) {
 			printf("dumping fn %d...\n", dof);
 
 			// prepare solution corresponding to basis function with dof 'dof'
-			double sln_vector[ndofs + 1];
-			memset(sln_vector, 0, (ndofs + 1) * sizeof(double));
+			double sln_vector[ndofs];
+			memset(sln_vector, 0, ndofs * sizeof(double));
 			sln_vector[dof] = 1.0;
-			sln.set_solution_vector(sln_vector, false);
+			sln.set_fe_solution(&space, sln_vector);
 
 #ifdef OUTPUT_DIR
 			char of_name[512];
@@ -657,7 +657,7 @@ int main(int argc, char **args) {
 				fclose(ofile);
 			}
 			else {
-				ERROR("Cannot not open '%s' for writing.", of_name);
+				error("Cannot not open '%s' for writing.", of_name);
 			}
 #endif
 		}
