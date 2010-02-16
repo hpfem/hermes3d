@@ -22,6 +22,19 @@ Exact solution is:
 
 .. math:: u = atan(k \cdot \sqrt{(x + 0.25)^2 + (y + 0.25)^2 + (z + 0.25)^2} - \frac{\pi}{3})
 
+Convergence graphs:
+
+.. image:: layer-conv.png
+
+.. image:: layer-conv-time.png
+
+
+Solution and hp-mesh:
+
+.. image:: layer-sln.png
+
+.. image:: layer-order.png
+
 
 .. literalinclude:: ../../examples/layer/layer.cc
    :language: c
