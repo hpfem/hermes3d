@@ -16,17 +16,20 @@ Having these packages installed, you can do:
 
 .. code-block:: bash
 
-   $ cmake . ;# as yourself
+   $ cmake . # as yourself
    $ make
-   # make install ;#as root
+   $ make install # as root, if your install path is system-wide
+
+In order to install Hermes3D into different location, you need to change ``CMAKE_INSTALL_PREFIX``
+variable.
 
 
 Customization
 -------------
 
-Hermes3D is quite modular and can be build with several options. All configuration is done via
-``CMake.vars`` file that has to be placed in the root directory of Hermes3D. Look into
-``CMake.vars.example`` file for the file format.
+Hermes3D is quite modular and can be build with several options. Configuration can be done via
+``CMake.vars`` file that has to be placed in the build directory. Look into ``CMake.vars.example``
+file for the file format.
 
 - Element types
 
