@@ -1,4 +1,4 @@
-hermes3d
+Hermes3D
 ========
 
 Compilation
@@ -6,6 +6,20 @@ Compilation
 
 $ cmake .
 $ make
+
+If you have cmake text-based UI installed, you can do:
+
+$ ccmake .
+  press C  
+  customize your build
+  press C
+  press G
+$ make
+
+Hermes3D build configuration scripts will look for required libraries on default include and system
+paths. If you packages are installed elsewhere, you need to specify their paths. Consult either
+online documetation (http://hpfem.org/hermes3d/doc/install.html) or cmake/FindXYX.cmake files for
+exact names. These values have to be put into CMake.var file located in your build directory. 
 
 Intel C Compiler
 ----------------
@@ -19,6 +33,7 @@ $ make
 
 NOTE: version 10.0.026 did not work for me (some compatibility issues with STL), 10.1.022 works ok
 
+
 Tests
 -----
 
@@ -30,11 +45,16 @@ To run all tests (warning: takes very long time to finish):
 
 $ make test
 
+Note: To run developer tests, say 'set(DEV_TESTS YES)' in CMake.vars. This is needed to run only if
+the lowest internals are changed. Developers test suite includes hundreds of tests for hanging
+nodes. These will run for several hours in case of H1 space, Hcurl ones take days. These test do not
+have to be run every time.
+
 
 Examples
 --------
 
-To build examples, type:
+To build examples, type (supposed you enabled examples during the configuration):
 
 $ make examples
 
