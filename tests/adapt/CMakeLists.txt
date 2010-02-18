@@ -1,4 +1,5 @@
 if(REAL)
 add_subdirectory(h1-simple)
 add_subdirectory(projection)
+add_subdirectory(smooth)
 endif(REAL)
