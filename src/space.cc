@@ -877,7 +877,7 @@ void Space::find_constraints()
 	// first include all base elements
 	FOR_ALL_BASE_ELEMENTS(eid, mesh) {
 		Element *e = mesh->elements[eid];
-		for (int iface = 0; iface < Hex::NUM_FACES; iface++) {
+		for (int iface = 0; iface < e->get_num_faces(); iface++) {
 			Word_t fid = mesh->get_facet_id(e, iface);
 			if (!elms.is_set(fid)) {
 				open.add(fid);
