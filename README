@@ -37,13 +37,14 @@ NOTE: version 10.0.026 did not work for me (some compatibility issues with STL),
 Tests
 -----
 
-To run tests, do:
-
-$ make test-quick
-
-To run all tests (warning: takes very long time to finish):
+To enable tests, say 'set(WITH_TESTS YES)' in your CMake.vars.
+To run the tests, type:
 
 $ make test
+
+To run quick tests, type:
+
+$ make test-quick
 
 Note: To run developer tests, say 'set(DEV_TESTS YES)' in CMake.vars. This is needed to run only if
 the lowest internals are changed. Developers test suite includes hundreds of tests for hanging
