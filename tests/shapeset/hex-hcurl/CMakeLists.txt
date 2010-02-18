@@ -31,5 +31,6 @@ configure_file(
 
 set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 add_test(${PROJECT_NAME}-1 ${BIN})
+set_tests_properties(${PROJECT_NAME}-1 PROPERTIES LABELS long)
 
 endif(WITH_HEX)

@@ -25,3 +25,6 @@ configure_file(
 set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 set(NAME ${PROJECT_NAME})
 include(../tests-hex.cmake)
+
+set_tests_properties(hnnd-hex-hcurl-1-01 PROPERTIES LABELS long)
+set_tests_properties(hnnd-hex-hcurl-1-02 PROPERTIES LABELS long)

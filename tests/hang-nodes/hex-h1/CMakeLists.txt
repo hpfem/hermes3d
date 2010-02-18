@@ -55,4 +55,3 @@ include(../tests-hex.cmake)
 set(BIN ${PROJECT_BINARY_DIR}/${BIN_NEWTON})
 set(NAME ${PROJECT_NAME}-nwt)
 include(../tests-hex.cmake)
-
