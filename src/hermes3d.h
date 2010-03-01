@@ -106,4 +106,7 @@
 #include "adapt/h1proj.h"
 #include "adapt/h1projipol.h"
 
+// global H3D iface
+void set_verbose(bool verb = true);
+
 #endif
