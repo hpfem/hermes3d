@@ -42,6 +42,15 @@
 
 double k = 200.0;				// slope of the step inside the domain
 
+// usage info
+
+void usage() {
+	printf("Usage\n");
+	printf("\n");
+	printf("  layer <mesh-file>\n");
+	printf("\n");
+}
+
 double fn(double x, double y, double z)
 {
 	return atan(k * (sqrt(sqr(x + 0.25) + sqr(y + 0.25) + sqr(z + 0.25)) - M_PI/3));
@@ -145,7 +154,10 @@ int main(int argc, char **args) {
 	PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL); // disable PETSc error handler
 #endif
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) {
+		usage();
+		return 0;
+	}
 
 	// load the inital mesh
 	Mesh mesh;

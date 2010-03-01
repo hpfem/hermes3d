@@ -32,6 +32,15 @@
 // to elements markers, sideset IDs correspond to face (BC) markers
 //
 
+// usage info
+
+void usage() {
+	printf("Usage\n");
+	printf("\n");
+	printf("  heat-cubit <mesh-file>\n");
+	printf("\n");
+}
+
 EBCType bc_types(int marker)
 {
 	if (marker == 1) return BC_ESSENTIAL;
@@ -117,7 +126,10 @@ int main(int argc, char **argv)
 	PetscInitialize(&argc, &argv, (char *) PETSC_NULL, PETSC_NULL);
 #endif
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) {
+		usage();
+		return 0;
+	}
 
 	printf("* Loading mesh '%s'\n", argv[1]);
 	Mesh mesh;

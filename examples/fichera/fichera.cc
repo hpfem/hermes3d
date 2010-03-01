@@ -40,6 +40,15 @@
 // error should be smaller than this epsilon
 #define EPS								10e-14F
 
+// usage info
+
+void usage() {
+	printf("Usage\n");
+	printf("\n");
+	printf("  fichera <mesh-file>\n");
+	printf("\n");
+}
+
 double fnc(double x, double y, double z) {
 	return pow(x*x + y*y + z*z, .25);
 }
@@ -125,7 +134,10 @@ int main(int argc, char **args) {
 	PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL); // disable PETSc error handler
 #endif
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) {
+		usage();
+		return 0;
+	}
 
 	// load the inital mesh
 	Mesh mesh;

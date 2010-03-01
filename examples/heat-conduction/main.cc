@@ -36,6 +36,14 @@ const double tau = 0.05;					// time step
 // error should be smaller than this epsilon
 #define EPS								10e-10F
 
+// usage info
+
+void usage() {
+	printf("Usage\n");
+	printf("\n");
+	printf("  heat-conduction <mesh-file>\n");
+	printf("\n");
+}
 
 // needed for calculation norms and used by visualizator
 double exact_solution(double x, double y, double z, double &dx, double &dy, double &dz) {
@@ -112,7 +120,10 @@ int main(int argc, char **argv) {
 	PetscInitialize(&argc, &argv, (char *) PETSC_NULL, PETSC_NULL);
 #endif
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) {
+		usage();
+		return 0;
+	}
 
 	printf("* Loading mesh '%s'\n", argv[1]);
 	Mesh mesh;

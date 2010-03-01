@@ -44,6 +44,15 @@
 const double K_squared = 1e4;     // Equation parameter.
 const double CONST_F = 1e4;       // Constant right-hand side (set to be roughly K*K for scaling purposes).
 
+// usage info
+
+void usage() {
+	printf("Usage\n");
+	printf("\n");
+	printf("  sinpert-aniso <mesh-file>\n");
+	printf("\n");
+}
+
 // weak formulation
 
 EBCType bc_types(int marker)
@@ -117,7 +126,10 @@ int main(int argc, char **args) {
 	PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL); // disable PETSc error handler
 #endif
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) {
+		usage();
+		return 0;
+	}
 
 	// load the inital mesh
 	Mesh mesh;
