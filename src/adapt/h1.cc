@@ -97,6 +97,7 @@ H1Adapt::H1Adapt(int num, ...)
 	strategy = 0;
 	max_order = MAX_ELEMENT_ORDER;
 	aniso = false;			// FIXME: when implementing aniso, change this to true
+	exponent = 1.0 / 3.0;
 
 	log_file = NULL;
 }
@@ -564,7 +565,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 	double score, maxscore = 0.0;
 	for (i = 1; i < n; i++) {
 		if (cand[i].dofs - cand[0].dofs > 0) {
-			score = (log10(cand[0].error) - log10(cand[i].error)) / cbrt(cand[i].dofs - cand[0].dofs);
+			score = (log10(cand[0].error) - log10(cand[i].error)) / pow(cand[i].dofs - cand[0].dofs, exponent);
 
 #ifdef DEBUG_PRINT
 			printf("- cand: #%d, split = %s", i, split_str[cand[i].split]);

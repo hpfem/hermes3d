@@ -79,6 +79,10 @@ public:
 	/// @param[in] h_only - true if h-adaptivity should be performed
 	void set_type(int h_only) { this->h_only = h_only; }
 
+	/// Set the type of adaptivity
+	/// @param[in] h_only - true if h-adaptivity should be performed
+	void set_exponent(double exp) { this->exponent = exp; }
+
 	/// Allow/disable aniso refinements
 	/// @param[in] aniso - set to true to allow aniso refts, false to disable them
 	void set_aniso(int aniso) { this->aniso = aniso; }
@@ -110,6 +114,7 @@ protected:
 	int strategy;
 	int max_order;
 	bool aniso;
+	double exponent;			// exponent used in score formula (see get_optimal_refinement())
 
 	// spaces & solutions
 	int num;					// number of spaces to work with
