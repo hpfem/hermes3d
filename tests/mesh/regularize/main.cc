@@ -41,6 +41,8 @@ int parse_reft(char *str) {
 }
 
 int main(int argc, char *argv[]) {
+	set_verbose(false);
+
 	if (argc < 1) die("Not enough parameters");
 
 	Mesh mesh;

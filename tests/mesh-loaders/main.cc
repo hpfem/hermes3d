@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 {
 	_F_
 	int ret = ERROR_SUCCESS;
+	set_verbose(false);
 
 	if (argc < 3)
 		return ERROR_NOT_ENOUGH_PARAMS;

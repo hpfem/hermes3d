@@ -35,6 +35,7 @@
 
 int main(int argc, char *argv[]) {
 	int ret = ERROR_SUCCESS;
+	set_verbose(false);
 
 	if (argc < 2) die("Not enough parameters");
 

@@ -265,6 +265,8 @@ int test_quadrature_3d() {
 //
 
 int main() {
+	set_verbose(false);
+
 //	TRACE_START("trace.txt");
 	DEBUG_OUTPUT_OFF;
 	SET_VERBOSE_LEVEL(0);

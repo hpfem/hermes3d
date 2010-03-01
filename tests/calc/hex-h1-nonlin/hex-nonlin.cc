@@ -237,6 +237,7 @@ res_t liproj_form(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<r
 int main(int argc, char **argv)
 {
 	int res = ERR_SUCCESS;
+	set_verbose(false);
 
 	if (argc < 2) die("Not enough parameters");
 

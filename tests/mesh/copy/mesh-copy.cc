@@ -69,6 +69,7 @@ int main(int argc, char **args) {
 #ifdef WITH_PETSC
 	PetscInitialize(&argc, &args, (char *) PETSC_NULL, PETSC_NULL);
 #endif
+	set_verbose(false);
 
 	TRACE_START("trace.txt");
 	DEBUG_OUTPUT_ON;

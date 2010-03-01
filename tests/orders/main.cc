@@ -186,6 +186,7 @@ int test_order_hex() {
 
 int main() {
 	int ret = ERROR_SUCCESS;
+	set_verbose(false);
 
 	try {
 		if ((ret = test_order_tri()) != ERROR_SUCCESS) throw ERROR_FAILURE;

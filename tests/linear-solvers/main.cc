@@ -222,6 +222,7 @@ int main(int argc, char *argv[])
 	// disable PETSc error handler
 	PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL);
 #endif
+	set_verbose(false);
 
 #ifndef COMPLEX
 	if (argc < 3) die("Not enough parameters");

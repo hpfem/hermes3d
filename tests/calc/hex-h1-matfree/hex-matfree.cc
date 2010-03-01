@@ -264,6 +264,7 @@ res_t precond_0_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, fn_t<f_t> *v
 
 int main(int argc, char **argv) {
 	int res = ERR_SUCCESS;
+	set_verbose(false);
 
 	if (argc < 2) die("Not enough parameters");
 

@@ -114,6 +114,8 @@ bool test_timer_output() {
 
 
 int main(int argc, char *argv[]) {
+	set_verbose(false);
+
 //	TRACE_START("trace.txt");
 	DEBUG_OUTPUT_OFF;
 	SET_VERBOSE_LEVEL(0);

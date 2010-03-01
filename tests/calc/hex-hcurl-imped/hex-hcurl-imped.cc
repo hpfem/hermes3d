@@ -216,6 +216,7 @@ int main(int argc, char **args) {
 #ifdef WITH_PETSC
 	PetscInitialize(&argc, &args, (char *) PETSC_NULL, PETSC_NULL);
 #endif
+	set_verbose(false);
 
 	if (argc < 3) die("Not enough parameters");
 

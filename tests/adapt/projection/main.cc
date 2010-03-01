@@ -161,6 +161,7 @@ int main(int argc, char *argv[])
 #ifdef WITH_PETSC
 	PetscInitialize(NULL, NULL, (char *) PETSC_NULL, PETSC_NULL);
 #endif
+	set_verbose(false);
 
 	H1ShapesetLobattoHex shapeset;
 
