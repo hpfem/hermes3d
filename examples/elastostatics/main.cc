@@ -150,11 +150,10 @@ res_t surf_linear_form_2(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_d
 //
 
 void out_fn(MeshFunction *x, MeshFunction *y, MeshFunction *z, const char *name) {
-#ifdef OUTPUT_DIR
 	char of_name[1024];
 	FILE *ofile;
 	// mesh out
-	sprintf(of_name, "%s/%s.vtk", OUTPUT_DIR, name);
+	sprintf(of_name, "%s.vtk", name);
 	ofile = fopen(of_name, "w");
 	if (ofile != NULL) {
 		VtkOutputEngine output(ofile);
@@ -164,7 +163,6 @@ void out_fn(MeshFunction *x, MeshFunction *y, MeshFunction *z, const char *name)
 	else {
 		error("Can not not open '%s' for writing.", of_name);
 	}
-#endif
 }
 
 
@@ -274,11 +272,9 @@ int main(int argc, char **argv) {
 	ysln.set_fe_solution(&ydisp, s);
 	zsln.set_fe_solution(&zdisp, s);
 
-#ifdef OUTPUT_DIR
 	printf("  - output... "); fflush(stdout);
 	out_fn(&xsln, &ysln, &zsln, "disp");
 	printf("done\n");
-#endif
 
 #ifdef WITH_PETSC
 	mat.free();

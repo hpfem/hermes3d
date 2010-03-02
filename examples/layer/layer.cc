@@ -34,7 +34,7 @@
 #ifdef USE_UMFPACK
 #include <umfpack.h>
 #endif
-
+#include <getopt.h>
 #include <hermes3d.h>
 
 // error should be smaller than this epsilon
@@ -42,13 +42,52 @@
 
 double k = 200.0;				// slope of the step inside the domain
 
+// commnad line arguments
+bool do_output = true;				// generate output files (if true)
+char *mesh_file_name = NULL;		// the name of the mesh file
+
 // usage info
 
 void usage() {
 	printf("Usage\n");
 	printf("\n");
-	printf("  layer <mesh-file>\n");
+	printf("  layer [options] <mesh-file>\n");
 	printf("\n");
+	printf("Options:\n");
+	printf("  --no-output         - do not generate output files\n");
+	printf("\n");
+}
+
+bool process_cmd_line(int argc, char **argv)
+{
+	static struct option long_options[] = {
+		{ "no-output", no_argument, (int *) &do_output, false },
+		{ 0, 0, 0, 0 }
+	};
+
+	// getopt_long stores the option index here.
+	int option_index = 0;
+	int c;
+	while ((c = getopt_long(argc, argv, "", long_options, &option_index)) != -1) {
+		switch (c) {
+            case 0:
+				break;
+
+			case '?':
+				// getopt_long already printed an error message
+				break;
+
+			default:
+				return false;
+		}
+	}
+
+	if (optind < argc) {
+		mesh_file_name = argv[optind++];
+		return true;
+	}
+	else
+		return false;
 }
 
 double fn(double x, double y, double z)
@@ -109,9 +148,8 @@ res_t liform(int n, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t>
 
 void out_orders(Space *space, const char *name, int iter)
 {
-#ifdef OUTPUT_DIR
 	char fname[1024];
-	sprintf(fname, "%s/iter-%s-%d.vtk", OUTPUT_DIR, name, iter);
+	sprintf(fname, "iter-%s-%d.vtk", name, iter);
 	FILE *f = fopen(fname, "w");
 	if (f != NULL) {
 		VtkOutputEngine vtk(f);
@@ -120,14 +158,12 @@ void out_orders(Space *space, const char *name, int iter)
 	}
 	else
 		error("Could not open file '%s' for writing.", fname);
-#endif
 }
 
 void out_fn(MeshFunction *fn, const char *name, int iter)
 {
-#ifdef OUTPUT_DIR
 	char fname[1024];
-	sprintf(fname, "%s/iter-%s-%d.vtk", OUTPUT_DIR, name, iter);
+	sprintf(fname, "iter-%s-%d.vtk", name, iter);
 	FILE *f = fopen(fname, "w");
 	if (f != NULL) {
 		VtkOutputEngine vtk(f);
@@ -136,7 +172,6 @@ void out_fn(MeshFunction *fn, const char *name, int iter)
 	}
 	else
 		error("Could not open file '%s' for writing.", fname);
-#endif
 }
 
 //
@@ -154,7 +189,7 @@ int main(int argc, char **args) {
 	PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL); // disable PETSc error handler
 #endif
 
-	if (argc < 2) {
+	if (!process_cmd_line(argc, args)) {
 		usage();
 		return 0;
 	}
@@ -162,7 +197,8 @@ int main(int argc, char **args) {
 	// load the inital mesh
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(args[1], &mesh)) die("Unable to load mesh file '%s'\n", args[1]);
+	if (!mesh_loader.load(mesh_file_name, &mesh))
+		die("Unable to load mesh file '%s'\n", mesh_file_name);
 
 	H1ShapesetLobattoHex shapeset;
 
@@ -229,9 +265,11 @@ int main(int argc, char **args) {
 		Solution sln(&mesh);
 		sln.set_fe_solution(&space, solver.get_solution());
 
-		// output the orders and the solution
-		out_orders(&space, "order", iter);
-		out_fn(&sln, "sln", iter);
+		if (do_output) {
+			// output the orders and the solution
+			out_orders(&space, "order", iter);
+			out_fn(&sln, "sln", iter);
+		}
 
 		// reference solution
 		printf("Reference solution\n");
@@ -281,11 +319,11 @@ int main(int argc, char **args) {
 		// calculate the error estimate
 		double err = h1_error(&sln, &rsln);
 		printf("  - H1 error: % lf\n", err * 100);
-#ifdef OUTPUT_DIR
+
 		// save it to the graph
 		graph.add_value(0, ndofs, err * 100);
-		graph.save(OUTPUT_DIR"/conv.gp");
-#endif
+		if (do_output)
+			graph.save("conv.gp");
 
 		// do the hp-adaptivity
 		printf("Adaptivity\n");
@@ -319,4 +357,3 @@ int main(int argc, char **args) {
 
 	return res;
 }
-
