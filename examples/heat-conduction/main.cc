@@ -224,9 +224,12 @@ int main(int argc, char **argv) {
 		printf("  - assembling... "); fflush(stdout);
 		Timer tmr_assemble;
 		tmr_assemble.start();
-		lp.assemble(&mat, &rhs);
+		bool assembled = lp.assemble(&mat, &rhs);
 		tmr_assemble.stop();
-		printf("done in %s (%lf secs)\n", tmr_assemble.get_human_time(), tmr_assemble.get_seconds());
+		if (assembled)
+			printf("done in %s (%lf secs)\n", tmr_assemble.get_human_time(), tmr_assemble.get_seconds());
+		else
+			die("failed!");
 
 		// solve the stiffness matrix
 		printf("  - solving... "); fflush(stdout);

@@ -223,8 +223,10 @@ int main(int argc, char **args) {
 		printf("  - Number of DOFs: %d\n", ndofs);
 		// assemble stiffness matrix and rhs
 		printf("  - Assembling... "); fflush(stdout);
-		lp.assemble(&mat, &rhs);
-		printf("done in %lf secs\n", lp.get_time());
+		if (lp.assemble(&mat, &rhs))
+			printf("done in %lf secs\n", lp.get_time());
+		else
+			die("failed!");
 
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);
@@ -273,8 +275,10 @@ int main(int argc, char **args) {
 
 		// assemble stiffness matric and rhs
 		printf("  - Assembling... "); fflush(stdout);
-		rlp.assemble(&mat, &rhs);
-		printf("done in %lf secs\n", rlp.get_time());
+		if (rlp.assemble(&mat, &rhs))
+			printf("done in %lf secs\n", rlp.get_time());
+		else
+			die("failed!");
 
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);

@@ -233,9 +233,12 @@ int main(int argc, char **args) {
 		// assemble stiffness matrix and rhs
 		printf("  - Assembling... "); fflush(stdout);
 		t_assemble.start();
-		lp.assemble(&mat, &rhs);
+		bool assembled = lp.assemble(&mat, &rhs);
 		t_assemble.stop();
-		printf("done in %s (%lf secs)\n", t_assemble.get_human_time(), t_assemble.get_seconds());
+		if (assembled)
+			printf("done in %s (%lf secs)\n", t_assemble.get_human_time(), t_assemble.get_seconds());
+		else
+			die("failed!");
 
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);
@@ -288,9 +291,12 @@ int main(int argc, char **args) {
 		// assemble stiffness matric and rhs
 		printf("  - Assembling... "); fflush(stdout);
 		t_assemble.start();
-		rlp.assemble(&mat, &rhs);
+		assembled = rlp.assemble(&mat, &rhs);
 		t_assemble.stop();
-		printf("done in %s (%lf secs)\n", t_assemble.get_human_time(), t_assemble.get_seconds());
+		if (assembled)
+			printf("done in %s (%lf secs)\n", t_assemble.get_human_time(), t_assemble.get_seconds());
+		else
+			die("failed!");
 
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);
