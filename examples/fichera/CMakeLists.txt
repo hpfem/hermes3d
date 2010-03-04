@@ -3,7 +3,7 @@ project(fichera)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	fichera.cc
+	main.cc
 	${HERMES_COMMON_DIR}/timer.cc
 	${HERMES_COMMON_DIR}/error.cc
 )
