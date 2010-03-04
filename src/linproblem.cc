@@ -75,14 +75,14 @@ scalar **LinProblem::get_matrix_buffer(int n)
 	return (matrix_buffer = new_matrix<scalar>(n, n));
 }
 
-void LinProblem::assemble(Matrix *matrix, Vector *rhs)
+bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 {
 	_F_
 	Timer tmr;
 	tmr.start();
 
 	create(matrix, rhs);
-	if (ndofs == 0) return;
+	if (ndofs == 0) return false;
 
 	bool bnd[10];						// FIXME: magic number - maximal possible number of faces
 	FacePos fp[10];
@@ -292,6 +292,8 @@ void LinProblem::assemble(Matrix *matrix, Vector *rhs)
 
 	tmr.stop();
 	time = tmr.get_seconds();
+
+	return true;
 }
 
 void LinProblem::create(Matrix *matrix, Vector *rhs)

@@ -39,7 +39,8 @@ public:
 
 	void set_spaces(int n, ...);
 
-	void assemble(Matrix *matrix, Vector *rhs = NULL);
+	// @return true if successful, otherwise false
+	bool assemble(Matrix *matrix, Vector *rhs = NULL);
 
 	double get_time() { return time; }
 
