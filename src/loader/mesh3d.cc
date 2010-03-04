@@ -157,6 +157,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						if (vertex_count <= 0) throw E_READ_ERROR;
 						max_vertex_index = vertex_count; //vertices are counted from 1 in mesh3d format
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_VERTICES:
@@ -166,6 +168,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						vertex_count--;
 						if (vertex_count == 0) state = STATE_TETRAS_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_TETRAS_NUM:
@@ -173,6 +177,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						state = STATE_TETRAS;
 						if (tetra_count <= 0) state = STATE_HEXES_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_TETRAS:
@@ -187,6 +193,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						tetra_count--;
 						if (tetra_count == 0) state = STATE_HEXES_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_HEXES_NUM:
@@ -194,6 +202,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						state = STATE_HEXES;
 						if (hex_count <= 0) state = STATE_PRISMS_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_HEXES:
@@ -208,6 +218,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						hex_count--;
 						if (hex_count == 0) state = STATE_PRISMS_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_PRISMS_NUM:
@@ -215,6 +227,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						state = STATE_PRISMS;
 						if (prism_count <= 0) state = STATE_TRIS_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_PRISMS:
@@ -229,6 +243,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						prism_count--;
 						if (prism_count == 0) state = STATE_TRIS_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_TRIS_NUM:
@@ -236,6 +252,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						state = STATE_TRIS;
 						if (tri_count <= 0) state = STATE_QUADS_NUM;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_TRIS:
@@ -261,6 +279,8 @@ bool Mesh3DReader::load(const char *file_name, Mesh *mesh) {
 						state = STATE_QUADS;
 						if (quad_count <= 0) state = STATE_QUADS;
 					}
+					else
+						throw E_READ_ERROR;
 					break;
 
 				case STATE_QUADS:
