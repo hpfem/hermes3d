@@ -36,7 +36,7 @@ Solution and hp-mesh:
 .. image:: layer-order.png
 
 
-.. literalinclude:: ../../examples/layer/layer.cc
+.. literalinclude:: ../../examples/layer/main.cc
    :language: c
    :linenos:
    :lines: 30-

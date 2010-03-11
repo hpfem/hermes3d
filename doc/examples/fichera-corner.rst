@@ -41,7 +41,7 @@ Solution and hp-mesh:
 
 Source code:
 
-.. literalinclude:: ../../examples/fichera/fichera.cc
+.. literalinclude:: ../../examples/fichera/main.cc
    :language: c
    :linenos:
    :lines: 30-

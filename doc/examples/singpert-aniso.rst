@@ -38,7 +38,7 @@ Solution and hp-mesh:
 
 
 
-.. literalinclude:: ../../examples/singpert-aniso/singpert-aniso.cc
+.. literalinclude:: ../../examples/singpert-aniso/main.cc
    :language: c
    :linenos:
    :lines: 30-
