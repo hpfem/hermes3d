@@ -12,4 +12,5 @@ This is a list of examples which show what you can do with hermes3d.
    examples/fichera-corner
    examples/layer
    examples/singpert-aniso
+   examples/bessel
 
