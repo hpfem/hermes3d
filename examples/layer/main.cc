@@ -107,18 +107,19 @@ double fndd(double x, double y, double z, double &dx, double &dy, double &dz)
 	return fn(x, y, z);
 }
 
-// weak formulation
-
+// Boundary condition types
 EBCType bc_types(int marker)
 {
-	return BC_ESSENTIAL;
+  return BC_ESSENTIAL;
 }
 
+// Dirichlet boundary condition values
 double bc_values(int marker, double x, double y, double z)
 {
-	return fn(x, y, z);
+  return fn(x, y, z);
 }
 
+// Weak forms
 template<typename f_t, typename res_t>
 res_t biform(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data)
 {
