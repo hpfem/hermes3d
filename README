@@ -1,8 +1,31 @@
-Hermes3D
-========
+Welcome to Hermes3D!
+
+Hermes3D is a C++ library that extends Hermes2D  to three-dimensional 
+problems. The functionalities and API of Hermes3D as well as the code 
+structure are very similar to the 2D code. 
+
+Hermes3D is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public 
+License along with Hermes2D; If not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
+MA  02110-1301, USA.
+
+Copyright (c) 2009 hp-FEM group at the University of Nevada, 
+Reno (UNR). Email: hpfem@unr.edu, home page: http://hpfem.org/.
+
+Download and Installation
+=========================
+
+Installation instructions for Linux, Mac OS X and Windows Cygwin 
+can be found in the Sphinx documentation at 
+http://hpfem.org/hermes3d/doc/index.html. 
 
 Compilation
-------------
+===========
 
 $ cmake .
 $ make
@@ -22,7 +45,7 @@ online documetation (http://hpfem.org/hermes3d/doc/install.html) or cmake/FindXY
 exact names. These values have to be put into CMake.var file located in your build directory. 
 
 Intel C Compiler
-----------------
+================
 
 To use Intel C compiler
 
@@ -35,7 +58,7 @@ NOTE: version 10.0.026 did not work for me (some compatibility issues with STL),
 
 
 Tests
------
+=====
 
 To enable tests, say 'set(WITH_TESTS YES)' in your CMake.vars.
 To run the tests, type:
@@ -53,7 +76,7 @@ have to be run every time.
 
 
 Examples
---------
+========
 
 To build examples, type (supposed you enabled examples during the configuration):
 
@@ -69,7 +92,7 @@ To view the files:
 
 
 Debugging
----------
+=========
 
 If you need to debug the build, use:
 
