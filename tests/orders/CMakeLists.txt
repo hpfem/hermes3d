@@ -5,8 +5,8 @@ if(REAL)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	main.cc
-	${HERMES_COMMON_DIR}/trace.cc
+	main.cpp
+	${HERMES_COMMON_DIR}/trace.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

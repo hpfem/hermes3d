@@ -3,9 +3,9 @@ project(calc-hex-hcurl-cplx)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	hex-hcurl-cplx.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	hex-hcurl-cplx.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

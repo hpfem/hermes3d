@@ -6,7 +6,7 @@ include(CMake.vars OPTIONAL)
 
 
 add_executable(${PROJECT_NAME}
-	main.cc
+	main.cpp
 )
 
 include_directories(${TESTS_INCLUDE_DIRS})

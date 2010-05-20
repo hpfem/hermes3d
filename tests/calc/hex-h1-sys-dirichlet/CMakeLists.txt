@@ -3,9 +3,9 @@ project(calc-hex-h1-sys-dirichlet)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	main.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	main.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

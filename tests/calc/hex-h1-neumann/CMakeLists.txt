@@ -3,10 +3,10 @@ project(calc-hex-h1-neumann)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	hex-neumann.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
-	${HERMES_COMMON_DIR}/utils.cc
+	hex-neumann.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
+	${HERMES_COMMON_DIR}/utils.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

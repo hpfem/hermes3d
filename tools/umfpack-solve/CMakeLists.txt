@@ -12,7 +12,7 @@ endif(DEBUG)
 
 
 add_executable(${PROJECT_NAME}
-	main.cc
+	main.cpp
 )
 
 find_package(UMFPACK REQUIRED)

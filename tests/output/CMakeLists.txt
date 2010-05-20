@@ -15,7 +15,7 @@ include_directories(${hermes3d_SOURCE_DIR})
 # GMSH ####
 
 add_executable(${BIN_GMSH}
-	main.cc
+	main.cpp
 )
 
 set_target_properties(${BIN_GMSH}
@@ -29,7 +29,7 @@ target_link_libraries(${BIN_GMSH} ${HERMES_REAL_BIN})
 # VTK ####
 
 add_executable(${BIN_VTK}
-	main.cc
+	main.cpp
 )
 
 set_target_properties(${BIN_VTK}

@@ -24,7 +24,7 @@
 #include "h3dconfig.h"
 #include "common.h"
 #include "solution.h"
-#include "function.cc" // non-inline template members
+#include "function.cpp" // non-inline template members
 #include "matrix.h"
 #include "quadcheb.h"
 #include <common/error.h>

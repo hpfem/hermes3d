@@ -5,14 +5,14 @@ include(CMake.vars OPTIONAL)
 if(WITH_HEX)
 #
 add_executable(${PROJECT_NAME}
-	main.cc
-	lindep.cc
-	zero.cc
-	cont.cc
-	grad.cc
-	graddir.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	main.cpp
+	lindep.cpp
+	zero.cpp
+	cont.cpp
+	grad.cpp
+	graddir.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

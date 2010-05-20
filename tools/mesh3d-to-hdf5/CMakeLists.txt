@@ -12,9 +12,9 @@ endif(DEBUG)
 
 
 add_executable(${PROJECT_NAME}
-	main.cc
-	mesh3dreader.cc
-	mesh.cc
+	main.cpp
+	mesh3dreader.cpp
+	mesh.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../..)

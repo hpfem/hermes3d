@@ -3,9 +3,9 @@ project(calc-tetra-h1-neumann)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	tetra-neumann.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	tetra-neumann.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

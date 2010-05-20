@@ -3,9 +3,9 @@ project(hnnd-hex-hcurl)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	hang-nodes-cont.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	hang-nodes-cont.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

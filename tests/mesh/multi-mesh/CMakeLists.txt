@@ -10,10 +10,10 @@ set(BINARIES)
 
 macro(ADD_BIN BIN DEFINE)
 	add_executable(${BIN}
-		multi-mesh.cc
-		${HERMES_COMMON_DIR}/timer.cc
-		${HERMES_COMMON_DIR}/error.cc
-		${HERMES_COMMON_DIR}/utils.cc
+		multi-mesh.cpp
+		${HERMES_COMMON_DIR}/timer.cpp
+		${HERMES_COMMON_DIR}/error.cpp
+		${HERMES_COMMON_DIR}/utils.cpp
 	)
 
 	set_target_properties(${BIN} PROPERTIES COMPILE_FLAGS -D${DEFINE})

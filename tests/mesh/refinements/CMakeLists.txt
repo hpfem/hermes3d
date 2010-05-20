@@ -3,9 +3,9 @@ project(mesh-refinements)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	refinements.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	refinements.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

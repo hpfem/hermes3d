@@ -7,9 +7,9 @@ include_directories(${TESTS_INCLUDE_DIRS})
 include_directories(${hermes3d_SOURCE_DIR})
 
 add_executable(${PROJECT_NAME}
-	main.cc
-	${HERMES_COMMON_DIR}/trace.cc
-	${HERMES_COMMON_DIR}/error.cc
+	main.cpp
+	${HERMES_COMMON_DIR}/trace.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${TESTS_LIBRARIES}) 

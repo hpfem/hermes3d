@@ -13,9 +13,9 @@ include_directories(${hermes3d_SOURCE_DIR})
 # Dirichlet ####
 
 add_executable(${BIN_DIRICHLET}
-	hang-nodes-cont.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	hang-nodes-cont.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 set_target_properties(${BIN_DIRICHLET}
@@ -28,9 +28,9 @@ target_link_libraries(${BIN_DIRICHLET} ${HERMES_REAL_BIN})
 # Newton ####
 
 add_executable(${BIN_NEWTON}
-	hang-nodes-cont.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
+	hang-nodes-cont.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
 )
 
 set_target_properties(${BIN_NEWTON}

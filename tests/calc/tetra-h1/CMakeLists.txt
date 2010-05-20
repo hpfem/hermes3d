@@ -3,10 +3,10 @@ project(calc-tetra-h1)
 include(CMake.vars OPTIONAL)
 
 add_executable(${PROJECT_NAME}
-	tetra.cc
-	${HERMES_COMMON_DIR}/timer.cc
-	${HERMES_COMMON_DIR}/error.cc
-	${HERMES_COMMON_DIR}/trace.cc
+	tetra.cpp
+	${HERMES_COMMON_DIR}/timer.cpp
+	${HERMES_COMMON_DIR}/error.cpp
+	${HERMES_COMMON_DIR}/trace.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

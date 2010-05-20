@@ -8,16 +8,16 @@ include_directories(${hermes3d_SOURCE_DIR})
 
 if(REAL)
 	add_executable(${PROJECT_NAME}
-		main.cc
-		${HERMES_COMMON_DIR}/trace.cc
+		main.cpp
+		${HERMES_COMMON_DIR}/trace.cpp
 	)
 	target_link_libraries(${PROJECT_NAME} ${TESTS_LIBRARIES})
 	target_link_libraries(${PROJECT_NAME} ${HERMES_REAL_BIN})
 endif(REAL)
 if(COMPLEX)
 	add_executable(${PROJECT_NAME}-cplx
-		main.cc
-		${HERMES_COMMON_DIR}/trace.cc
+		main.cpp
+		${HERMES_COMMON_DIR}/trace.cpp
 	)
 	set_target_properties(${PROJECT_NAME}-cplx PROPERTIES COMPILE_FLAGS -DCOMPLEX)
 	target_link_libraries(${PROJECT_NAME}-cplx ${TESTS_LIBRARIES})
