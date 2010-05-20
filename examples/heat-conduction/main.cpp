@@ -82,7 +82,7 @@ double exact_solution_prev(double x, double y, double z, double &dx, double &dy,
 
 //
 
-EBCType bc_types(int marker) {
+BCType bc_types(int marker) {
 	return BC_ESSENTIAL;
 }
 

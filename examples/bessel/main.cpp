@@ -138,7 +138,7 @@ scalar3 &exact_solution(double x, double y, double z, scalar3 &dx, scalar3 &dy, 
 
 // BCs
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	if (marker == 1 || marker == 6)
 		return BC_ESSENTIAL; // perfect conductor

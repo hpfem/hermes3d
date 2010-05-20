@@ -81,7 +81,7 @@ T dfnc(T x, T y, T z)
 	return -6.0;
 }
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_ESSENTIAL;
 }
@@ -126,7 +126,7 @@ T dfnc(T x, T y, T z)
 	return -(ddxx + ddyy + ddzz) + fnc(x, y, z);
 }
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_NATURAL;
 }
@@ -183,7 +183,7 @@ T dfnc(T x, T y, T z)
 	return -(ddxx + ddyy + ddzz);
 }
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_NATURAL;
 }
@@ -219,7 +219,7 @@ res_t form_0_surf(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> 
 
 // nonlinear case with dirichlet BC
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_ESSENTIAL;
 }

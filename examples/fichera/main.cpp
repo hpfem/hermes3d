@@ -81,7 +81,7 @@ double exact_solution(double x, double y, double z, double &dx, double &dy, doub
 
 // weak formulation
 
-EBCType bc_types(int marker) {
+BCType bc_types(int marker) {
 	return BC_ESSENTIAL;
 }
 

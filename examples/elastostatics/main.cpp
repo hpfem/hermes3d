@@ -59,15 +59,15 @@ res_t int_a_dudy_dvdz_b_dudz_dvdy(double a, double b, int n, double *wt, fn_t<f_
 
 // BCs
 
-EBCType bc_types_x(int marker) {
+BCType bc_types_x(int marker) {
 	return BC_NATURAL;
 }
 
-EBCType bc_types_y(int marker) {
+BCType bc_types_y(int marker) {
 	return BC_NATURAL;
 }
 
-EBCType bc_types_z(int marker) {
+BCType bc_types_z(int marker) {
 	return (marker == 3) ? BC_ESSENTIAL : BC_NATURAL;
 }
 

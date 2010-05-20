@@ -107,7 +107,7 @@ double exact_solution(double x, double y, double z, double &dx, double &dy, doub
 
 //
 
-EBCType bc_types(int marker) {
+BCType bc_types(int marker) {
 #ifdef DIRICHLET
 	return BC_ESSENTIAL;
 #elif defined NEWTON

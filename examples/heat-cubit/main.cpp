@@ -59,7 +59,7 @@ bool process_cmd_line(int argc, char **argv)
 		return false;
 }
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	if (marker == 1) return BC_ESSENTIAL;
 	else return BC_NATURAL;

@@ -67,7 +67,7 @@ void f(ct x, ct y, ct z, res_t (&val)[3]) {
 	val[2] = img * (-3./4. * z * (1. - y*y));
 }
 
-EBCType bc_types(int marker) {
+BCType bc_types(int marker) {
 	return BC_ESSENTIAL;
 }
 

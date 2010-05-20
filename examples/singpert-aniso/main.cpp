@@ -72,7 +72,7 @@ bool process_cmd_line(int argc, char **argv)
 
 // weak formulation
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_ESSENTIAL;
 }

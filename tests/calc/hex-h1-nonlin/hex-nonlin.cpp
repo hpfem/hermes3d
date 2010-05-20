@@ -60,7 +60,7 @@ double exact_solution(double x, double y, double z, double &dx, double &dy, doub
 	return fnc(x, y, z);
 }
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_ESSENTIAL;
 }
@@ -110,7 +110,7 @@ inline T dlambda(T temp) { return 0.2 * temp; }
 
 const int marker_right = 2;
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	if (marker == marker_right) return BC_NATURAL;
 	else return BC_ESSENTIAL;
@@ -171,7 +171,7 @@ double exact_solution(double x, double y, double z, double &dx, double &dy, doub
 
 // BC
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_ESSENTIAL;
 }

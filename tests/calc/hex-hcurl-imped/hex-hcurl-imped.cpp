@@ -163,7 +163,7 @@ scalar3 &bc_values(int marker, double x, double y, double z) {
 }
 */
 
-EBCType bc_types(int marker) {
+BCType bc_types(int marker) {
 	return BC_NATURAL;
 }
 

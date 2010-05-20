@@ -60,7 +60,7 @@
 
 
 /// Possible return values for bc_type_callback():
-enum EBCType {
+enum BCType {
 	BC_ESSENTIAL, /// Essential (Dirichlet) BC
 	BC_NATURAL,   /// Natural (Neumann, Newton) BC
 	BC_NONE       /// Do-nothing BC
@@ -87,7 +87,7 @@ public:
 
 	ESpaceType get_type() { return type; }
 
-	void set_bc_types(EBCType (*bc_type_callback)(int marker));
+	void set_bc_types(BCType (*bc_type_callback)(int marker));
 	void set_bc_values(scalar (*bc_value_callback_by_coord)(int marker, double x, double y, double z));
 	// TODO: different callback: void (*bc_vec_value_callback_by_coord)(int marker, double x, double y, double z, scalar3 &result)
 	void set_bc_values(scalar3 &(*bc_vec_value_callback_by_coord)(int marker, double x, double y, double z));
@@ -154,7 +154,7 @@ protected:
 
 	struct NodeData {
 		int marker;
-		EBCType bc_type;
+		BCType bc_type;
 
 		NodeData() {
 			marker = MARKER_UNDEFINED;
@@ -296,7 +296,7 @@ protected:
 	virtual void calc_edge_boundary_projection(Element *elem, int iedge) = 0;
 	virtual void calc_face_boundary_projection(Element *elem, int iface) = 0;
 
-	void set_bc_info(NodeData *node, EBCType bc, int marker);
+	void set_bc_info(NodeData *node, BCType bc, int marker);
 	void set_bc_information();
 	void copy_callbacks(const Space *space);
 
@@ -381,7 +381,7 @@ protected:
 	void calc_mid_edge_edge_ced(Word_t meid, Word_t eid[], int ori[], int epart, int part);
 
 public:
-	EBCType (*bc_type_callback)(int);
+	BCType (*bc_type_callback)(int);
 
 	// value callbacks for dirichlet
 	scalar (*bc_value_callback_by_coord)(int marker, double x, double y, double z);

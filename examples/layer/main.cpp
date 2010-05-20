@@ -86,7 +86,7 @@ double fndd(double x, double y, double z, double &dx, double &dy, double &dz)
 }
 
 // Boundary condition types
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
   return BC_ESSENTIAL;
 }

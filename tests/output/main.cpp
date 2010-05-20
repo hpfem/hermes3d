@@ -100,7 +100,7 @@ scalar3 &exact_vec_solution(double x, double y, double z, scalar3 &dx, scalar3 &
 
 //
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_ESSENTIAL;
 }

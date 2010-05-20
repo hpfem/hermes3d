@@ -534,7 +534,7 @@ void Space::get_bubble_assembly_list(Element *e, AsmList *al) {
 
 // BC ////
 
-void Space::set_bc_info(NodeData *node, EBCType bc, int marker) {
+void Space::set_bc_info(NodeData *node, BCType bc, int marker) {
 	_F_
 	if (bc == BC_ESSENTIAL || (bc == BC_NATURAL && node->bc_type == BC_NONE)) {
 		node->bc_type = bc;
@@ -550,7 +550,7 @@ void Space::set_bc_information() {
 
 		if (facet->type == Facet::OUTER) {
 			Boundary *bdr = mesh->boundaries[facet->right];
-			EBCType bc_type = bc_type_callback(bdr->marker);
+			BCType bc_type = bc_type_callback(bdr->marker);
 
 			int marker = bdr->marker;
 			// set boundary condition for face
@@ -2309,7 +2309,7 @@ void Space::update_constraints()
 
 //// BC stuff /////////////////////////////////////////////////////////////////////////////////////
 
-static EBCType default_bc_type(int marker) {
+static BCType default_bc_type(int marker) {
 	return BC_ESSENTIAL;
 }
 
@@ -2322,7 +2322,7 @@ static scalar3 &default_bc_vec_value_by_coord(int marker, double x, double y, do
 	return val;
 }
 
-void Space::set_bc_types(EBCType(*bc_type_callback)(int)) {
+void Space::set_bc_types(BCType(*bc_type_callback)(int)) {
 	_F_
 	if (bc_type_callback == NULL) bc_type_callback = default_bc_type;
 	this->bc_type_callback = bc_type_callback;

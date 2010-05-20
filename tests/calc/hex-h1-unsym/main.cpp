@@ -57,7 +57,7 @@ double exact_sln_fn(double x, double y, double z, double &dx, double &dy, double
 
 //
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	_F_
 	return BC_ESSENTIAL;

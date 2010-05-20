@@ -155,7 +155,7 @@ void f(S x, S y, S z, T (&val)[3]) {
 	val[2] = curlpart[2] - alpha * ev[2];
 }
 
-EBCType bc_types(int marker) {
+BCType bc_types(int marker) {
 	return BC_ESSENTIAL;
 }
 

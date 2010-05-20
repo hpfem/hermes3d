@@ -63,7 +63,7 @@ double exact_solution(double x, double y, double z, double &dx, double &dy, doub
 	return fnc(x, y, z);
 }
 
-EBCType bc_types(int marker)
+BCType bc_types(int marker)
 {
 	return BC_ESSENTIAL;
 }
@@ -133,7 +133,7 @@ double exact_sln_fn_2(double x, double y, double z, double &dx, double &dy, doub
 
 //
 
-EBCType bc_types_1(int marker)
+BCType bc_types_1(int marker)
 {
 	return BC_ESSENTIAL;
 }
@@ -142,7 +142,7 @@ double bc_values_1(int marker, double x, double y, double z) {
 	return u1(x, y, z);
 }
 
-EBCType bc_types_2(int marker)
+BCType bc_types_2(int marker)
 {
 	if (marker == 3) return BC_NATURAL;
 	else return BC_ESSENTIAL;
@@ -286,7 +286,7 @@ double exact_sln_fn_3(double x, double y, double z, double &dx, double &dy, doub
 
 //
 
-EBCType bc_types_1(int marker)
+BCType bc_types_1(int marker)
 {
 	return BC_ESSENTIAL;
 }
@@ -295,7 +295,7 @@ double bc_values_1(int marker, double x, double y, double z) {
 	return u1(x, y, z);
 }
 
-EBCType bc_types_2(int marker)
+BCType bc_types_2(int marker)
 {
 	return BC_ESSENTIAL;
 }
@@ -305,7 +305,7 @@ double bc_values_2(int marker, double x, double y, double z)
 	return 0;
 }
 
-EBCType bc_types_3(int marker)
+BCType bc_types_3(int marker)
 {
 	return BC_ESSENTIAL;
 }
