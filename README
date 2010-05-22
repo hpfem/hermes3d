@@ -1,8 +1,15 @@
 Welcome to Hermes3D!
+====================
 
-Hermes3D is a C++ library that extends Hermes2D  to three-dimensional 
-problems. The functionalities and API of Hermes3D as well as the code 
-structure are very similar to the 2D code. 
+Hermes3D is a C++ library for rapid prototyping of adaptive hp-FEM 
+solvers for 3D problems. The usage of Hermes3D is very similar to 
+Hermes2D, and thus it is recommend to get familiar with Hermes2D 
+first. Also the User Documentation of Hermes3D concentrates on things 
+that are different from Hermes2D.
+
+
+License
+=======
 
 Hermes3D is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,8 +21,13 @@ License along with Hermes2D; If not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 MA  02110-1301, USA.
 
+
+Copyright
+=========
+
 Copyright (c) 2009 hp-FEM group at the University of Nevada, 
 Reno (UNR). Email: hpfem@unr.edu, home page: http://hpfem.org/.
+
 
 Download and Installation
 =========================
@@ -23,6 +35,40 @@ Download and Installation
 Installation instructions for Linux, Mac OS X and Windows Cygwin 
 can be found in the Sphinx documentation at 
 http://hpfem.org/hermes3d/doc/index.html. 
+
+
+Documentation
+=============
+
+Generating and Viewing User Documentation Offline (Linux)
+---------------------------------------------------------
+
+Source files of the (Sphinx) user documentation are in the
+directory doc/. In order to compile the user documentation, 
+you need to install Sphinx. Then follow these steps:
+
+cd doc
+make html
+firefox _build/html 
+
+Generating and Viewing Developer Documentation Offline (Linux)
+--------------------------------------------------------------
+
+Source files of the (Doxygen) developer documentation are
+in the directory doc.cpp/. In order to build them you need
+to install Doxygen. Then do:
+
+cd doc.cpp/
+doxygen hermes3d.lib-real.doxyfile
+doxygen hermes3d.lib-cplx.doxyfile
+
+This will generate documentation for the real and complex
+version of the library, respectively. To view the docs, 
+type
+
+firefox h3d-real/html/index.html
+firefox h3d-cplx/html/index.html
+
 
 Compilation
 ===========
@@ -99,4 +145,5 @@ If you need to debug the build, use:
 cmake -DCMAKE_VERBOSE_MAKEFILE=ON .
 
 Then the make will print the exact commands that are executed.
+
 
