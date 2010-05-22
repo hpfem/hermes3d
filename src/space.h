@@ -60,10 +60,12 @@
 
 
 /// Possible return values for bc_type_callback():
-enum BCType {
-	BC_ESSENTIAL, /// Essential (Dirichlet) BC
-	BC_NATURAL,   /// Natural (Neumann, Newton) BC
-	BC_NONE       /// Do-nothing BC
+enum BCType 
+{
+  BC_ESSENTIAL, /// Essential (Dirichlet) BC.
+  BC_NATURAL,   /// Natural (Neumann, Newton) BC.
+  BC_NONE       /// Hermes will not attempt to evaluate any boundary
+                /// integrals on this part of the boundary.
 };
 
 
