@@ -41,11 +41,13 @@
 // Timer //////////////////////////////////////////////////////////////////////
 
 Timer::Timer() {
+        tick(H3D_SKIP);
 	reset();
 	this->name = NULL;
 }
 
 Timer::Timer(const char *name) {
+        tick(H3D_SKIP);
 	reset();
 	this->name = new char [strlen(name) + 1];
 	strcpy(this->name, name);
@@ -58,6 +60,20 @@ Timer::~Timer() {
 void Timer::start(bool rst) {
 	if (rst) reset();
 	gettimeofday(&this->st, NULL);
+}
+
+void Timer::tick(TimerTickType type) {
+  if (type == H3D_SKIP) {
+    start();
+    accum_time = 0;
+    last_period = -1;
+  }
+  else {
+    stop(); 
+    double secs = get_seconds();
+    accum_time += secs;
+    last_period = secs;
+  }
 }
 
 void Timer::stop() {

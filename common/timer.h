@@ -30,9 +30,15 @@
 ///
 /// TODO: Measure time that CPU spent on the task
 ///
+
+enum TimerTickType {
+  H3D_ACCUMULATE, ///< Accumulate a period between ticks.
+  H3D_SKIP ///< Skip period between ticks, i.e., do not accumulate it.
+};
+
 class Timer {
 public:
-	Timer();						// default constructor
+	Timer();					// default constructor
 	Timer(const char *name);
 	virtual ~Timer();				// destructor
 
@@ -44,8 +50,15 @@ public:
 	/// reset the timer
 	void reset();
 
+        /// Starts/ends a new period
+        void tick(TimerTickType type = H3D_ACCUMULATE);        
+
 	const char *get_name() { return name; }
 	double get_seconds();
+        /// Time of the last measured period 
+	double last_period; 
+	/// Time accumulator (in seconds)
+        double accum_time; 
 	const char *get_human_time();
 
 protected:
@@ -53,6 +66,7 @@ protected:
 	char *name;
 	/// time when the timer was started/resumed
 	struct timeval st;
+	struct timeval last_time;;
 	/// accumulator
 	struct timeval accum;
 };

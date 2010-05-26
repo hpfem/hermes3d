@@ -200,8 +200,7 @@ int main(int argc, char **args) {
 	do {
 		printf("\n=== Iter #%d ================================================================\n", iter);
 
-		Timer t_assemble;
-		Timer t_solver;
+                Timer cpu_time;
 
 		printf("\nSolution\n");
 
@@ -210,21 +209,26 @@ int main(int argc, char **args) {
 		printf("  - Number of DOFs: %d\n", ndofs);
 		// assemble stiffness matrix and rhs
 		printf("  - Assembling... "); fflush(stdout);
-		t_assemble.start();
+
+		cpu_time.tick(H3D_SKIP);
 		bool assembled = lp.assemble(&mat, &rhs);
-		t_assemble.stop();
-		if (assembled)
-			printf("done in %s (%lf secs)\n", t_assemble.get_human_time(), t_assemble.get_seconds());
-		else
+		cpu_time.tick();
+
+		if (assembled) {
+			printf("done in %s (%lf secs)\n", cpu_time.get_human_time(), cpu_time.get_seconds()); }
+		else {
 			die("failed!");
+                }
 
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);
-		t_solver.start();
+
+		cpu_time.tick(H3D_SKIP);
 		bool solved = solver.solve();
-		t_solver.stop();
-		if (solved)
-			printf("done in %s (%lf secs)\n", t_solver.get_human_time(), t_solver.get_seconds());
+		cpu_time.tick();
+
+		if (solved) {
+			printf("done in %s (%lf secs)\n", cpu_time.get_human_time(), cpu_time.get_seconds()); }
 		else {
 			printf("Failed\n");
 			break;
@@ -268,21 +272,24 @@ int main(int argc, char **args) {
 
 		// assemble stiffness matric and rhs
 		printf("  - Assembling... "); fflush(stdout);
-		t_assemble.start();
-		assembled = rlp.assemble(&mat, &rhs);
-		t_assemble.stop();
-		if (assembled)
-			printf("done in %s (%lf secs)\n", t_assemble.get_human_time(), t_assemble.get_seconds());
-		else
-			die("failed!");
 
+		cpu_time.tick(H3D_SKIP);
+		assembled = rlp.assemble(&mat, &rhs);
+		cpu_time.tick();
+
+		if (assembled) {
+			printf("done in %s (%lf secs)\n", cpu_time.get_human_time(), cpu_time.get_seconds()); }
+		else {
+			die("failed!");
+                }
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);
-		t_solver.start();
+
+		cpu_time.tick(H3D_SKIP);
 		bool rsolved = rsolver.solve();
-		t_solver.stop();
+		cpu_time.tick();
 		if (rsolved)
-			printf("done in %s (%lf secs)\n", t_solver.get_human_time(), t_solver.get_seconds());
+			printf("done in %s (%lf secs)\n", cpu_time.get_human_time(), cpu_time.get_seconds());
 		else {
 			printf("failed\n");
 			break;
@@ -305,24 +312,24 @@ int main(int argc, char **args) {
 		printf("Adaptivity\n");
 		printf("  - tolerance: "); fflush(stdout);
 		H1Adapt hp(1, &space);
-		Timer t_err;
-		t_err.start();
-		double tol = hp.calc_error(&sln, &rsln) * 100;		// calc error estimates on elements
-		t_err.stop();
-		printf("% lf\n", tol);
 
+		cpu_time.tick(H3D_SKIP);
+		double tol = hp.calc_error(&sln, &rsln) * 100;		// calc error estimates on elements
+		cpu_time.tick();
+
+		printf("% lf\n", tol);
 		if (tol < TOLERANCE) {
 			// we are within the tolerance, so we can stop
 			printf("\nDone\n");
 			break;
 		}
-
 		printf("  - adapting... "); fflush(stdout);
-		Timer t_adapt;
-		t_adapt.start();
-		hp.adapt(THRESHOLD);								// run the adaptivity algorithm
-		t_adapt.stop();
-		printf("done in %lf secs (refined %d element(s))\n", t_adapt.get_seconds(), hp.get_num_refined_elements());
+
+		cpu_time.tick(H3D_SKIP);
+		hp.adapt(THRESHOLD);			// run the adaptivity algorithm
+ 		cpu_time.tick();
+
+		printf("done in %lf secs (refined %d element(s))\n", cpu_time.get_seconds(), hp.get_num_refined_elements());
 
 		delete rspace;										// clean-up
 

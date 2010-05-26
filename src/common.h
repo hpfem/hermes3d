@@ -265,4 +265,8 @@ inline double sqr(complex x) { return std::norm(x); }
 
 #define countof(a) (sizeof(a)/sizeof(a[0]))
 
+#define H3D_EC_TIME 'T' ///< An event code: time measurements. \internal
+#define H3D_REPORT_TIME
+#define report_time(...)
+
 #endif
