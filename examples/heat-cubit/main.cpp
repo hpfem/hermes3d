@@ -65,7 +65,7 @@ BCType bc_types(int marker)
 	else return BC_NATURAL;
 }
 
-double bc_values(int marker, double x, double y, double z)
+scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 {
 	return 10;
 }
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 	printf("* Setting the space up\n");
 	H1Space space(&mesh, &shapeset);
 	space.set_bc_types(bc_types);
-	space.set_bc_values(bc_values);
+	space.set_essential_bc_values(essential_bc_values);
 	space.set_uniform_order(order3_t(1, 1, 1));
 
 	int ndofs = space.assign_dofs();

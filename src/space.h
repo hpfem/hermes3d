@@ -90,9 +90,9 @@ public:
 	ESpaceType get_type() { return type; }
 
 	void set_bc_types(BCType (*bc_type_callback)(int marker));
-	void set_bc_values(scalar (*bc_value_callback_by_coord)(int marker, double x, double y, double z));
+	void set_essential_bc_values(scalar (*bc_value_callback_by_coord)(int ess_bdy_marker, double x, double y, double z));
 	// TODO: different callback: void (*bc_vec_value_callback_by_coord)(int marker, double x, double y, double z, scalar3 &result)
-	void set_bc_values(scalar3 &(*bc_vec_value_callback_by_coord)(int marker, double x, double y, double z));
+	void set_essential_bc_values(scalar3 &(*bc_vec_value_callback_by_coord)(int ess_bdy_marker, double x, double y, double z));
 
 	void set_element_order(Word_t eid, order3_t order);
 	order3_t get_element_order(Word_t eid) const;
@@ -386,8 +386,8 @@ public:
 	BCType (*bc_type_callback)(int);
 
 	// value callbacks for dirichlet
-	scalar (*bc_value_callback_by_coord)(int marker, double x, double y, double z);
-	scalar3 &(*bc_vec_value_callback_by_coord)(int marker, double x, double y, double z);
+	scalar (*bc_value_callback_by_coord)(int ess_bdy_marker, double x, double y, double z);
+	scalar3 &(*bc_vec_value_callback_by_coord)(int ess_bdy_marker, double x, double y, double z);
 
 protected:
 	/// Internal. Used by LinProblem to detect changes in the space.
