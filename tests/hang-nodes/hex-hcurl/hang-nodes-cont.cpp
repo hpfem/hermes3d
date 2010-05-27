@@ -394,7 +394,7 @@ int main(int argc, char **args) {
 	printf("* Setting the space up\n");
 	HcurlSpace space(&mesh, &shapeset);
 	space.set_bc_types(bc_types);
-//	space.set_bc_values(bc_values);
+//	space.set_essential_bc_values(essential_bc_values);
 
 #if defined FN4
 	order3_t o(4, 4, 4);

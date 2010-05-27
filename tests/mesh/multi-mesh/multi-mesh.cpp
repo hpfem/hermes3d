@@ -68,7 +68,7 @@ BCType bc_types(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values(int marker, double x, double y, double z)
+scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 {
 	return fnc(x, y, z);
 }
@@ -138,7 +138,7 @@ BCType bc_types_1(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values_1(int marker, double x, double y, double z) {
+scalar essential_bc_values_1(int ess_bdy_marker, double x, double y, double z) {
 	return u1(x, y, z);
 }
 
@@ -148,7 +148,7 @@ BCType bc_types_2(int marker)
 	else return BC_ESSENTIAL;
 }
 
-double bc_values_2(int marker, double x, double y, double z) {
+scalar essential_bc_values_2(int ess_bdy_marker, double x, double y, double z) {
 	return u2(x, y, z);
 }
 
@@ -291,7 +291,7 @@ BCType bc_types_1(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values_1(int marker, double x, double y, double z) {
+scalar essential_bc_values_1(int ess_bdy_marker, double x, double y, double z) {
 	return u1(x, y, z);
 }
 
@@ -300,7 +300,7 @@ BCType bc_types_2(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values_2(int marker, double x, double y, double z)
+scalar essential_bc_values_2(int ess_bdy_marker, double x, double y, double z)
 {
 	return 0;
 }
@@ -310,7 +310,7 @@ BCType bc_types_3(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values_3(int marker, double x, double y, double z)
+scalar essential_bc_values_3(int ess_bdy_marker, double x, double y, double z)
 {
 	return x;
 }
@@ -427,7 +427,7 @@ int main(int argc, char **args)
 	printf("* Setting the space up\n");
 	H1Space space(&mesh1, &shapeset);
 	space.set_bc_types(bc_types);
-	space.set_bc_values(bc_values);
+	space.set_essential_bc_values(essential_bc_values);
 
 	order3_t order(2, 2, 2);
 	printf("  - Setting uniform order to (%d, %d, %d)\n", order.x, order.y, order.z);
@@ -463,7 +463,7 @@ int main(int argc, char **args)
 	printf("* Setup spaces\n");
 	H1Space space1(&mesh1, &shapeset);
 	space1.set_bc_types(bc_types_1);
-	space1.set_bc_values(bc_values_1);
+	space1.set_essential_bc_values(essential_bc_values_1);
 
 	order3_t o1(2, 2, 2);
 	printf("  - Setting uniform order to (%d, %d, %d)\n", o1.x, o1.y, o1.z);
@@ -471,7 +471,7 @@ int main(int argc, char **args)
 
 	H1Space space2(&mesh2, &shapeset);
 	space2.set_bc_types(bc_types_2);
-	space2.set_bc_values(bc_values_2);
+	space2.set_essential_bc_values(essential_bc_values_2);
 
 	order3_t o2(2, 2, 2);
 	printf("  - Setting uniform order to (%d, %d, %d)\n", o2.x, o2.y, o2.z);
@@ -479,7 +479,7 @@ int main(int argc, char **args)
 
 	H1Space space3(&mesh3, &shapeset);
 	space3.set_bc_types(bc_types_3);
-	space3.set_bc_values(bc_values_3);
+	space3.set_essential_bc_values(essential_bc_values_3);
 
 	order3_t o3(1, 1, 1);
 	printf("  - Setting uniform order to (%d, %d, %d)\n", o3.x, o3.y, o3.z);

@@ -86,7 +86,7 @@ BCType bc_types(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values(int marker, double x, double y, double z)
+scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 {
 	return fnc(x, y, z);
 }
@@ -224,7 +224,7 @@ BCType bc_types(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values(int marker, double x, double y, double z)
+scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 {
 	return fnc(x, y, z);
 }
@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
 	H1Space space(&mesh, &shapeset);
 	space.set_bc_types(bc_types);
 #if defined LIN_DIRICHLET || defined NLN_DIRICHLET
-	space.set_bc_values(bc_values);
+	space.set_essential_bc_values(essential_bc_values);
 #endif
 
 	int mx = 2;

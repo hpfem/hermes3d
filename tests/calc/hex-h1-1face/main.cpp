@@ -289,7 +289,7 @@ BCType bc_types(int marker) {
 #endif
 }
 
-double bc_values(int marker, double x, double y, double z) {
+scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z) {
 #ifdef DIRICHLET
 	return fnc(x, y, z);
 #else
@@ -424,7 +424,7 @@ int main(int argc, char **args) {
 //				printf("* Setting the space up\n");
 				H1Space space(&mesh, &shapeset);
 				space.set_bc_types(bc_types);
-				space.set_bc_values(bc_values);
+				space.set_essential_bc_values(essential_bc_values);
 
 #ifdef XM_YN_ZO
 				order3_t ord(4, 4, 4);

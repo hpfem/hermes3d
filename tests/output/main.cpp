@@ -105,7 +105,7 @@ BCType bc_types(int marker)
 	return BC_ESSENTIAL;
 }
 
-double bc_values(int marker, double x, double y, double z)
+scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 {
 	return fnc(x, y, z);
 }
@@ -157,7 +157,7 @@ void test_mat(Mesh *mesh, StiffMatrix &mat)
 	H1ShapesetLobattoHex shapeset;
 	H1Space space(mesh, &shapeset);
 	space.set_bc_types(bc_types);
-	space.set_bc_values(bc_values);
+	space.set_essential_bc_values(essential_bc_values);
 
 	m = n = o = 2;
 	int mx = maxn(4, m, n, o, 4);
@@ -234,7 +234,7 @@ int main(int argc, char **args)
 
 		H1Space space(&mesh, &shapeset);
 		space.set_bc_types(bc_types);
-		space.set_bc_values(bc_values);
+		space.set_essential_bc_values(essential_bc_values);
 
 		order3_t order;
 		if (mesh.elements[1]->get_mode() == MODE_HEXAHEDRON)
