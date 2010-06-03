@@ -11,6 +11,7 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    src/intro
     src/install
     src/tutorial
     src/examples
