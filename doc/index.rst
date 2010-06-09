@@ -14,6 +14,7 @@ Contents:
     src/intro
     src/install
     src/tutorial
+    src/benchmarks
     src/examples
     src/devel-guide
     src/glossary

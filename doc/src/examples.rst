@@ -6,11 +6,10 @@ Examples
 This is a list of examples which show what you can do with hermes3d.
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   examples/heat-conduction
-   examples/fichera-corner
-   examples/layer
-   examples/singpert-aniso
-   examples/bessel
-
+    examples/heat-conduction
+    examples/fichera-corner
+    examples/singpert-aniso
+    examples/bessel
+..  examples/layer
