@@ -182,13 +182,13 @@ int main(int argc, char **args) {
 #endif
 
 	WeakForm wf(2);
-	wf.add_biform(0, 0, bilinear_form_1_1<double, scalar>, bilinear_form_1_1<ord_t, ord_t>, SYM);
-	wf.add_biform(0, 1, bilinear_form_1_2<double, scalar>, bilinear_form_1_2<ord_t, ord_t>, SYM);
-	wf.add_liform(0, linear_form_1<double, scalar>, linear_form_1<ord_t, ord_t>);
+	wf.add_matrix_form(0, 0, bilinear_form_1_1<double, scalar>, bilinear_form_1_1<ord_t, ord_t>, SYM);
+	wf.add_matrix_form(0, 1, bilinear_form_1_2<double, scalar>, bilinear_form_1_2<ord_t, ord_t>, SYM);
+	wf.add_vector_form(0, linear_form_1<double, scalar>, linear_form_1<ord_t, ord_t>);
 
 //	wf.add_biform(1, 0, bilinear_form_2_1<sfn_t, scalar>, bilinear_form_2_1<fn_order_t, ord_t>, SYM);
-	wf.add_biform(1, 1, bilinear_form_2_2<double, scalar>, bilinear_form_2_2<ord_t, ord_t>, SYM);
-	wf.add_liform(1, linear_form_2<double, scalar>, linear_form_2<ord_t, ord_t>);
+	wf.add_matrix_form(1, 1, bilinear_form_2_2<double, scalar>, bilinear_form_2_2<ord_t, ord_t>, SYM);
+	wf.add_vector_form(1, linear_form_2<double, scalar>, linear_form_2<ord_t, ord_t>);
 
 	LinProblem lp(&wf);
 	lp.set_spaces(2, &space1, &space2);

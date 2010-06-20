@@ -30,7 +30,7 @@ void banner() {
 	if (verbose) {
 		printf("----------------------------------------------\n");
 		printf("  This is Hermes3D - a C++ library for rapid\n");
-		printf("prototyping of adaptive FEM and hp-FEM solvers\n");
+		printf("development of adaptive FEM and hp-FEM solvers\n");
 		printf("      developed by the hp-FEM group at UNR\n");
 		printf("     and distributed under the GPL license.\n");
 		printf("    For more details visit http://hpfem.org/.\n");

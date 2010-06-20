@@ -79,12 +79,12 @@ public:
 	int def_area(int n, ...);
 
 	// linear case
-	void add_biform(int i, int j, biform_val_t fn, biform_ord_t ord, SymFlag sym = UNSYM,
+	void add_matrix_form(int i, int j, biform_val_t fn, biform_ord_t ord, SymFlag sym = UNSYM,
 	                int area = ANY, int nx = 0, ...);
-	void add_biform_surf(int i, int j, biform_val_t fn, biform_ord_t ord, int area = ANY,
+	void add_matrix_form_surf(int i, int j, biform_val_t fn, biform_ord_t ord, int area = ANY,
 	                     int nx = 0, ...);
-	void add_liform(int i, liform_val_t fn, liform_ord_t ord, int area = ANY, int nx = 0, ...);
-	void add_liform_surf(int i, liform_val_t fn, liform_ord_t ord, int area = ANY, int nx = 0, ...);
+	void add_vector_form(int i, liform_val_t fn, liform_ord_t ord, int area = ANY, int nx = 0, ...);
+	void add_vector_form_surf(int i, liform_val_t fn, liform_ord_t ord, int area = ANY, int nx = 0, ...);
 	// non-linear case
 	void add_jacform(int i, int j, jacform_val_t fn, jacform_ord_t ord, SymFlag sym = UNSYM,
 	                 int area = ANY, int nx = 0, ...);

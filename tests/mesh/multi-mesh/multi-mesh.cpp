@@ -512,22 +512,22 @@ int main(int argc, char **args)
 
 #ifdef RHS2
 	WeakForm wf(1);
-	wf.add_biform(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-	wf.add_liform(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 1, &fsln);
+	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 1, &fsln);
 
 	LinProblem lp(&wf);
 	lp.set_spaces(1, &space);
 #elif defined SYS3
 	WeakForm wf(3);
-	wf.add_biform(0, 0, biform_1_1<double, scalar>, biform_1_1<ord_t, ord_t>, SYM);
-	wf.add_biform(0, 1, biform_1_2<double, scalar>, biform_1_2<ord_t, ord_t>, UNSYM);
-	wf.add_liform(0, liform_1<double, scalar>, liform_1<ord_t, ord_t>);
+	wf.add_matrix_form(0, 0, biform_1_1<double, scalar>, biform_1_1<ord_t, ord_t>, SYM);
+	wf.add_matrix_form(0, 1, biform_1_2<double, scalar>, biform_1_2<ord_t, ord_t>, UNSYM);
+	wf.add_vector_form(0, liform_1<double, scalar>, liform_1<ord_t, ord_t>);
 
-	wf.add_biform(1, 1, biform_2_2<double, scalar>, biform_2_2<ord_t, ord_t>, SYM);
-	wf.add_biform(1, 2, biform_2_3<double, scalar>, biform_2_3<ord_t, ord_t>, UNSYM);
-	wf.add_liform(1, liform_2<double, scalar>, liform_2<ord_t, ord_t>);
+	wf.add_matrix_form(1, 1, biform_2_2<double, scalar>, biform_2_2<ord_t, ord_t>, SYM);
+	wf.add_matrix_form(1, 2, biform_2_3<double, scalar>, biform_2_3<ord_t, ord_t>, UNSYM);
+	wf.add_vector_form(1, liform_2<double, scalar>, liform_2<ord_t, ord_t>);
 
-	wf.add_biform(2, 2, biform_3_3<double, scalar>, biform_3_3<ord_t, ord_t>, SYM);
+	wf.add_matrix_form(2, 2, biform_3_3<double, scalar>, biform_3_3<ord_t, ord_t>, SYM);
 
 	LinProblem lp(&wf);
 	lp.set_spaces(3, &space1, &space2, &space3);

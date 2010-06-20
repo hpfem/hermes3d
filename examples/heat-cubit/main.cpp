@@ -163,9 +163,9 @@ int main(int argc, char **argv)
 	printf("  - Number of DOFs: %d\n", ndofs);
 
 	WeakForm wf(1);
-	wf.add_biform(0, 0, bilinear_form1<double, scalar>, bilinear_form1<ord_t, ord_t>, SYM, 1);
-	wf.add_biform(0, 0, bilinear_form2<double, scalar>, bilinear_form2<ord_t, ord_t>, SYM, 2);
-	wf.add_liform(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY);
+	wf.add_matrix_form(0, 0, bilinear_form1<double, scalar>, bilinear_form1<ord_t, ord_t>, SYM, 1);
+	wf.add_matrix_form(0, 0, bilinear_form2<double, scalar>, bilinear_form2<ord_t, ord_t>, SYM, 2);
+	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY);
 
 	LinProblem lp(&wf);
 	lp.set_spaces(1, &space);

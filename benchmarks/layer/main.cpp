@@ -8,10 +8,11 @@
 #include <getopt.h>
 #include <hermes3d.h>
 
-//  This is another example that allows you to compare h- and hp-adaptivity from the point of view
-//  of both CPU time requirements and discrete problem size, look at the quality of the a-posteriori
-//  error estimator used by Hermes (exact error is provided), etc. 
-//  The problem is made harder for adaptive algorithms by increasing the parameter SLOPE.
+//  This benchmark solves the Poisson equation and it comes with an exact solution that 
+//  exhibits a steep internal layer. You can compare h- and hp-adaptivity from the point of view
+//  of both CPU time requirements and discrete problem size. Also look at the quality of 
+//  the a-posteriori error estimator used by Hermes. The problem is made harder for adaptive 
+//  algorithms by increasing the parameter SLOPE.
 //
 //  PDE: -Laplace u = f.
 //
@@ -22,42 +23,35 @@
 //  BC:  Dirichlet, given by exact solution.
 //
 //  The following parameters can be changed:
-//  
-//
-//  usage: $0 <mesh file>
-//
-//
 
-const double ERR_STOP  = 1;			// Stopping criterion for adaptivity (rel. error tolerance between the
-						// fine mesh and coarse mesh solution in percent).
-const double THRESHOLD = 0.3;			// error threshold for element refinement of the adapt(...) function 
-						// (default) STRATEGY = 0 ... refine elements elements until sqrt(THRESHOLD) 
-						// times total error is processed. If more elements have similar errors, 
-						// refine all to keep the mesh symmetric.
-						// STRATEGY = 1 ... refine all elements whose error is larger
-						// than THRESHOLD times maximum element error.
-const int P_INIT = 2;				// Initial polynomial degree of all mesh elements.
-const int NDOF_STOP = 100000;			// Adaptivity process stops when the number of degrees of freedom grows
-						// over this limit. This is to prevent h-adaptivity to go on forever.
-bool do_output = true;				// generate output files (if true); Cmd line arguments
+const int INIT_REF_NUM = 2;          // Number of initial uniform mesh refinements.
+const int P_INIT = 2;		     // Initial polynomial degree of all mesh elements.
+const double THRESHOLD = 0.3;	     // Error threshold for element refinement of the adapt(...) function 
+				     // (default) STRATEGY = 0 ... refine elements elements until sqrt(THRESHOLD) 
+				     // times total error is processed. If more elements have similar errors, 
+				     // refine all to keep the mesh symmetric.
+				     // STRATEGY = 1 ... refine all elements whose error is larger
+				     // than THRESHOLD times maximum element error.
+const double ERR_STOP  = 1;	     // Stopping criterion for adaptivity (rel. error tolerance between the
+				     // fine mesh and coarse mesh solution in percent).
+const int NDOF_STOP = 100000;	     // Adaptivity process stops when the number of degrees of freedom grows
+				     // over this limit. This is to prevent h-adaptivity to go on forever.
+bool do_output = true;		     // Generate output files (if true).
 
-// Error should be smaller than this epsilon. 
-#define EPS	10e-14F
-
-// Problem parameters. 
-double SLOPE = 200.0;				// slope of the layer inside the domain
+// Problem parameters.
+double SLOPE = 200.0;                // Slope of the layer.
 
 
 // Exact solution.
 #include "exact_solution.cpp"
 
-// Boundary condition types
+// Boundary condition types.
 BCType bc_types(int marker)
 {
   return BC_ESSENTIAL;
 }
 
-// Essential (Dirichlet) boundary condition values
+// Essential (Dirichlet) boundary condition values.
 scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 {
   return fn(x, y, z);
@@ -66,7 +60,7 @@ scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 // Weak forms.
 #include "forms.cpp"
 
-// Output the order of polynomial
+// Output element orders.
 void out_orders(Space *space, const char *name, int iter)
 {
   char fname[1024];
@@ -81,7 +75,7 @@ void out_orders(Space *space, const char *name, int iter)
     error("Could not open file '%s' for writing.", fname);
 }
 
-// Output the solution
+// Output the solution.
 void out_fn(MeshFunction *fn, const char *name, int iter)
 {
   char fname[1024];
@@ -92,8 +86,7 @@ void out_fn(MeshFunction *fn, const char *name, int iter)
     vtk.out(fn, name);
     fclose(f);
   }
-  else
-    error("Could not open file '%s' for writing.", fname);
+  else error("Could not open file '%s' for writing.", fname);
 }
 
 /***********************************************************************************
@@ -101,17 +94,22 @@ void out_fn(MeshFunction *fn, const char *name, int iter)
 ************************************************************************************/
 int main(int argc, char **args) 
 {
-  int res = ERR_SUCCESS;						// error code for debug purpose
 
 #ifdef WITH_PETSC
   PetscInitialize(NULL, NULL, PETSC_NULL, PETSC_NULL);
-  PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL);		// disable PETSc error handler
+  PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL);		// Disable PETSc error handler.
 #endif
 
   // Load the inital mesh.
   Mesh mesh;
   Mesh3DReader mesh_loader;
-  mesh_loader.load("hexahedron.mesh3d", &mesh))				// hexahedron used
+  mesh_loader.load("hexahedron.mesh3d", &mesh);
+
+  // Initial uniform  mesh refinements.
+  printf("Performing %d initial mesh refinements.\n", INIT_REF_NUM);
+  for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements(REFT_HEX_XYZ);
+  Word_t (nelem) = mesh.get_num_elements();
+  printf("New number of elements is %d.\n", nelem);
 
   //Initialize the shapeset and the cache.
   H1ShapesetLobattoHex shapeset;
@@ -145,29 +143,29 @@ int main(int argc, char **args)
 
   // Initialize the week formulation. 
   WeakForm wf(1);
-  wf.add_biform(0, 0, biform<double, double>, biform<ord_t, ord_t>, SYM, ANY, 0);
-  wf.add_liform(0, liform<double, double>, liform<ord_t, ord_t>, ANY, 0);
+  wf.add_matrix_form(0, 0, biform<double, double>, biform<ord_t, ord_t>, SYM, ANY, 0);
+  wf.add_vector_form(0, liform<double, double>, liform<ord_t, ord_t>, ANY, 0);
 
   // Initialize the coarse mesh problem.
   LinProblem lp(&wf);
   lp.set_spaces(1, &space);
 
   // Adaptivity loop.
-  int iter = 0;  bool done = false;
+  int as = 0;  bool done = false;
   do {
-    printf("\n---- Adaptivity step %d\n", iter);
+    printf("\n---- Adaptivity step %d:\n", as);
 
-    printf("\nSolving on coarse mesh\n");
+    printf("\nSolving on coarse mesh:\n");
 
     // Procedures for coarse mesh problem.
-    // Assign DOFs.
+    // Assign DOF.
     int ndof = space.assign_dofs();
-    printf("  - Number of DOFs: %d\n", ndof);
+    printf("  - Number of DOF: %d\n", ndof);
 
     // Assemble stiffness matrix and rhs.
     printf("  - Assembling... "); fflush(stdout);
     if (lp.assemble(&mat, &rhs))
-      printf("done in %lf secs\n", lp.get_time());
+      printf("done in %lf secs.\n", lp.get_time());
     else
       die("failed!");
 
@@ -175,10 +173,10 @@ int main(int argc, char **args)
     printf("  - Solving... "); fflush(stdout);
     bool solved = solver.solve();
     if (solved)
-      printf("done in %lf secs\n", solver.get_time());
+      printf("done in %lf secs.\n", solver.get_time());
     else 
     {
-      printf("Failed\n");
+      printf("Failed.\n");
       break;
     }
 
@@ -189,13 +187,12 @@ int main(int argc, char **args)
     if (do_output) 
     {
     // Output the orders and the solution.
-    out_orders(&space, "order", iter);
-    out_fn(&sln, "sln", iter);
+    out_orders(&space, "order", as);
+    out_fn(&sln, "sln", as);
     }
 
-    // Procedures for fine mesh problem.
-    // Reference(refined) solution.
-    printf("Solving on fine mesh\n");
+    // Solving fine mesh problem.
+    printf("Solving on fine mesh:\n");
 
     //Matrix solver.
 #if defined WITH_UMFPACK
@@ -209,24 +206,24 @@ int main(int argc, char **args)
     // Construct the refined mesh for reference(refined) solution.
     Mesh rmesh;
     rmesh.copy(mesh);
-    rmesh.refine_all_elements(REFT_HEX_XYZ);		// REFT_HEX_XYZ is hexahedron refiment type
+    rmesh.refine_all_elements(REFT_HEX_XYZ);
 
-    // Setup space for the reference(refined) solution.
+    // Setup space for the reference (globally refined) solution.
     Space *rspace = space.dup(&rmesh);
     rspace->copy_orders(space, 1);
 
-    // Initialize the mesh problem for reference(refined) solution.
+    // Initialize the mesh problem for reference solution.
     LinProblem rlp(&wf);
     rlp.set_spaces(1, rspace);
 
     // Assign DOF.
     int rndof = rspace->assign_dofs();
-    printf("  - Number of DOFs: %d\n", rndof);
+    printf("  - Number of DOF: %d\n", rndof);
 
     // Assemble stiffness matric and rhs.
     printf("  - Assembling... "); fflush(stdout);
     if (rlp.assemble(&mat, &rhs))
-      printf("done in %lf secs\n", rlp.get_time());
+      printf("done in %lf secs.\n", rlp.get_time());
     else
       die("failed!");
 
@@ -234,10 +231,10 @@ int main(int argc, char **args)
     printf("  - Solving... "); fflush(stdout);
     bool rsolved = rsolver.solve();
     if (rsolved)
-      printf("done in %lf secs\n", rsolver.get_time());
+      printf("done in %lf secs.\n", rsolver.get_time());
     else 
     {
-      printf("failed\n");
+      printf("failed.\n");
       break;
     }
 
@@ -255,33 +252,35 @@ int main(int argc, char **args)
     if (do_output)
       graph.save("conv.gp");
 
-    // Do the hp-adaptivity.
+    // Calculate error estimates for adaptivity.
     printf("Adaptivity\n");
     printf("  - calculating error: "); fflush(stdout);
     H1Adapt hp(1, &space);
-    double err_est = hp.calc_error(&sln, &rsln) * 100;		// calc error estimates on elements
-    printf("% lf\n", err_est);
+    double err_est = hp.calc_error(&sln, &rsln) * 100;	
+    printf("% lf %%\n", err_est);
 
+    // If error is too large, adapt the mesh.
     if (err_est < ERR_STOP) 
     {
       printf("\nDone\n");
       break;
     }
-
     printf("  - adapting... "); fflush(stdout);
-    hp.adapt(THRESHOLD);					// run the adaptivity algorithm
-    printf("done in %lf secs (refined %d element(s))\n", hp.get_adapt_time(), hp.get_num_refined_elements());
+    hp.adapt(THRESHOLD);				
+    printf("done in %lf secs (refined %d element(s)).\n", 
+           hp.get_adapt_time(), hp.get_num_refined_elements());
 
     if (rndof >= NDOF_STOP) 
     {
-      printf("\nDone\n");
+      printf("\nDone.\n");
       break;
     }
 
-    delete rspace;						// clean-up
+    // Clean up.
+    delete rspace;
 
-    // Next iteration.
-    iter++;
+    // Next adaptivity step.
+    as++;
 
     mat.free();
     rhs.free();
@@ -291,5 +290,5 @@ int main(int argc, char **args)
 	PetscFinalize();
 #endif
 
-	return res;
+    return 1;
 }

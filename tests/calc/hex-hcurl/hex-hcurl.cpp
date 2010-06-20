@@ -165,8 +165,8 @@ int main(int argc, char **args) {
 #endif
 
 	WeakForm wf(1);
-	wf.add_biform(0, 0, FORM_CB(bilinear_form), SYM);
-	wf.add_liform(0, FORM_CB(linear_form));
+	wf.add_matrix_form(0, 0, FORM_CB(bilinear_form), SYM);
+	wf.add_vector_form(0, FORM_CB(linear_form));
 
 	LinProblem lp(&wf);
 	lp.set_spaces(1, &space);

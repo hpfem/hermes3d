@@ -51,7 +51,7 @@ WeakForm::~WeakForm()
 	va_end(ap)
 
 
-void WeakForm::add_biform(int i, int j, biform_val_t fn, biform_ord_t ord, SymFlag sym, int area,
+void WeakForm::add_matrix_form(int i, int j, biform_val_t fn, biform_ord_t ord, SymFlag sym, int area,
                           int nx, ...)
 {
 	_F_
@@ -66,7 +66,7 @@ void WeakForm::add_biform(int i, int j, biform_val_t fn, biform_ord_t ord, SymFl
 	bfvol.push_back(form);
 }
 
-void WeakForm::add_biform_surf(int i, int j, biform_val_t fn, biform_ord_t ord, int area, int nx,
+void WeakForm::add_matrix_form_surf(int i, int j, biform_val_t fn, biform_ord_t ord, int area, int nx,
                                ...)
 {
 	_F_
@@ -78,7 +78,7 @@ void WeakForm::add_biform_surf(int i, int j, biform_val_t fn, biform_ord_t ord, 
 	bfsurf.push_back(form);
 }
 
-void WeakForm::add_liform(int i, liform_val_t fn, liform_ord_t ord, int area, int nx, ...)
+void WeakForm::add_vector_form(int i, liform_val_t fn, liform_ord_t ord, int area, int nx, ...)
 {
 	_F_
 	if (i < 0 || i >= neq) die("Invalid equation number.");
@@ -89,7 +89,7 @@ void WeakForm::add_liform(int i, liform_val_t fn, liform_ord_t ord, int area, in
 	lfvol.push_back(form);
 }
 
-void WeakForm::add_liform_surf(int i, liform_val_t fn, liform_ord_t ord, int area, int nx, ...)
+void WeakForm::add_vector_form_surf(int i, liform_val_t fn, liform_ord_t ord, int area, int nx, ...)
 {
 	_F_
 	if (i < 0 || i >= neq) die("Invalid equation number.");

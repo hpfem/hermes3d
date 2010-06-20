@@ -188,17 +188,17 @@ int main(int argc, char **argv) {
 
 	// weak formulation
 	WeakForm wf(3);
-	wf.add_biform(0, 0, bilinear_form_0_0<double, scalar>, bilinear_form_0_0<ord_t, ord_t>, SYM);
-	wf.add_biform(0, 1, bilinear_form_0_1<double, scalar>, bilinear_form_0_1<ord_t, ord_t>, SYM);
-	wf.add_biform(0, 2, bilinear_form_0_2<double, scalar>, bilinear_form_0_2<ord_t, ord_t>, SYM);
-	wf.add_liform_surf(0, surf_linear_form_0<double, scalar>, surf_linear_form_0<ord_t, ord_t>);
+	wf.add_matrix_form(0, 0, bilinear_form_0_0<double, scalar>, bilinear_form_0_0<ord_t, ord_t>, SYM);
+	wf.add_matrix_form(0, 1, bilinear_form_0_1<double, scalar>, bilinear_form_0_1<ord_t, ord_t>, SYM);
+	wf.add_matrix_form(0, 2, bilinear_form_0_2<double, scalar>, bilinear_form_0_2<ord_t, ord_t>, SYM);
+	wf.add_vector_form_surf(0, surf_linear_form_0<double, scalar>, surf_linear_form_0<ord_t, ord_t>);
 
-	wf.add_biform(1, 1, bilinear_form_1_1<double, scalar>, bilinear_form_1_1<ord_t, ord_t>, SYM);
-	wf.add_biform(1, 2, bilinear_form_1_2<double, scalar>, bilinear_form_1_2<ord_t, ord_t>, SYM);
-	wf.add_liform_surf(1, surf_linear_form_1<double, scalar>, surf_linear_form_1<ord_t, ord_t>);
+	wf.add_matrix_form(1, 1, bilinear_form_1_1<double, scalar>, bilinear_form_1_1<ord_t, ord_t>, SYM);
+	wf.add_matrix_form(1, 2, bilinear_form_1_2<double, scalar>, bilinear_form_1_2<ord_t, ord_t>, SYM);
+	wf.add_vector_form_surf(1, surf_linear_form_1<double, scalar>, surf_linear_form_1<ord_t, ord_t>);
 
-	wf.add_biform(2, 2, bilinear_form_2_2<double, scalar>, bilinear_form_2_2<ord_t, ord_t>, SYM);
-	wf.add_liform_surf(2, surf_linear_form_2<double, scalar>, surf_linear_form_2<ord_t, ord_t>, 5);
+	wf.add_matrix_form(2, 2, bilinear_form_2_2<double, scalar>, bilinear_form_2_2<ord_t, ord_t>, SYM);
+	wf.add_vector_form_surf(2, surf_linear_form_2<double, scalar>, surf_linear_form_2<ord_t, ord_t>, 5);
 
 	LinProblem lp(&wf);
 	lp.set_spaces(3, &xdisp, &ydisp, &zdisp);

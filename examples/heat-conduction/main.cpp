@@ -166,8 +166,8 @@ int main(int argc, char **argv) {
 
 	// discretization
 	WeakForm wf(1);
-	wf.add_biform(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-	wf.add_liform(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 1, &uprev);
+	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 1, &uprev);
 
 	LinProblem lp(&wf);
 	lp.set_spaces(1, &space);
