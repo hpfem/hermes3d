@@ -6,4 +6,4 @@ CMake.vars
 config.h
 h3dconfig.h
 doc/Doxyfile
-doc/conf.py
+#doc/conf.py

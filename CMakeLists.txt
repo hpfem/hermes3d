@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 
 # default values
 
-option(DEBUG         "Build debug version" NO)
+option(DEBUG         "Build debug version" YES)
 set(DEBUG_ORDER NO)
 set(PROFILING   NO)
 
@@ -27,8 +27,9 @@ option(WITH_HDF5     "Enable support for HDF5" NO)
 
 option(WITH_OPENMP   "Build with OpenMP support" NO)
 
-option(WITH_EXAMPLES "Build examples" NO)
-option(WITH_TESTS    "Build tests" NO)
+option(WITH_EXAMPLES "Build examples" YES)
+option(WITH_BENCHMARKS "Build benchmarks" YES)
+option(WITH_TESTS    "Build tests" YES)
 set(WITH_TOOLS  NO)
 
 option(WITH_PYTHON   "Enable support for Python" NO)
@@ -38,10 +39,10 @@ set(OUTPUT_DIR "" CACHE STRING "Directory were the output will be written")
 set(DEV_TESTS NO)
 
 # Doxygen related
-set(DOXYGEN_BINARY doxygen)
-set(DOXYGEN_CONFIG_FILE ${PROJECT_SOURCE_DIR}/doc/Doxyfile)
+#set(DOXYGEN_BINARY doxygen)
+#set(DOXYGEN_CONFIG_FILE ${PROJECT_SOURCE_DIR}/doc/Doxyfile)
 
-set(SPHINX_BUILD_BIN sphinx-build)
+#set(SPHINX_BUILD_BIN sphinx-build)
 
 # allow to override default values via CMake.vars 
 include(${PROJECT_BINARY_DIR}/CMake.vars OPTIONAL)
@@ -197,25 +198,33 @@ add_custom_command(
 	COMMAND   make -C ${PROJECT_BINARY_DIR}/examples
 )
 
+# benchmarks
+add_subdirectory(benchmarks EXCLUDE_FROM_ALL)
+add_custom_target(benchmarks)
+add_custom_command(
+	TARGET    benchmarks
+	COMMAND   make -C ${PROJECT_BINARY_DIR}/benchmarks
+)
+
 # doc
-add_subdirectory(doc)
+#add_subdirectory(doc)
 
-add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/doc/xml/index.xml)
-add_custom_command(
-	TARGET    doc
-	COMMAND   ${SPHINX_BUILD_BIN} -N -b html ${PROJECT_SOURCE_DIR}/doc ${PROJECT_BINARY_DIR}/doc/html
-)
+#add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/doc/xml/index.xml)
+#add_custom_command(
+#	TARGET    doc
+#	COMMAND   ${SPHINX_BUILD_BIN} -N -b html ${PROJECT_SOURCE_DIR}/doc ${PROJECT_BINARY_DIR}/doc/html
+#)
 
-add_custom_target(doc-tex DEPENDS ${PROJECT_BINARY_DIR}/doc/xml/index.xml)
-add_custom_command(
-	TARGET    doc-tex
-	COMMAND   ${SPHINX_BUILD_BIN} -N -b latex ${PROJECT_SOURCE_DIR}/doc ${PROJECT_BINARY_DIR}/doc/tex
-)
+#add_custom_target(doc-tex DEPENDS ${PROJECT_BINARY_DIR}/doc/xml/index.xml)
+#add_custom_command(
+#	TARGET    doc-tex
+#	COMMAND   ${SPHINX_BUILD_BIN} -N -b latex ${PROJECT_SOURCE_DIR}/doc ${PROJECT_BINARY_DIR}/doc/tex
+#)
 
-add_custom_command(
-	OUTPUT    ${PROJECT_BINARY_DIR}/doc/xml/index.xml
-	COMMAND   ${DOXYGEN_BINARY} ${DOXYGEN_CONFIG_FILE}
-)
+#add_custom_command(
+#	OUTPUT    ${PROJECT_BINARY_DIR}/doc/xml/index.xml
+#	COMMAND   ${DOXYGEN_BINARY} ${DOXYGEN_CONFIG_FILE}
+#)
 
 
 add_custom_target(test-quick

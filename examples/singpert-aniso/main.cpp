@@ -182,8 +182,8 @@ int main(int argc, char **args) {
 	space.set_uniform_order(order3_t(1, 1, 1));
 
 	WeakForm wf(1);
-	wf.add_biform(0, 0, biform<double, double>, biform<ord_t, ord_t>, SYM, ANY, 0);
-	wf.add_liform(0, liform<double, double>, liform<ord_t, ord_t>, ANY, 0);
+	wf.add_matrix_form(0, 0, biform<double, double>, biform<ord_t, ord_t>, SYM, ANY, 0);
+	wf.add_vector_form(0, liform<double, double>, liform<ord_t, ord_t>, ANY, 0);
 
 	// ADAPT loop
 	LinProblem lp(&wf);
