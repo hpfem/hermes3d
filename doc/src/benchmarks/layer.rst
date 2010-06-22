@@ -4,7 +4,7 @@ Internal Layer (Elliptic)
 =========================
 
 **Git reference:** Benchmark 
-`layer http://git.hpfem.org/hermes3d.git/tree/HEAD:/benchmarks/layer>`_.
+`layer <http://git.hpfem.org/hermes3d.git/tree/HEAD:/benchmarks/layer>`_.
 
 This example has a smooth solution that exhibits a steep internal layer 
 inside the domain. 
@@ -134,5 +134,5 @@ Solution and hp-mesh:
 
 .. seealso::
 
-   :ref:`benchmark-fichera-corner`
+   :ref:`benchmark-bessel`
 

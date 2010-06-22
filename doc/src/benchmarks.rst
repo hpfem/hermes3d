@@ -13,4 +13,5 @@ for comparisons of various methods and adaptivity algorithms.
    :maxdepth: 2
 
    benchmarks/layer
+   benchmarks/bessel
 

@@ -10,7 +10,7 @@ set(PROFILING   NO)
 
 # real/complex version of the library
 option(REAL          "Build real (double precision) version of Hermes3D" YES)
-option(COMPLEX       "Build complex version of Hermes3D" NO)
+option(COMPLEX       "Build complex version of Hermes3D" YES)
 # supported element types
 option(WITH_TETRA    "Enable tetrahedral elements" YES)
 option(WITH_HEX      "Enable hexahedral elements" YES)
