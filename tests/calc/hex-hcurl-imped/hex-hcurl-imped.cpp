@@ -263,10 +263,10 @@ int main(int argc, char **args) {
 #endif
 
 	WeakForm wf(1);
-	wf.add_biform(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, UNSYM);
-	wf.add_biform_surf(0, 0, bilinear_form_surf<double, scalar>, bilinear_form_surf<ord_t, ord_t>);
-	wf.add_liform(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>);
-	wf.add_liform_surf(0, linear_form_surf<double, scalar>, linear_form_surf<ord_t, ord_t>);
+	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, UNSYM);
+	wf.add_matrix_form_surf(0, 0, bilinear_form_surf<double, scalar>, bilinear_form_surf<ord_t, ord_t>);
+	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>);
+	wf.add_vector_form_surf(0, linear_form_surf<double, scalar>, linear_form_surf<ord_t, ord_t>);
 //	wf.add_biform(0, 0, bilinear_form, SYM);
 //	wf.add_biform_surf(0, 0, bilinear_form_surf);
 //	wf.add_liform(0, linear_form);
