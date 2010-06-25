@@ -204,13 +204,13 @@ int main(int argc, char **args)
 {
 	set_verbose(false);
 
-	if (argc < 3) die("Not enough parameters");
+	if (argc < 3) error("Not enough parameters");
 
 	char *type = args[1];
 
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(args[2], &mesh)) die("Loading mesh file '%s'\n", args[2]);
+	if (!mesh_loader.load(args[2], &mesh)) error("Loading mesh file '%s'\n", args[2]);
 
 	if (strcmp(type, "sln") == 0) {
 		// Testing on Exact solution which always gives the same value (values from Solution may differ by epsilon)
@@ -242,7 +242,7 @@ int main(int argc, char **args)
 		else if (mesh.elements[1]->get_mode() == MODE_TETRAHEDRON)
 			order = order3_t(3);
 		else
-			die(ERR_NOT_IMPLEMENTED);
+			error(ERR_NOT_IMPLEMENTED);
 		space.set_uniform_order(order);
 
 		output.out_orders(&space, "orders");

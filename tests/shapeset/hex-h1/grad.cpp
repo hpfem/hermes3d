@@ -110,7 +110,7 @@ bool test_grad(int fn_idx, Shapeset *shapeset) {
 
 	if (fabs(vol_val[0] - surf_val[0]) > EPS || fabs(vol_val[1] - surf_val[1]) > EPS || fabs(vol_val[2] - surf_val[2]) > EPS) {
 		printf("\n");
-		error("Gradient values for fn #%d do not match", fn_idx);
+		warning("Gradient values for fn #%d do not match", fn_idx);
 		return false;
 	}
 

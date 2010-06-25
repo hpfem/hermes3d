@@ -44,11 +44,7 @@
 void h_exit(int line, const char *func, const char *file, char const *fmt, ...) NORETURN;
 
 /// Report unrecoverable error (no call stack or location dumped)
-void die(char const *fmt, ...) NORETURN;
-
-/// Notify the user about an error (the execution continues), neither location or call stack
-/// is dumped
-void error(char const *fmt, ...);
+void error(char const *fmt, ...) NORETURN;
 
 /// Notify the user about warning (the execution continues), neither location or call stack
 /// is dumped

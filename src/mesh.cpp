@@ -2333,14 +2333,14 @@ void Mesh::check_elem_oris()
 		order3_t ord;
 		if (e->get_mode() == MODE_HEXAHEDRON) ord = order3_t(1, 1, 1);
 		else if (e->get_mode() == MODE_TETRAHEDRON) ord = order3_t(2);
-		else error(ERR_NOT_IMPLEMENTED);
+		else warning(ERR_NOT_IMPLEMENTED);
 		Quad3D *quad = get_quadrature(e->get_mode());
 		int np = quad->get_num_points(ord);
 		QuadPt3D *pt = quad->get_points(ord);
 
 		double3x3 *m = refmap.get_ref_map(np, pt);
 		for (int i = 0; i < np; i++) {
-			if (det(m[i]) <= 0) die("Element #%ld has an incorrect orientation.", eid);
+			if (det(m[i]) <= 0) error("Element #%ld has an incorrect orientation.", eid);
 		}
 		delete [] m;
 	}

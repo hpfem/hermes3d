@@ -124,7 +124,7 @@ void out_fn(MeshFunction *x, const char *name, int i) {
 		fclose(ofile);
 	}
 	else {
-		error("Can not not open '%s' for writing.", of_name);
+		warning("Can not open '%s' for writing.", of_name);
 	}
 }
 
@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
 	printf("* Loading mesh '%s'\n", mesh_file_name);
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(mesh_file_name, &mesh)) die("Loading mesh file '%s'\n", mesh_file_name);
+	if (!mesh_loader.load(mesh_file_name, &mesh)) error("Loading mesh file '%s'\n", mesh_file_name);
 
 	mesh.refine_all_elements(REFT_HEX_XYZ);
 	mesh.refine_all_elements(REFT_HEX_XYZ);
@@ -207,7 +207,7 @@ int main(int argc, char **argv) {
 		if (assembled)
 			printf("done in %s (%lf secs)\n", tmr_assemble.get_human_time(), tmr_assemble.get_seconds());
 		else
-			die("failed!");
+			error("failed!");
 
 		// solve the stiffness matrix
 		printf("  - solving... "); fflush(stdout);

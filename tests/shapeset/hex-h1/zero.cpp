@@ -83,7 +83,7 @@ bool test_zero_values_of_vertex_fns(Shapeset *shapeset) {
 		int *idx = vertices[vtx];
 		for (int i = 0; i < num_vertices; i++) {
 			if (shapeset->get_fn_value(fn_idx, vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, 0) > EPS) {
-				error("Vertex fn #%d (%d) is not zero at (% lf, %lf, %lf), vertex #%d.", vtx, fn_idx, vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, idx[i]);
+				warning("Vertex fn #%d (%d) is not zero at (% lf, %lf, %lf), vertex #%d.", vtx, fn_idx, vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, idx[i]);
 				return false;
 			}
 		}
@@ -98,7 +98,7 @@ bool test_zero_values_of_vertex_fns(Shapeset *shapeset) {
 			shapeset->get_fn_values(fn_idx, np, pts, 0, vals);
 			for (int j = 0; j < np; j++) {
 				if (vals[j] > EPS) {
-					error("Vertex fn #%d (%d) is not zero at (% lf, %lf, %lf), edge %d.", vtx, fn_idx, pts[j].x, pts[j].y, pts[j].z, edges[vtx][i]);
+					warning("Vertex fn #%d (%d) is not zero at (% lf, %lf, %lf), edge %d.", vtx, fn_idx, pts[j].x, pts[j].y, pts[j].z, edges[vtx][i]);
 					return false;
 				}
 			}
@@ -113,7 +113,7 @@ bool test_zero_values_of_vertex_fns(Shapeset *shapeset) {
 			shapeset->get_fn_values(fn_idx, np, pts, 0, vals);
 			for (int j = 0; j < np; j++) {
 				if (vals[j] > EPS) {
-					error("Vertex fn #%d (%d) is not zero at (% lf, %lf, %lf), face %d.", vtx, fn_idx, pts[j].x, pts[j].y, pts[j].z, faces[vtx][i]);
+					warning("Vertex fn #%d (%d) is not zero at (% lf, %lf, %lf), face %d.", vtx, fn_idx, pts[j].x, pts[j].y, pts[j].z, faces[vtx][i]);
 					return false;
 				}
 			}
@@ -188,7 +188,7 @@ bool test_zero_values_of_edge_fns(Shapeset *shapeset) {
 				int *idx = vertices[edge];
 				for (int i = 0; i < num_vertices; i++) {
 					if (shapeset->get_fn_value(edge_fn[fn], vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, 0) > EPS) {
-						error("Edge fn #%d is not zero at (% lf, %lf, %lf), vertex #%d.", edge_fn[fn], vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, idx[i]);
+						warning("Edge fn #%d is not zero at (% lf, %lf, %lf), vertex #%d.", edge_fn[fn], vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, idx[i]);
 						return false;
 					}
 				}
@@ -202,7 +202,7 @@ bool test_zero_values_of_edge_fns(Shapeset *shapeset) {
 					shapeset->get_fn_values(edge_fn[fn], np, pts, 0, vals);
 					for (int j = 0; j < np; j++) {
 						if (vals[j] > EPS) {
-							error("Edge fn #%d is not zero at (% lf, %lf, %lf), edge %d.", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[edge][i]);
+							warning("Edge fn #%d is not zero at (% lf, %lf, %lf), edge %d.", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[edge][i]);
 							return false;
 						}
 					}
@@ -217,7 +217,7 @@ bool test_zero_values_of_edge_fns(Shapeset *shapeset) {
 					shapeset->get_fn_values(edge_fn[fn], np, pts, 0, vals);
 					for (int j = 0; j < np; j++) {
 						if (vals[j] > EPS) {
-							error("Edge fn #%d is not zero at (% lf, %lf, %lf), face %d.", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[edge][i]);
+							warning("Edge fn #%d is not zero at (% lf, %lf, %lf), face %d.", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[edge][i]);
 							return false;
 						}
 					}
@@ -282,7 +282,7 @@ bool test_zero_values_of_face_fns(Shapeset *shapeset) {
 				int *idx = vertices[face];
 				for (int i = 0; i < num_vertices; i++) {
 					if (shapeset->get_fn_value(face_fn[fn], vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, 0) > EPS) {
-						error("Face fn #%d is not zero at (% lf, %lf, %lf), vertex #%d.", face_fn[fn], vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, idx[i]);
+						warning("Face fn #%d is not zero at (% lf, %lf, %lf), vertex #%d.", face_fn[fn], vtx_pt[idx[i]].x, vtx_pt[idx[i]].y, vtx_pt[idx[i]].z, idx[i]);
 						return false;
 					}
 				}
@@ -296,7 +296,7 @@ bool test_zero_values_of_face_fns(Shapeset *shapeset) {
 					shapeset->get_fn_values(face_fn[fn], np, pts, 0, vals);
 					for (int j = 0; j < np; j++) {
 						if (vals[j] > EPS) {
-							error("Face fn #%d is not zero at (% lf, %lf, %lf), edge %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[face][i]);
+							warning("Face fn #%d is not zero at (% lf, %lf, %lf), edge %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[face][i]);
 							return false;
 						}
 					}
@@ -311,7 +311,7 @@ bool test_zero_values_of_face_fns(Shapeset *shapeset) {
 					shapeset->get_fn_values(face_fn[fn], np, pts, 0, vals);
 					for (int j = 0; j < np; j++) {
 						if (vals[j] > EPS) {
-							error("Face fn #%d is not zero at (% lf, %lf, %lf), face %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[face][i]);
+							warning("Face fn #%d is not zero at (% lf, %lf, %lf), face %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[face][i]);
 							return false;
 						}
 					}
@@ -342,7 +342,7 @@ bool test_zero_values_of_bubble_fns(Shapeset *shapeset) {
 		const Point3D *vtx_pt = REF_DOMAIN::get_vertices();
 		for (int i = 0; i < Hex::NUM_VERTICES; i++) {
 			if (shapeset->get_fn_value(bubble_fn[fn], vtx_pt[i].x, vtx_pt[i].y, vtx_pt[i].z, 0) > EPS) {
-				error("Bubble fn #%d is not zero at (% lf, %lf, %lf), vertex #%d.", bubble_fn[fn], vtx_pt[i].x, vtx_pt[i].y, vtx_pt[i].z, i);
+				warning("Bubble fn #%d is not zero at (% lf, %lf, %lf), vertex #%d.", bubble_fn[fn], vtx_pt[i].x, vtx_pt[i].y, vtx_pt[i].z, i);
 				return false;
 			}
 		}
@@ -356,7 +356,7 @@ bool test_zero_values_of_bubble_fns(Shapeset *shapeset) {
 			shapeset->get_fn_values(bubble_fn[fn], np, pts, 0, vals);
 			for (int j = 0; j < np; j++) {
 				if (vals[j] > EPS) {
-					error("Bubble fn #%d is not zero at (% lf, %lf, %lf), edge %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, iedge);
+					warning("Bubble fn #%d is not zero at (% lf, %lf, %lf), edge %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, iedge);
 					return false;
 				}
 			}
@@ -371,7 +371,7 @@ bool test_zero_values_of_bubble_fns(Shapeset *shapeset) {
 			shapeset->get_fn_values(bubble_fn[fn], np, pts, 0, vals);
 			for (int j = 0; j < np; j++) {
 				if (vals[j] > EPS) {
-					error("Bubble fn #%d is not zero at (% lf, %lf, %lf), face %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, iface);
+					warning("Bubble fn #%d is not zero at (% lf, %lf, %lf), face %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, iface);
 					return false;
 				}
 			}

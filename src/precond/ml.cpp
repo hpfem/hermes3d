@@ -40,7 +40,7 @@ MlPrecond::MlPrecond(const char *type)
 	if (strcmp(type, "sa") == 0) ML_Epetra::SetDefaults("SA", mlist);
 	else if (strcmp(type, "dd") == 0) ML_Epetra::SetDefaults("DD", mlist);
 #else
-	die(ML_NOT_COMPILED);
+	error(ML_NOT_COMPILED);
 #endif
 }
 

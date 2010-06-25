@@ -266,12 +266,12 @@ int main(int argc, char **argv) {
 	int res = ERR_SUCCESS;
 	set_verbose(false);
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) error("Not enough parameters");
 
 	printf("* Loading mesh '%s'\n", argv[1]);
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(argv[1], &mesh)) die("loading mesh file '%s'\n", argv[1]);
+	if (!mesh_loader.load(argv[1], &mesh)) error("loading mesh file '%s'\n", argv[1]);
 
 	H1ShapesetLobattoHex shapeset;
 	printf("* Setting the space up\n");
@@ -349,7 +349,7 @@ int main(int argc, char **argv) {
 			fclose(ofile);
 		}
 		else {
-			error("Can't open '%s' for writing.", of_name);
+			warning("Can not open '%s' for writing.", of_name);
 		}
 #endif
 

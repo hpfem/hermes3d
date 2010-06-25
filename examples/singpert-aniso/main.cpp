@@ -107,7 +107,7 @@ void out_orders(Space *space, const char *name, int iter)
 		fclose(f);
 	}
 	else
-		error("Could not open file '%s' for writing.", fname);
+		warning("Could not open file '%s' for writing.", fname);
 }
 
 void out_fn(MeshFunction *fn, const char *name, int iter)
@@ -121,7 +121,7 @@ void out_fn(MeshFunction *fn, const char *name, int iter)
 		fclose(f);
 	}
 	else
-		error("Could not open file '%s' for writing.", fname);
+		warning("Could not open file '%s' for writing.", fname);
 }
 
 //
@@ -148,7 +148,7 @@ int main(int argc, char **args) {
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
 	if (!mesh_loader.load(mesh_file_name, &mesh))
-		die("Unable to load mesh file '%s'\n", mesh_file_name);
+		error("Unable to load mesh file '%s'\n", mesh_file_name);
 
 	mesh.refine_all_elements(REFT_HEX_XYZ);
 
@@ -204,7 +204,7 @@ int main(int argc, char **args) {
 		if (lp.assemble(&mat, &rhs))
 			printf("done in %lf secs\n", lp.get_time());
 		else
-			die("failed!");
+			error("failed!");
 
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);
@@ -256,7 +256,7 @@ int main(int argc, char **args) {
 		if (rlp.assemble(&mat, &rhs))
 			printf("done in %lf secs\n", rlp.get_time());
 		else
-			die("failed!");
+			error("failed!");
 
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);

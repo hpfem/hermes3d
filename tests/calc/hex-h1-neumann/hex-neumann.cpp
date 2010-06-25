@@ -115,7 +115,7 @@ int main(int argc, char **args) {
 	DEBUG_OUTPUT_ON;
 	SET_VERBOSE_LEVEL(0);
 
-	if (argc < 5) die("Not enough parameters");
+	if (argc < 5) error("Not enough parameters");
 
 	sscanf(args[2], "%d", &m);
 	sscanf(args[3], "%d", &n);
@@ -124,7 +124,7 @@ int main(int argc, char **args) {
 	printf("* Loading mesh '%s'\n", args[1]);
 	Mesh mesh;
 	Mesh3DReader mloader;
-	if (!mloader.load(args[1], &mesh)) die("Loading mesh file '%s'\n", args[1]);
+	if (!mloader.load(args[1], &mesh)) error("Loading mesh file '%s'\n", args[1]);
 
 	H1ShapesetLobattoHex shapeset;
 	printf("* Setting the space up\n");
@@ -244,7 +244,7 @@ int main(int argc, char **args) {
 			fclose(ofile);
 		}
 		else {
-			ERROR("Can't open '%s' for writing.", of_name);
+			warning("Can not open '%s' for writing.", of_name);
 		}
 #endif
 	}

@@ -288,7 +288,8 @@ PardisoLinearSolver::PardisoLinearSolver(PardisoMatrix *m, PardisoVector *rhs)
 	_F_
 #ifdef WITH_PARDISO
 #else
-	die("hermes3d was not built with Pardiso support.");
+	warning("hermes3d was not built with Pardiso support.");
+	exit(128);
 #endif
 }
 
@@ -300,7 +301,8 @@ PardisoLinearSolver::PardisoLinearSolver(LinProblem *lp)
 	m = new PardisoMatrix;
 	rhs = new PardisoVector;
 #else
-	die("hermes3d was not built with Pardiso support.");
+	warning("hermes3d was not built with Pardiso support.");
+	exit(128);
 #endif
 }
 

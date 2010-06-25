@@ -85,7 +85,7 @@ bool test_zero_values_of_edge_fns(Shapeset *shapeset) {
 					for (int j = 0; j < quad->get_edge_num_points(iedge, max_order); j++) {
 						int comp = RefHex::get_edge_tangent_direction(edges[iedge][i]);
 						if (shapeset->get_fn_value(edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, comp) > EPS) {
-							error("Edge fn #%d is not zero at (% lf, %lf, %lf), edge %d, component %d.\n", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[iedge][i], comp);
+							warning("Edge fn #%d is not zero at (% lf, %lf, %lf), edge %d, component %d.\n", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[iedge][i], comp);
 							return false;
 						}
 					}
@@ -99,7 +99,7 @@ bool test_zero_values_of_edge_fns(Shapeset *shapeset) {
 						for (int icomp = 0; icomp < 2; icomp++) {
 							int comp = RefHex::get_face_tangent_direction(faces[iedge][i], icomp);
 							if (shapeset->get_fn_value(edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, comp) > EPS) {
-								error("Edge fn #%d is not zero at (% lf, %lf, %lf), face %d.", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[iedge][i]);
+								warning("Edge fn #%d is not zero at (% lf, %lf, %lf), face %d.", edge_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[iedge][i]);
 								return false;
 							}
 						}
@@ -156,7 +156,7 @@ bool test_zero_values_of_face_fns(Shapeset *shapeset) {
 					for (int j = 0; j < quad->get_edge_num_points(edges[iface][i], max_order); j++) {
 						int comp = RefHex::get_edge_tangent_direction(edges[iface][i]);
 						if (shapeset->get_fn_value(face_fn[fn], pts[j].x, pts[j].y, pts[j].z, comp) > EPS) {
-							error("Face fn #%d is not zero at (% lf, %lf, %lf), edge %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[iface][i]);
+							warning("Face fn #%d is not zero at (% lf, %lf, %lf), edge %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, edges[iface][i]);
 							return false;
 						}
 					}
@@ -170,7 +170,7 @@ bool test_zero_values_of_face_fns(Shapeset *shapeset) {
 						for (int icomp = 0; icomp < 2; icomp++) {
 							int comp = RefHex::get_face_tangent_direction(faces[iface][i], icomp);
 							if (shapeset->get_fn_value(face_fn[fn], pts[j].x, pts[j].y, pts[j].z, comp) > EPS) {
-								error("Face fn #%d is not zero at (% lf, %lf, %lf), face %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[iface][i]);
+								warning("Face fn #%d is not zero at (% lf, %lf, %lf), face %d.", face_fn[fn], pts[j].x, pts[j].y, pts[j].z, faces[iface][i]);
 								return false;
 							}
 						}
@@ -205,7 +205,7 @@ bool test_zero_values_of_bubble_fns(Shapeset *shapeset) {
 			for (int j = 0; j < quad->get_edge_num_points(i, max_order); j++) {
 				int comp = RefHex::get_edge_tangent_direction(i);
 				if (shapeset->get_fn_value(bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, comp) > EPS) {
-					error("Bubble fn #%d is not zero at (% lf, %lf, %lf), edge %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, i);
+					warning("Bubble fn #%d is not zero at (% lf, %lf, %lf), edge %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, i);
 					return false;
 				}
 			}
@@ -219,7 +219,7 @@ bool test_zero_values_of_bubble_fns(Shapeset *shapeset) {
 				for(int i_comp = 0; i_comp < 2; i_comp++){
 					int comp = RefHex::get_face_tangent_direction(i, i_comp);
 					if (shapeset->get_fn_value(bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, comp) > EPS) {
-						error("Bubble fn #%d is not zero at (% lf, %lf, %lf), face %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, i);
+						warning("Bubble fn #%d is not zero at (% lf, %lf, %lf), face %d.", bubble_fn[fn], pts[j].x, pts[j].y, pts[j].z, i);
 						return false;
 					}
 				}

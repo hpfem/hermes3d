@@ -37,11 +37,11 @@ int main(int argc, char *argv[]) {
 	int ret = ERROR_SUCCESS;
 	set_verbose(false);
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) error("Not enough parameters");
 
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(argv[1], &mesh)) die("Loading mesh file '%s'\n", argv[1]);
+	if (!mesh_loader.load(argv[1], &mesh)) error("Loading mesh file '%s'\n", argv[1]);
 
 	RefMap refmap(&mesh);
 

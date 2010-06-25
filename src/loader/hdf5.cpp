@@ -52,7 +52,7 @@ HDF5Reader::HDF5Reader() {
 	_F_
 #ifdef WITH_HDF5
 #else
-	die("hermes3d was not built with HDF5 support.");
+	error("hermes3d was not built with HDF5 support.");
 #endif
 }
 

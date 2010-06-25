@@ -51,7 +51,7 @@ IfpackPrecond::IfpackPrecond(const char *cls, const char *type)
 	this->cls = cls;
 	this->type = type;
 #else
-	die(IFPACK_NOT_COMPILED);
+	error(IFPACK_NOT_COMPILED);
 #endif
 }
 
@@ -68,7 +68,7 @@ IfpackPrecond::IfpackPrecond(const char *cls, const char *type, int overlap)
 	this->type = type;
 	this->overlap = overlap;
 #else
-	die(IFPACK_NOT_COMPILED);
+	error(IFPACK_NOT_COMPILED);
 #endif
 }
 

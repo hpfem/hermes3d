@@ -98,14 +98,14 @@ int main(int argc, char **argv) {
 #endif
 	set_verbose(false);
 
-	if (argc < 5) die("Not enough parameters.");
+	if (argc < 5) error("Not enough parameters.");
 
 	H1ShapesetLobattoHex shapeset;
 
 	printf("* Loading mesh '%s'\n", argv[1]);
 	Mesh mesh;
 	Mesh3DReader mloader;
-	if (!mloader.load(argv[1], &mesh)) die("Loading mesh file '%s'\n", argv[1]);
+	if (!mloader.load(argv[1], &mesh)) error("Loading mesh file '%s'\n", argv[1]);
 
 	printf("* Setting the space up\n");
 	H1Space space(&mesh, &shapeset);

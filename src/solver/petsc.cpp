@@ -37,7 +37,7 @@ PetscMatrix::PetscMatrix() {
 #ifdef WITH_PETSC
 	inited = false;
 #else
-	die(PETSC_NOT_COMPILED);
+	error(PETSC_NOT_COMPILED);
 #endif
 }
 
@@ -157,7 +157,7 @@ PetscVector::PetscVector() {
 #ifdef WITH_PETSC
 	inited = false;
 #else
-	die(PETSC_NOT_COMPILED);
+	error(PETSC_NOT_COMPILED);
 #endif
 }
 
@@ -256,7 +256,8 @@ PetscLinearSolver::PetscLinearSolver(PetscMatrix *mat, PetscVector *rhs)
 	_F_
 #ifdef WITH_PETSC
 #else
-	die(PETSC_NOT_COMPILED);
+	warning(PETSC_NOT_COMPILED);
+	exit(128);
 #endif
 }
 
@@ -267,7 +268,8 @@ PetscLinearSolver::PetscLinearSolver(LinProblem *lp)
 	m = new PetscMatrix;
 	rhs = new PetscVector;
 #else
-	die(PETSC_NOT_COMPILED);
+	warning(PETSC_NOT_COMPILED);
+	exit(128);
 #endif
 }
 

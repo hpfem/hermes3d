@@ -64,11 +64,11 @@ int main(int argc, char **args) {
 	DEBUG_OUTPUT_ON;
 	SET_VERBOSE_LEVEL(0);
 
-	if (argc < 1) die("Not enough parameters");
+	if (argc < 1) error("Not enough parameters");
 
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(args[1], &mesh)) die("Loading mesh file '%s'\n", args[1]);
+	if (!mesh_loader.load(args[1], &mesh)) error("Loading mesh file '%s'\n", args[1]);
 
 	// apply refinements
 	bool ok = true;
@@ -83,7 +83,7 @@ int main(int argc, char **args) {
 		mesh.dump();
 	}
 	else {
-		error("Unable to refine a mesh.");
+		warning("Unable to refine a mesh.");
 		res = ERR_FAILURE;
 	}
 

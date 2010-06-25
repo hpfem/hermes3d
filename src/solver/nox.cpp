@@ -235,7 +235,8 @@ NoxSolver::NoxSolver(FeProblem *problem)
 	// NOX_Epetra_Interface
 	interface = Teuchos::rcp(new NoxProblemInterface(*problem));
 #else
-	die(NOX_NOT_COMPILED);
+	warning(NOX_NOT_COMPILED);
+	exit(128);
 #endif
 }
 

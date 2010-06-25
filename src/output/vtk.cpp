@@ -823,7 +823,7 @@ void VtkOutputEngine::out_orders(Space *space, const char *name)
 				break;
 
 			default:
-				die(ERR_NOT_IMPLEMENTED);
+				error(ERR_NOT_IMPLEMENTED);
 		}
 	}
 
@@ -893,7 +893,7 @@ void VtkOutputEngine::out(Matrix *mat, bool structure)
 	SparseMatrix *m = dynamic_cast<SparseMatrix *>(mat);
 	if (m == NULL) {
 		// dense matrix
-		error(ERR_NOT_IMPLEMENTED);
+		warning(ERR_NOT_IMPLEMENTED);
 	}
 	else {
 		if (m->row_storage) {

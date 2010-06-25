@@ -228,7 +228,7 @@ void SimpleFilter::init_components() {
 void SimpleFilter::precalculate(const int np, const QuadPt3D *pt, int mask) {
 	_F_
 	if (mask & (FN_DX | FN_DY | FN_DZ | FN_DXX | FN_DYY | FN_DZZ | FN_DXY | FN_DXZ | FN_DYZ)) {
-		error("Filter not defined for derivatives.");
+		warning("Filter not defined for derivatives.");
 		return;
 	}
 
@@ -246,7 +246,7 @@ void SimpleFilter::precalculate(const int np, const QuadPt3D *pt, int mask) {
 			mask_to_comp_val(item[i], a, b);
 			tab[i] = sln[i]->get_values(num_components == 1 ? a : j, b);
 			if (tab[i] == NULL) {
-				error("'item%d' is incorrect in filter definition.", i + 1);
+				warning("'item%d' is incorrect in filter definition.", i + 1);
 				return;
 			}
 		}

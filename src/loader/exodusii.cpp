@@ -41,7 +41,7 @@ ExodusIIReader::ExodusIIReader()
 	_F_
 #ifdef WITH_EXODUSII
 #else
-	die("hermes3d was not compiled with ExodusII support");
+	error("hermes3d was not compiled with ExodusII support");
 #endif
 }
 
@@ -65,7 +65,7 @@ bool ExodusIIReader::load(const char *file_name, Mesh *mesh)
 	char title[MAX_LINE_LENGTH + 1];
 	err = ex_get_init(exoid, title, &n_dims, &n_nodes, &n_elems, &n_eblocks, &n_nodesets, &n_sidesets);
 	if (n_dims != 3) {
-		error("File '%s' does not contain 3D mesh", file_name);
+		warning("File '%s' does not contain 3D mesh", file_name);
 		return false;
 	}
 
@@ -112,7 +112,7 @@ bool ExodusIIReader::load(const char *file_name, Mesh *mesh)
 				hex->marker = id;
 			}
 			else
-				die("Unknown type of element.");
+				error("Unknown type of element.");
 		}
 		delete [] connect;
 	}
@@ -146,7 +146,7 @@ bool ExodusIIReader::load(const char *file_name, Mesh *mesh)
 			switch (elem->get_face_mode(iface)) {
 				case MODE_TRIANGLE: mesh->add_tri_boundary(vtcs, sid); break;
 				case MODE_QUAD: mesh->add_quad_boundary(vtcs, sid); break;
-				default: error("Unknown type of face"); break;
+				default: warning("Unknown type of face"); break;
 			}
 		}
 
@@ -168,5 +168,5 @@ bool ExodusIIReader::load(const char *file_name, Mesh *mesh)
 
 bool ExodusIIReader::save(const char *file_name, Mesh *mesh)
 {
-	die(ERR_NOT_IMPLEMENTED);
+	error(ERR_NOT_IMPLEMENTED);
 }

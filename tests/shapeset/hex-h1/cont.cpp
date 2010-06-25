@@ -323,7 +323,7 @@ bool test_cont_values_of_vertex_fns(Mesh *mesh, Word_t fid, int pos0, int pos1, 
 
 			if (fabs(uval[j1] - vval[j2]) > EPS) {
 				printf("failed\n");
-				error("Vertex fn not continuous @(% lf, % lf, % lf), diff = % e",
+				warning("Vertex fn not continuous @(% lf, % lf, % lf), diff = % e",
 					fpts[0].ref_pt[j1].x, fpts[0].ref_pt[j1].y, fpts[0].ref_pt[j1].z,
 					fabs(uval[j1] - vval[j2]));
 				return false;
@@ -460,7 +460,7 @@ bool test_cont_values_of_edge_fns(Mesh *mesh, Word_t fid, int pos0, int pos1, Sh
 
 				if (fabs(uval[j1] - vval[j2]) > EPS) {
 					printf("failed\n");
-					error("Edge fn not continuous @(% lf, % lf, % lf), diff = % e",
+					warning("Edge fn not continuous @(% lf, % lf, % lf), diff = % e",
 						fpts[0].ref_pt[j1].x, fpts[0].ref_pt[j1].y, fpts[0].ref_pt[j1].z,
 						fabs(uval[j1] - vval[j2]));
 					return false;
@@ -552,7 +552,7 @@ bool test_cont_values_of_face_fns(Mesh *mesh, Word_t fid, int pos0, int pos1, Sh
 
 			if (fabs(uval[j1] - vval[j2]) > EPS) {
 				printf("failed\n");
-				error("Face fn not continuous @(% lf, % lf, % lf), diff = % e",
+				warning("Face fn not continuous @(% lf, % lf, % lf), diff = % e",
 					fpts[0].ref_pt[j1].x, fpts[0].ref_pt[j1].y, fpts[0].ref_pt[j1].z,
 					fabs(uval[j1] - vval[j2]));
 				return false;

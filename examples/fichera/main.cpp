@@ -117,7 +117,7 @@ void out_orders(Space *space, const char *name, int iter) {
 		fclose(f);
 	}
 	else
-		error("Could not open file '%s' for writing.", fname);
+		warning("Could not open file '%s' for writing.", fname);
 }
 
 void out_fn(MeshFunction *fn, const char *name, int iter) {
@@ -130,7 +130,7 @@ void out_fn(MeshFunction *fn, const char *name, int iter) {
 		fclose(f);
 	}
 	else
-		error("Could not open file '%s' for writing.", fname);
+		warning("Could not open file '%s' for writing.", fname);
 }
 
 //
@@ -157,7 +157,7 @@ int main(int argc, char **args) {
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
 	if (!mesh_loader.load(mesh_file_name, &mesh))
-		die("Unable to load mesh file '%s'\n", mesh_file_name);
+		error("Unable to load mesh file '%s'\n", mesh_file_name);
 
 	H1ShapesetLobattoHex shapeset;
 
@@ -217,7 +217,7 @@ int main(int argc, char **args) {
 		if (assembled) {
 			printf("done in %s (%lf secs)\n", cpu_time.get_human_time(), cpu_time.get_seconds()); }
 		else {
-			die("failed!");
+			error("failed!");
                 }
 
 		// solve the system
@@ -280,7 +280,7 @@ int main(int argc, char **args) {
 		if (assembled) {
 			printf("done in %s (%lf secs)\n", cpu_time.get_human_time(), cpu_time.get_seconds()); }
 		else {
-			die("failed!");
+			error("failed!");
                 }
 		// solve the system
 		printf("  - Solving... "); fflush(stdout);

@@ -83,12 +83,12 @@ int main(int argc, char **args) {
 #endif
 	set_verbose(false);
 
-	if (argc < 3) die("Not enough parameters");
+	if (argc < 3) error("Not enough parameters");
 
 	printf("* Loading mesh '%s'\n", args[1]);
 	Mesh mesh;
 	Mesh3DReader mloader;
-	if (!mloader.load(args[1], &mesh)) die("Loading mesh file '%s'\n", args[1]);
+	if (!mloader.load(args[1], &mesh)) error("Loading mesh file '%s'\n", args[1]);
 
 	FOR_ALL_ELEMENTS(idx, &mesh) {
 		Element *e = mesh.elements[idx];
@@ -217,7 +217,7 @@ int main(int argc, char **args) {
 			fclose(ofile);
 		}
 		else {
-			error("Can not not open '%s' for writing.", of_name);
+			warning("Can not open '%s' for writing.", of_name);
 		}
 #endif
 	}

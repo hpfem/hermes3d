@@ -89,7 +89,7 @@ void FeProblem::free()
 void FeProblem::set_spaces(int n, ...)
 {
 	_F_
-	if (n <= 0 || n > wf->neq) die("Bad number of spaces.");
+	if (n <= 0 || n > wf->neq) error("Bad number of spaces.");
 	va_list ap;
 	va_start(ap, n);
 	for (int i = 0; i < wf->neq; i++) {
@@ -123,7 +123,7 @@ scalar **FeProblem::get_matrix_buffer(int n)
 void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 {
 	_F_
-	if (!have_spaces) die("You have to call set_spaces() before calling assemble().");
+	if (!have_spaces) error("You have to call set_spaces() before calling assemble().");
 
 	scalar *vv = new scalar[ndofs]; MEM_CHECK(vv);
 	memset(vv, 0, ndofs * sizeof(scalar));

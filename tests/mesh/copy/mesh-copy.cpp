@@ -75,14 +75,14 @@ int main(int argc, char **args) {
 	DEBUG_OUTPUT_ON;
 	SET_VERBOSE_LEVEL(0);
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) error("Not enough parameters");
 
 	ECopyType copy_type = parse_copy_type(args[1]);
-	if (copy_type == CT_NONE) die("Unknown copy type (%s).\n", args[1]);
+	if (copy_type == CT_NONE) error("Unknown copy type (%s).\n", args[1]);
 
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(args[2], &mesh)) die("Loading mesh file '%s'\n", args[2]);
+	if (!mesh_loader.load(args[2], &mesh)) error("Loading mesh file '%s'\n", args[2]);
 
 	// apply refinements
 	bool ok = true;
@@ -104,7 +104,7 @@ int main(int argc, char **args) {
 		dup.dump();
 	}
 	else {
-		error("Unable to refine a mesh.");
+		warning("Unable to refine a mesh.");
 		res = ERR_FAILURE;
 	}
 

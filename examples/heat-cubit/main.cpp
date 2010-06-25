@@ -111,7 +111,7 @@ void out_fn(MeshFunction *x, const char *name)
 		fclose(ofile);
 	}
 	else {
-		error("Can not not open '%s' for writing.", of_name);
+		warning("Can not open '%s' for writing.", of_name);
 	}
 }
 
@@ -128,7 +128,7 @@ void out_bc(Mesh *mesh, const char *name)
 		fclose(ofile);
 	}
 	else {
-		error("Can not not open '%s' for writing.", of_name);
+		warning("Can not open '%s' for writing.", of_name);
 	}
 }
 
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 	Mesh mesh;
 	ExodusIIReader mesh_loader;
 	if (!mesh_loader.load(mesh_file_name, &mesh))
-		die("Loading mesh file '%s'\n", mesh_file_name);
+		error("Loading mesh file '%s'\n", mesh_file_name);
 
 	H1ShapesetLobattoHex shapeset;
 
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 	if (assembled)
 		printf("done in %s (%lf secs)\n", tmr_assemble.get_human_time(), tmr_assemble.get_seconds());
 	else
-		die("failed!");
+		error("failed!");
 
 	// solve the stiffness matrix
 	printf("  - solving... "); fflush(stdout);

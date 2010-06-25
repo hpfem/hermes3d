@@ -110,14 +110,14 @@ int main(int argc, char **argv)
 #endif
 	set_verbose(false);
 
-	if (argc < 2) die("Not enough parameters.");
+	if (argc < 2) error("Not enough parameters.");
 
 	H1ShapesetLobattoHex shapeset;
 
 	printf("* Loading mesh '%s'\n", argv[1]);
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(argv[1], &mesh)) die("loading mesh file '%s' failed.", argv[1]);
+	if (!mesh_loader.load(argv[1], &mesh)) error("loading mesh file '%s' failed.", argv[1]);
 
 	printf("* Setup space\n");
 	H1Space space(&mesh, &shapeset);
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
 			fclose(ofile);
 		}
 		else {
-			error("Can not not open '%s' for writing.", of_name);
+			warning("Can not open '%s' for writing.", of_name);
 		}
 #endif
 	}

@@ -414,7 +414,7 @@ int main(int argc, char **args) {
 						fclose(ofile);
 					}
 					else {
-						error("Can not not open '%s' for writing.", of_name);
+						warning("Can not open '%s' for writing.", of_name);
 					}
 				END_BLOCK
 #endif

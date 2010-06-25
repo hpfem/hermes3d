@@ -105,7 +105,7 @@ public:
 	void set_max_order(int order)
 	{
 		if (order <= MAX_ELEMENT_ORDER) max_order = order;
-		else die("Cannot set order greater than max elem. order (%d)", MAX_ELEMENT_ORDER);
+		else error("Cannot set order greater than max elem. order (%d)", MAX_ELEMENT_ORDER);
 	}
 
 protected:

@@ -894,5 +894,5 @@ void GmshOutputEngine::out_orders(Space *space, const char *name) {
 void GmshOutputEngine::out(Matrix *mat)
 {
 	_F_
-	die(ERR_NOT_IMPLEMENTED);
+	error(ERR_NOT_IMPLEMENTED);
 }

@@ -49,7 +49,7 @@ EpetraMatrix::EpetraMatrix()
 	this->row_storage = true;
 	this->col_storage = false;
 #else
-	die(EPETRA_NOT_COMPILED);
+	error(EPETRA_NOT_COMPILED);
 #endif
 }
 
@@ -183,7 +183,7 @@ void EpetraMatrix::add(int m, int n, scalar v)
 	if (v != 0.0 && m != DIRICHLET_DOF && n != DIRICHLET_DOF) {		// ignore dirichlet DOFs
 #ifndef COMPLEX
 		int ierr = mat->SumIntoGlobalValues(m, 1, &v, &n);
-		if (ierr != 0) die("Failed to insert into Epetra matrix");
+		if (ierr != 0) error("Failed to insert into Epetra matrix");
 #else
 		int ierr = mat->SumIntoGlobalValues(m, 1, &std::real(v), &n);
 		assert(ierr == 0);

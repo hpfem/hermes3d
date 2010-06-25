@@ -399,7 +399,7 @@ void out_fn(Solution *sln, const char *name)
 		fclose(ofile);
 	}
 	else {
-		error("Can't open '%s' for writing.", of_name);
+		warning("Can not open '%s' for writing.", of_name);
 	}
 #endif
 }
@@ -415,12 +415,12 @@ int main(int argc, char **args)
 #endif
 	set_verbose(false);
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) error("Not enough parameters");
 
 	printf("* Loading mesh '%s'\n", args[1]);
 	Mesh mesh1;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(args[1], &mesh1)) die("Loading mesh file '%s'\n", args[1]);
+	if (!mesh_loader.load(args[1], &mesh1)) error("Loading mesh file '%s'\n", args[1]);
 
 	H1ShapesetLobattoHex shapeset;
 #if defined RHS2

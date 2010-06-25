@@ -292,7 +292,7 @@ UMFPackLinearSolver::UMFPackLinearSolver(UMFPackMatrix *m, UMFPackVector *rhs)
 	_F_
 #ifdef WITH_UMFPACK
 #else
-	die("hermes3d was not built with UMFPACK support.");
+	error("hermes3d was not built with UMFPACK support.");
 #endif
 }
 
@@ -304,7 +304,7 @@ UMFPackLinearSolver::UMFPackLinearSolver(LinProblem *lp)
 	m = new UMFPackMatrix;
 	rhs = new UMFPackVector;
 #else
-	die("hermes3d was not built with UMFPACK support.");
+	error("hermes3d was not built with UMFPACK support.");
 #endif
 }
 
@@ -324,17 +324,17 @@ static void check_status(const char *fn_name, int status) {
 	_F_
 	switch (status) {
 		case UMFPACK_OK: break;
-		case UMFPACK_WARNING_singular_matrix:       error("%s: singular matrix!", fn_name); break;
-		case UMFPACK_ERROR_out_of_memory:           error("%s: out of memory!", fn_name); break;
-		case UMFPACK_ERROR_argument_missing:        error("%s: argument missing", fn_name); break;
-		case UMFPACK_ERROR_invalid_Symbolic_object: error("%s: invalid Symbolic object", fn_name); break;
-		case UMFPACK_ERROR_invalid_Numeric_object:  error("%s: invalid Numeric object", fn_name); break;
-		case UMFPACK_ERROR_different_pattern:       error("%s: different pattern", fn_name); break;
-		case UMFPACK_ERROR_invalid_system:          error("%s: invalid system", fn_name); break;
-		case UMFPACK_ERROR_n_nonpositive:           error("%s: n nonpositive", fn_name); break;
-		case UMFPACK_ERROR_invalid_matrix:          error("%s: invalid matrix", fn_name); break;
-		case UMFPACK_ERROR_internal_error:          error("%s: internal error", fn_name); break;
-		default:                                    error("%s: unknown error (%d)", fn_name, status); break;
+		case UMFPACK_WARNING_singular_matrix:       warning("%s: singular matrix!", fn_name); break;
+		case UMFPACK_ERROR_out_of_memory:           warning("%s: out of memory!", fn_name); break;
+		case UMFPACK_ERROR_argument_missing:        warning("%s: argument missing", fn_name); break;
+		case UMFPACK_ERROR_invalid_Symbolic_object: warning("%s: invalid Symbolic object", fn_name); break;
+		case UMFPACK_ERROR_invalid_Numeric_object:  warning("%s: invalid Numeric object", fn_name); break;
+		case UMFPACK_ERROR_different_pattern:       warning("%s: different pattern", fn_name); break;
+		case UMFPACK_ERROR_invalid_system:          warning("%s: invalid system", fn_name); break;
+		case UMFPACK_ERROR_n_nonpositive:           warning("%s: n nonpositive", fn_name); break;
+		case UMFPACK_ERROR_invalid_matrix:          warning("%s: invalid matrix", fn_name); break;
+		case UMFPACK_ERROR_internal_error:          warning("%s: internal error", fn_name); break;
+		default:                                    warning("%s: unknown error (%d)", fn_name, status); break;
 	}
 }
 

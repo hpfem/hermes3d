@@ -61,7 +61,7 @@ void out_mesh(Mesh *mesh, const char *name)
     fclose(f);
   }
   else
-    error("Could not open file '%s' for writing.", fname);
+    warning("Could not open file '%s' for writing.", fname);
 }
 
 // Helper function to output solution. 
@@ -78,7 +78,7 @@ void out_fn(MeshFunction *fn, const char *name)
     fclose(ofile);
   }
   else 
-    error("Can not not open '%s' for writing.", of_name);
+    warning("Can not not open '%s' for writing.", of_name);
 }
 
 /***********************************************************************************

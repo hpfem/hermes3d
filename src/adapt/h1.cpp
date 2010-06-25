@@ -121,7 +121,7 @@ H1Adapt::~H1Adapt()
 void H1Adapt::set_biform(int i, int j, biform_val_t bi_form, biform_ord_t bi_ord)
 {
 	if (i < 0 || i >= num || j < 0 || j >= num)
-		die("Invalid equation number.");
+		error("Invalid equation number.");
 
 	form[i][j] = bi_form;
 	ord[i][j] = bi_ord;

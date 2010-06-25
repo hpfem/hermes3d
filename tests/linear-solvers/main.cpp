@@ -225,9 +225,9 @@ int main(int argc, char *argv[])
 	set_verbose(false);
 
 #ifndef COMPLEX
-	if (argc < 3) die("Not enough parameters");
+	if (argc < 3) error("Not enough parameters");
 #else
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) error("Not enough parameters");
 #endif
 
 	int n;
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 	Array<scalar> ar_rhs;
 
 	if (read_matrix_and_rhs(argv[2], n, ar_mat, ar_rhs) != ERR_SUCCESS)
-		die("Failed to read the matrix and rhs.");
+		error("Failed to read the matrix and rhs.");
 
 	if (strcasecmp(argv[1], "petsc") == 0) {
 #ifdef WITH_PETSC

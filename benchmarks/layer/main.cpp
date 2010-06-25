@@ -72,7 +72,7 @@ void out_orders(Space *space, const char *name, int iter)
     fclose(f);
   }
   else
-    error("Could not open file '%s' for writing.", fname);
+    warning("Could not open file '%s' for writing.", fname);
 }
 
 // Output the solution.
@@ -86,7 +86,7 @@ void out_fn(MeshFunction *fn, const char *name, int iter)
     vtk.out(fn, name);
     fclose(f);
   }
-  else error("Could not open file '%s' for writing.", fname);
+  else warning("Could not open file '%s' for writing.", fname);
 }
 
 /***********************************************************************************
@@ -167,7 +167,7 @@ int main(int argc, char **args)
     if (lp.assemble(&mat, &rhs))
       printf("done in %lf secs.\n", lp.get_time());
     else
-      die("failed!");
+      error("failed!");
 
     // Solve the system.
     printf("  - Solving... "); fflush(stdout);
@@ -225,7 +225,7 @@ int main(int argc, char **args)
     if (rlp.assemble(&mat, &rhs))
       printf("done in %lf secs.\n", rlp.get_time());
     else
-      die("failed!");
+      error("failed!");
 
     // Solve the system.
     printf("  - Solving... "); fflush(stdout);

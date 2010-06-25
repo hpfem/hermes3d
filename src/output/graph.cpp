@@ -69,7 +69,7 @@ void Graph::set_row_style(int row, const char *color, const char *line, const ch
 void Graph::add_value(int row, double x, double y) {
 	_F_
 	if (!rows.size()) add_row(NULL);
-	if (row < 0 || row >= (int) rows.size()) error("Invalid row number.");
+	if (row < 0 || row >= (int) rows.size()) warning("Invalid row number.");
 	Values xy = { x, y };
 	rows[row].data.push_back(xy);
 }
@@ -100,10 +100,10 @@ void MatlabGraph::save(const char *filename) {
 	unsigned int i;
 	int j, k;
 
-	if (!rows.size()) error("No data rows defined.");
+	if (!rows.size()) warning("No data rows defined.");
 
 	FILE *f = fopen(filename, "w");
-	if (f == NULL) error("Error writing to %s", filename, strerror(errno));
+	if (f == NULL) warning("Error writing to %s", filename, strerror(errno));
 
 	if (!logx && !logy) fprintf(f, "plot(");
 	else if (logx && !logy) fprintf(f, "semilogx(");
@@ -188,12 +188,12 @@ void GnuplotGraph::save(const char *filename)
 {
 	_F_
 
-	if (!rows.size()) error("No data rows defined.");
+	if (!rows.size()) warning("No data rows defined.");
 
 	FILE *f;
 	if (filename != NULL) {
 		f = fopen(filename, "w");
-		if (f == NULL) error("Error writing to %s: %s", filename, strerror(errno));
+		if (f == NULL) warning("Error writing to %s: %s", filename, strerror(errno));
 
 		int len = strlen(filename);
 		char outname[len + 10];
@@ -230,7 +230,7 @@ void GnuplotGraph::save(const char *filename)
 	switch (type) {
 		case Line: save_line_graph(f); break;
 		case Column: save_column_graph(f); break;
-		default: die("Unsupported type of graph."); break;
+		default: error("Unsupported type of graph."); break;
 	}
 
 	fprintf(f, "set terminal x11\n");

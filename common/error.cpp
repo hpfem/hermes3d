@@ -55,23 +55,14 @@ void h_exit(int line, const char *func, const char *file, char const *fmt, ...)
 	exit(128);
 }
 
-void die(const char *err, ...)
+void error(const char *err, ...)
 {
 	va_list params;
 
 	va_start(params, err);
-	report("FATAL: ", err, params);
+	report("FATAL ERROR: ", err, params);
 	va_end(params);
 	exit(128);
-}
-
-void error(char const *fmt, ...)
-{
-	va_list params;
-
-	va_start(params, fmt);
-	report("ERROR: ", fmt, params);
-	va_end(params);
 }
 
 void warning(const char *warn, ...)

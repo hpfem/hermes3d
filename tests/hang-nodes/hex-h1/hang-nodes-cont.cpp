@@ -357,11 +357,11 @@ int main(int argc, char **args) {
 	DEBUG_OUTPUT_ON;
 	SET_VERBOSE_LEVEL(0);
 
-	if (argc < 2) die("Not enough parameters");
+	if (argc < 2) error("Not enough parameters");
 
 	Mesh mesh;
 	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(args[1], &mesh)) die("Loading mesh file '%s'\n", args[1]);
+	if (!mesh_loader.load(args[1], &mesh)) error("Loading mesh file '%s'\n", args[1]);
 
 	// apply refinements
 	for (int i = 2; i < argc; i += 2) {
@@ -384,7 +384,7 @@ int main(int argc, char **args) {
 			fclose(ofile);
 		}
 		else {
-			error("Can not not open '%s' for writing.", of_name);
+			warning("Can not open '%s' for writing.", of_name);
 		}
 	END_BLOCK
 #endif
@@ -658,7 +658,7 @@ int main(int argc, char **args) {
 				fclose(ofile);
 			}
 			else {
-				error("Cannot not open '%s' for writing.", of_name);
+				warning("Can not open '%s' for writing.", of_name);
 			}
 #endif
 		}

@@ -61,7 +61,7 @@ int find_position(int *Ai, int Alen, int idx) {
 			else if (idx > Ai[mid]) lo = mid + 1;
 			else break;
 
-			if (lo > hi) die("Sparse matrix entry not found.");
+			if (lo > hi) error("Sparse matrix entry not found.");
 		}
 
 		return mid;
@@ -394,9 +394,9 @@ static bool check_status(MUMPS_STRUCT *id)
 	_F_
 	switch (id->INFOG(1)) {
 		case 0: return true; // no error
-		case -1: error("Error occured on processor %d", MUMPS_INFO(id, 2)); break;
+		case -1: warning("Error occured on processor %d", MUMPS_INFO(id, 2)); break;
 		// TODO: add the rest according to the MUMPS docs
-		default: error("INFOG(1) = %d", id->INFOG(1)); break;
+		default: warning("INFOG(1) = %d", id->INFOG(1)); break;
 	}
 	return false;
 }

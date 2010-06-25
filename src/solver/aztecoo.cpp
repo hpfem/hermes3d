@@ -43,7 +43,8 @@ AztecOOSolver::AztecOOSolver(EpetraMatrix *m, EpetraVector *rhs)
 	tolerance = 10e-8;
 	pc = NULL;
 #else
-	die(AZTECOO_NOT_COMPILED);
+	warning(AZTECOO_NOT_COMPILED);
+	exit(128);
 #endif
 }
 
@@ -60,7 +61,8 @@ AztecOOSolver::AztecOOSolver(LinProblem *lp)
 	tolerance = 10e-8;
 	pc = NULL;
 #else
-	die(AZTECOO_NOT_COMPILED);
+	warning(AZTECOO_NOT_COMPILED);
+	exit(128);
 #endif
 }
 
