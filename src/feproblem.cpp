@@ -60,10 +60,8 @@ FeProblem::FeProblem(WeakForm *wf)
 	_F_
 	this->wf = wf;
 
-	ndofs = -1;
+	this->ndof = -1;
 	spaces = new Space *[wf->neq];
-	slns = new Solution *[wf->neq];
-	memset(slns, 0, wf->neq * sizeof(Solution *));
 	have_spaces = false;
 	sp_seq = new int[wf->neq];
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
@@ -76,7 +74,6 @@ FeProblem::~FeProblem()
 {
 	_F_
 	delete [] spaces;
-	delete [] slns;
 	delete [] sp_seq;
 }
 
@@ -104,11 +101,11 @@ int FeProblem::get_num_dofs()
 {
 	_F_
 	if (!is_up_to_date()) {
-		ndofs = 0;
+		this->ndof = 0;
 		for (int i = 0; i < wf->neq; i++)
-			ndofs += spaces[i]->get_dof_count();
+			this->ndof += spaces[i]->get_dof_count();
 	}
-	return ndofs;
+	return this->ndof;
 }
 
 scalar **FeProblem::get_matrix_buffer(int n)
@@ -120,19 +117,56 @@ scalar **FeProblem::get_matrix_buffer(int n)
 	return (matrix_buffer = new_matrix<scalar>(n, n));
 }
 
-void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
+void FeProblem::assemble(Vector *rhs, Matrix *jac, const Vector *x)
 {
 	_F_
+        // Sanity checks.
+	if (x->length() != this->ndof) error("Wrong vector length in assemble().");
 	if (!have_spaces) error("You have to call set_spaces() before calling assemble().");
+        for (int i=0; i<this->wf->neq; i++) {
+          if (this->spaces[i] == NULL) error("A space is NULL in assemble().");
+        }
+ 
+        // Extract values from the vector 'x'.
+	scalar *vv;
+        if (x != NULL) {
+          vv = new scalar[this->ndof]; MEM_CHECK(vv);
+	  memset(vv, 0, this->ndof * sizeof(scalar));
+	  x->extract(vv);
+        }
 
-	scalar *vv = new scalar[ndofs]; MEM_CHECK(vv);
-	memset(vv, 0, ndofs * sizeof(scalar));
-	x->extract(vv);
-	for (int i = 0; i < wf->neq; i++) {
-		slns[i] = new Solution(spaces[i]->get_mesh());
-		slns[i]->set_fe_solution(spaces[i], vv);
+        // Convert the coefficient vector 'x' into solutions.
+        Tuple<Solution*> solutions;
+	for (int i = 0; i < this->wf->neq; i++) {
+	  if (x != NULL) {
+            solutions.push_back(new Solution(this->spaces[i]->get_mesh()));
+	    solutions[i]->set_fe_solution(this->spaces[i], vv);
+          }
+          else solutions.push_back(NULL);
 	}
-	delete [] vv;
+	if (x != NULL) delete [] vv;
+
+        // Perform assembling.
+        this->assemble(rhs, jac, solutions);
+
+        // Delete temporary solutions.
+	for (int i = 0; i < wf->neq; i++) {
+	  if (solutions[i] != NULL) {
+            delete solutions[i];
+	    solutions[i] = NULL;
+          }
+	}
+}
+
+
+void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> solutions)
+{
+	_F_
+        // Sanity checks.
+	if (!have_spaces) error("You have to call set_spaces() before calling assemble().");
+        for (int i=0; i<this->wf->neq; i++) {
+          if (this->spaces[i] == NULL) error("A space is NULL in assemble().");
+        }
 
 	bool bnd[10];						// FIXME: magic number - maximal possible number of faces
 	FacePos fp[10];
@@ -189,8 +223,8 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 				test_fn[j].set_active_element(e[i]);
 				test_fn[j].set_transform(base_fn + j);
 
-				slns[j]->set_active_element(e[i]);
-				slns[j]->force_transform(base_fn[j].get_transform(), base_fn[j].get_ctm());
+				solutions[j]->set_active_element(e[i]);
+				solutions[j]->force_transform(base_fn[j].get_transform(), base_fn[j].get_ctm());
 
 				refmap[j].set_active_element(e[i]);
 				refmap[j].force_transform(base_fn[j].get_transform(), base_fn[j].get_ctm());
@@ -220,7 +254,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 						if (!sym) { // unsymmetric block
 							for (int j = 0; j < an->cnt; j++) {
 								fu->set_active_shape(an->idx[j]);
-								scalar bi = eval_form(bfv, slns, fu, fv, refmap + n, refmap + m)
+								scalar bi = eval_form(bfv, solutions, fu, fv, refmap + n, refmap + m)
 									* an->coef[j] * am->coef[i];
 								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
 							}
@@ -229,7 +263,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 							for (int j = 0; j < an->cnt; j++) {
 								if (j < i && an->dof[j] >= 0) continue;
 								fu->set_active_shape(an->idx[j]);
-								scalar bi = eval_form(bfv, slns, fu, fv, refmap + n, refmap + m)
+								scalar bi = eval_form(bfv, solutions, fu, fv, refmap + n, refmap + m)
 									* an->coef[j] * am->coef[i];
 								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = mat[j][i] = bi;
 							}
@@ -259,7 +293,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 					for (int i = 0; i < am->cnt; i++) {
 						if (am->dof[i] == DIRICHLET_DOF) continue;
 						fv->set_active_shape(am->idx[i]);
-						rhs->add(am->dof[i], eval_form(lfv, slns, fv, refmap + m) * am->coef[i]);
+						rhs->add(am->dof[i], eval_form(lfv, solutions, fv, refmap + m) * am->coef[i]);
 					}
 				}
 			}
@@ -301,7 +335,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 							fv->set_active_shape(am->idx[i]);
 							for (int j = 0; j < an->cnt; j++) {
 								fu->set_active_shape(an->idx[j]);
-								scalar bi = eval_form(bfs, slns, fu, fv, refmap + n, refmap + m,
+								scalar bi = eval_form(bfs, solutions, fu, fv, refmap + n, refmap + m,
 									fp + iface) * an->coef[j] * am->coef[i];
 								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
 							}
@@ -326,7 +360,7 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 							if (am->dof[i] == DIRICHLET_DOF) continue;
 							fv->set_active_shape(am->idx[i]);
 							rhs->add(am->dof[i],
-								eval_form(lfs, slns, fv, refmap + m, fp + iface) * am->coef[i]);
+								eval_form(lfs, solutions, fv, refmap + m, fp + iface) * am->coef[i]);
 						}
 					}
 				}
@@ -338,11 +372,6 @@ void FeProblem::assemble(const Vector *x, Vector *rhs, Matrix *jac)
 	delete [] matrix_buffer;
 	matrix_buffer = NULL;
 	matrix_buffer_dim = 0;
-
-	for (int i = 0; i < wf->neq; i++) {
-		delete slns[i];
-		slns[i] = NULL;
-	}
 }
 
 bool FeProblem::is_up_to_date()
@@ -370,8 +399,8 @@ void FeProblem::create(SparseMatrix *mat)
 	}
 	mat->free();
 
-	int ndofs = get_num_dofs();
-	mat->prealloc(ndofs);
+	// int ndof = get_num_dofs();
+	mat->prealloc(this->ndof);
 
 	AsmList al[wf->neq];
 	Mesh *meshes[wf->neq];

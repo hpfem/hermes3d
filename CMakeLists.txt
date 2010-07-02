@@ -25,6 +25,8 @@ option(WITH_TRILINOS "Enable support for Trilinos solvers" NO)
 option(WITH_EXODUSII "Enable support for EXODUSII mesh format" NO)
 option(WITH_HDF5     "Enable support for HDF5" NO)
 
+add_subdirectory(hermes_common)
+
 option(WITH_OPENMP   "Build with OpenMP support" NO)
 
 option(WITH_EXAMPLES "Build examples" YES)

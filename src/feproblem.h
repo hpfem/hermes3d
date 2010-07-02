@@ -25,6 +25,7 @@
 
 #include <common/array.h>
 #include "weakform.h"
+#include "../hermes_common/tuple.h"
 
 class Space;
 class Matrix;
@@ -45,7 +46,8 @@ public:
 	void set_spaces(int n, ...);
 
 	void create(SparseMatrix *mat);
-	void assemble(const Vector *x, Vector *f, Matrix *jac);
+	void assemble(Vector* rhs, Matrix* jac, const Vector* x = NULL);
+	void assemble(Vector* rhs, Matrix* jac, Tuple<Solution*> solutions =  Tuple<Solution*> ());
 
 	int get_num_dofs();
 	bool is_matrix_free() { return wf->is_matrix_free(); }
@@ -53,7 +55,7 @@ public:
 protected:
 	WeakForm *wf;
 
-	int ndofs;					/// number of DOFs
+	int ndof;					/// number of DOFs
 	int *sp_seq;				/// sequence numbers of spaces
 	Space **spaces;
 	Solution **slns;

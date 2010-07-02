@@ -315,6 +315,9 @@ public:
 	virtual void add(int n, int *idx, scalar *y) = 0;
 
 	virtual bool dump(FILE *file, const char *var_name, EMatrixDumpFormat = DF_MATLAB_SPARSE) = 0;
+        
+        /// get vector size
+        int size() { return this->size;
 
 protected:
 	int size;
