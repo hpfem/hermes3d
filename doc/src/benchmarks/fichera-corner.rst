@@ -1,7 +1,7 @@
 .. _benchmark-fichera-corner:
 
-Fichera Corner
-==============
+Fichera Corner (Elliptic)
+=========================
 
 **Git reference:** Benchmark
 `fichera <http://git.hpfem.org/hermes3d.git/tree/HEAD:/benchmarks/fichera>`_.
