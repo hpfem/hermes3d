@@ -92,7 +92,7 @@ scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 }
 
 template<typename f_t, typename res_t>
-res_t form_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0(int n, double *wt, fn_t<res_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
              user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
@@ -237,18 +237,18 @@ inline T f(T x, T y, T z)
 
 
 template<typename f_t, typename res_t>
-res_t form_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t form_0(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *vi, geom_t<f_t> *e,
              user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (u[0]->fn[i] * grad_grad(u[0], vi) - f(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
+		res += wt[i] * (u_ext[0]->fn[i] * grad_grad(u_ext[0], vi) - f(e->x[i], e->y[i], e->z[i]) * vi->fn[i]);
 	return res;
 }
 
 // precond
 template<typename f_t, typename res_t>
-res_t precond_0_0(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
+res_t precond_0_0(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0.0;

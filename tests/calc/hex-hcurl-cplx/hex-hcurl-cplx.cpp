@@ -74,24 +74,24 @@ BCType bc_types(int marker) {
 /// definition of the forms
 
 template<typename ct, typename res_t>
-res_t bilinear_form(int n, double *wt, fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t bilinear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	return
 		hcurl_int_curl_u_curl_v<ct, res_t>(n, wt, u, v, e) -
 		alpha * hcurl_int_u_v<ct, res_t>(n, wt, u, v, e);
 }
 
 template<typename ct, typename res_t>
-res_t linear_form(int n, double *wt, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t linear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	return hcurl_int_F_v<ct, res_t>(n, wt, f, v, e);
 }
 
 template<typename ct, typename res_t>
-res_t bilinear_form_surf(int n, double *wt, fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_surf(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	return -hcurl_int_u_v<ct, res_t>(n, wt, u, v, e);
 }
 
 template<typename ct, typename res_t>
-res_t linear_form_surf(int n, double *wt, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t linear_form_surf(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	return 0.0;
 }
 

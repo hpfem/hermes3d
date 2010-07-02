@@ -74,14 +74,14 @@ scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t bilinear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                     user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, u, v, e);
 }
 
 template<typename f_t, typename res_t>
-res_t linear_form(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data)
+res_t linear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
@@ -153,14 +153,14 @@ scalar essential_bc_values_2(int ess_bdy_marker, double x, double y, double z) {
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_1_1(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t bilinear_form_1_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                         user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, u, v, e);
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_1_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t bilinear_form_1_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                         user_data_t<res_t> *data)
 {
 //	return 0.0;
@@ -178,7 +178,7 @@ res_t bilinear_form_1_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_
 //}
 
 template<typename f_t, typename res_t>
-res_t linear_form_1(int n, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t> *data)
+res_t linear_form_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t> *data)
 {
 //	return int_F_v<f_t, res_t>(n, wt, f1, u, e);
 //	return -3.0 * int_u<f_t, res_t>(n, wt, u, e);
@@ -192,14 +192,14 @@ res_t linear_form_1(int n, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //template<typename f_t, typename res_t>
-//res_t bilinear_form_2_1(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+//res_t bilinear_form_2_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
 //                        user_data_t<res_t> *data)
 //{
 //	return int_u_v<f_t, res_t>(n, wt, u, v, e);
 //}
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_2_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t bilinear_form_2_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                         user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, u, v, e);
@@ -216,7 +216,7 @@ res_t bilinear_form_2_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_
 //}
 
 template<typename f_t, typename res_t>
-res_t linear_form_2(int n, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t> *data)
+res_t linear_form_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t> *data)
 {
 //	return int_F_v<f_t, res_t>(n, wt, f2, u, e);
 //	return -6.0 * int_u<f_t, res_t>(n, wt, u, e);
@@ -224,7 +224,7 @@ res_t linear_form_2(int n, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t
 }
 
 template<typename f_t, typename res_t>
-res_t linear_form_2_surf(int np, double *wt, fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t> *data)
+res_t linear_form_2_surf(int np, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t> *data)
 {
 	res_t result = 0;
 	for (int i = 0; i < np; i++) {
@@ -318,14 +318,14 @@ scalar essential_bc_values_3(int ess_bdy_marker, double x, double y, double z)
 // 1. eqn ------------------------------------------------------------------------------------------
 
 template<typename f_t, typename res_t>
-res_t biform_1_1(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t biform_1_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, u, v, e);
 }
 
 template<typename f_t, typename res_t>
-res_t biform_1_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t biform_1_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	return int_u_v<f_t, res_t>(n, wt, u, v, e);
@@ -338,7 +338,7 @@ T rhs1(T x, T y, T z)
 }
 
 template<typename f_t, typename res_t>
-res_t liform_1(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data)
+res_t liform_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
@@ -349,14 +349,14 @@ res_t liform_1(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_
 // 2. eqn ------------------------------------------------------------------------------------------
 
 template<typename f_t, typename res_t>
-res_t biform_2_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t biform_2_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, u, v, e);
 }
 
 template<typename f_t, typename res_t>
-res_t biform_2_3(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t biform_2_3(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	return int_u_v<f_t, res_t>(n, wt, u, v, e);
@@ -370,7 +370,7 @@ T rhs2(T x, T y, T z)
 }
 
 template<typename f_t, typename res_t>
-res_t liform_2(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data)
+res_t liform_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data)
 {
 	return int_F_v<f_t, res_t>(n, wt, rhs2, v, e);
 }
@@ -378,7 +378,7 @@ res_t liform_2(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_
 // 3. eqn ------------------------------------------------------------------------------------------
 
 template<typename f_t, typename res_t>
-res_t biform_3_3(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t biform_3_3(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                         user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, u, v, e);

@@ -96,7 +96,7 @@ void f(ct x, ct y, ct z, res_t (&val)[3]) {
 }
 
 /*
-// TODO: this could be written in a much simplier way. Just use curl of exact solution
+// TODO: this could be written in a much simpler way. Just use curl of exact solution
 // and cross product defined in Scalar3D...
 scalar3 &bc_values(int ess_bdy_marker, double x, double y, double z) {
 	static scalar bc[3] = { 0., 0., 0. };
@@ -170,24 +170,24 @@ BCType bc_types(int marker) {
 /// definition of the forms
 
 template<typename ct, typename res_t>
-res_t bilinear_form(int n, double *wt, fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t bilinear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	return
 		hcurl_int_curl_u_curl_v<ct, res_t>(n, wt, u, v, e) -
 		hcurl_int_u_v<ct, res_t>(n, wt, u, v, e);
 }
 
 template<typename ct, typename res_t>
-res_t linear_form(int n, double *wt, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t linear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	return hcurl_int_F_v<ct, res_t>(n, wt, f, v, e);
 }
 
 template<typename ct, typename res_t>
-res_t bilinear_form_surf(int n, double *wt, fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_surf(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *u, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	return -img * hcurl_int_u_v<ct, res_t>(n, wt, u, v, e);
 }
 
 template<typename ct, typename res_t>
-res_t linear_form_surf(int n, double *wt, fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
+res_t linear_form_surf(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<ct> *v, geom_t<ct> *e, user_data_t<res_t> *data) {
 	res_t result = 0.0;
 	for (int i = 0; i < n; i++) {
 		res_t ev[3], dx[3], dy[3], dz[3];

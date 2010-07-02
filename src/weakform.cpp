@@ -50,103 +50,53 @@ WeakForm::~WeakForm()
 		form.ext.push_back(va_arg(ap, MeshFunction*)); \
 	va_end(ap)
 
-
-void WeakForm::add_matrix_form(int i, int j, biform_val_t fn, biform_ord_t ord, SymFlag sym, int area,
-                          int nx, ...)
-{
-	_F_
-	if (i < 0 || i >= neq || j < 0 || j >= neq) error("Invalid equation number.");
-	if (sym < -1 || sym > 1) error("\"sym\" must be ANTISYM, UNSYM or SYM.");
-	if (sym < 0 && i == j) error("Only off-diagonal forms can be antisymmetric.");
-	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
-	if (bfvol.size() > 100) warning("Large number of forms (> 100). Is this the intent?");
-
-	BiFormVol form = { i, j, sym, area, fn, ord };
-	init_ext_fns;
-	bfvol.push_back(form);
-}
-
-void WeakForm::add_matrix_form_surf(int i, int j, biform_val_t fn, biform_ord_t ord, int area, int nx,
-                               ...)
-{
-	_F_
-	if (i < 0 || i >= neq || j < 0 || j >= neq) error("Invalid equation number.");
-	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
-
-	BiFormSurf form = { i, j, area, fn, ord };
-	init_ext_fns;
-	bfsurf.push_back(form);
-}
-
-void WeakForm::add_vector_form(int i, liform_val_t fn, liform_ord_t ord, int area, int nx, ...)
-{
-	_F_
-	if (i < 0 || i >= neq) error("Invalid equation number.");
-	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
-
-	LiFormVol form = { i, area, fn, ord };
-	init_ext_fns;
-	lfvol.push_back(form);
-}
-
-void WeakForm::add_vector_form_surf(int i, liform_val_t fn, liform_ord_t ord, int area, int nx, ...)
-{
-	_F_
-	if (i < 0 || i >= neq) error("Invalid equation number.");
-	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
-
-	LiFormSurf form = { i, area, fn, ord };
-	init_ext_fns;
-	lfsurf.push_back(form);
-}
-
-void WeakForm::add_jacform(int i, int j, jacform_val_t fn, jacform_ord_t ord, SymFlag sym, int area,
-                           int nx, ...)
+void WeakForm::add_matrix_form(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, SymFlag sym, int area,
+                               int nx, ...)
 {
 	_F_
 	if (i < 0 || i >= neq || j < 0 || j >= neq) error("Invalid equation number.");
 	if (sym != ANTISYM && sym != UNSYM && sym != SYM) error("\"sym\" must be ANTISYM, UNSYM or SYM.");
 	if (sym < 0 && i == j) error("Only off-diagonal forms can be antisymmetric.");
 	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
-	if (jfvol.size() > 100) warning("Large number of forms (> 100). Is this the intent?");
+	if (mfvol.size() > 100) warning("Large number of forms (> 100). Is this the intent?");
 
-	JacFormVol form = { i, j, sym, area, fn, ord };
+	MatrixFormVol form = { i, j, sym, area, fn, ord };
 	init_ext_fns;
-	jfvol.push_back(form);
+	mfvol.push_back(form);
 }
 
-void WeakForm::add_jacform_surf(int i, int j, jacform_val_t fn, jacform_ord_t ord, int area, int nx,
+void WeakForm::add_matrix_form_surf(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, int area, int nx,
                                 ...)
 {
 	_F_
 	if (i < 0 || i >= neq || j < 0 || j >= neq) error("Invalid equation number.");
 	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
 
-	JacFormSurf form = { i, j, area, fn, ord };
+	MatrixFormSurf form = { i, j, area, fn, ord };
 	init_ext_fns;
-	jfsurf.push_back(form);
+	mfsurf.push_back(form);
 }
 
-void WeakForm::add_resform(int i, resform_val_t fn, resform_ord_t ord, int area, int nx, ...)
+void WeakForm::add_vector_form(int i, vector_form_val_t fn, vector_form_ord_t ord, int area, int nx, ...)
 {
 	_F_
 	if (i < 0 || i >= neq) error("Invalid equation number.");
 	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
 
-	ResFormVol form = { i, area, fn, ord };
+	VectorFormVol form = { i, area, fn, ord };
 	init_ext_fns;
-	rfvol.push_back(form);
+	vfvol.push_back(form);
 }
 
-void WeakForm::add_resform_surf(int i, resform_val_t fn, resform_ord_t ord, int area, int nx, ...)
+void WeakForm::add_vector_form_surf(int i, vector_form_val_t fn, vector_form_ord_t ord, int area, int nx, ...)
 {
 	_F_
 	if (i < 0 || i >= neq) error("Invalid equation number.");
 	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
 
-	ResFormSurf form = { i, area, fn, ord };
+	VectorFormSurf form = { i, area, fn, ord };
 	init_ext_fns;
-	rfsurf.push_back(form);
+	vfsurf.push_back(form);
 }
 
 void WeakForm::set_ext_fns(void *fn, int nx, ...)
@@ -170,40 +120,40 @@ void WeakForm::get_stages(Space **spaces, std::vector<WeakForm::Stage> &stages, 
 	if (!rhsonly) {
 		if (is_linear()) {
 			// process volume biforms
-			for (i = 0; i < bfvol.size(); i++) {
-				int ii = bfvol[i].i, jj = bfvol[i].j;
+			for (i = 0; i < mfvol.size(); i++) {
+				int ii = mfvol[i].i, jj = mfvol[i].j;
 				Mesh *m1 = spaces[ii]->get_mesh();
 				Mesh *m2 = spaces[jj]->get_mesh();
-				Stage *s = find_stage(stages, ii, jj, m1, m2, bfvol[i].ext);
-				s->bfvol.push_back(&bfvol[i]);
+				Stage *s = find_stage(stages, ii, jj, m1, m2, mfvol[i].ext);
+				s->mfvol.push_back(&mfvol[i]);
 			}
 
 			// process surface biforms
-			for (i = 0; i < bfsurf.size(); i++) {
-				int ii = bfsurf[i].i, jj = bfsurf[i].j;
+			for (i = 0; i < mfsurf.size(); i++) {
+				int ii = mfsurf[i].i, jj = mfsurf[i].j;
 				Mesh *m1 = spaces[ii]->get_mesh();
 				Mesh *m2 = spaces[jj]->get_mesh();
-				Stage *s = find_stage(stages, ii, jj, m1, m2, bfsurf[i].ext);
-				s->bfsurf.push_back(&bfsurf[i]);
+				Stage *s = find_stage(stages, ii, jj, m1, m2, mfsurf[i].ext);
+				s->mfsurf.push_back(&mfsurf[i]);
 			}
 		}
 		else {
 			// process volume jac forms
-			for (unsigned i = 0; i < jfvol.size(); i++) {
-				int ii = jfvol[i].i, jj = jfvol[i].j;
+			for (unsigned i = 0; i < mfvol.size(); i++) {
+				int ii = mfvol[i].i, jj = mfvol[i].j;
 				Mesh *m1 = spaces[ii]->get_mesh();
 				Mesh *m2 = spaces[jj]->get_mesh();
-				Stage *s = find_stage(stages, ii, jj, m1, m2, jfvol[i].ext);
-				s->jfvol.push_back(&jfvol[i]);
+				Stage *s = find_stage(stages, ii, jj, m1, m2, mfvol[i].ext);
+				s->mfvol.push_back(&mfvol[i]);
 			}
 
 			// process surface jac forms
-			for (unsigned i = 0; i < jfsurf.size(); i++) {
-				int ii = jfsurf[i].i, jj = jfsurf[i].j;
+			for (unsigned i = 0; i < mfsurf.size(); i++) {
+				int ii = mfsurf[i].i, jj = mfsurf[i].j;
 				Mesh *m1 = spaces[ii]->get_mesh();
 				Mesh *m2 = spaces[jj]->get_mesh();
-				Stage *s = find_stage(stages, ii, jj, m1, m2, jfsurf[i].ext);
-				s->jfsurf.push_back(&jfsurf[i]);
+				Stage *s = find_stage(stages, ii, jj, m1, m2, mfsurf[i].ext);
+				s->mfsurf.push_back(&mfsurf[i]);
 			}
 
 		}
@@ -211,36 +161,36 @@ void WeakForm::get_stages(Space **spaces, std::vector<WeakForm::Stage> &stages, 
 
 	if (is_linear()) {
 		// process volume liforms
-		for (i = 0; i < lfvol.size(); i++) {
-			int ii = lfvol[i].i;
+		for (i = 0; i < vfvol.size(); i++) {
+			int ii = vfvol[i].i;
 			Mesh *m = spaces[ii]->get_mesh();
-			Stage *s = find_stage(stages, ii, ii, m, m, lfvol[i].ext);
-			s->lfvol.push_back(&lfvol[i]);
+			Stage *s = find_stage(stages, ii, ii, m, m, vfvol[i].ext);
+			s->vfvol.push_back(&vfvol[i]);
 		}
 
 		// process surface liforms
-		for (i = 0; i < lfsurf.size(); i++) {
-			int ii = lfsurf[i].i;
+		for (i = 0; i < vfsurf.size(); i++) {
+			int ii = vfsurf[i].i;
 			Mesh *m = spaces[ii]->get_mesh();
-			Stage *s = find_stage(stages, ii, ii, m, m, lfsurf[i].ext);
-			s->lfsurf.push_back(&lfsurf[i]);
+			Stage *s = find_stage(stages, ii, ii, m, m, vfsurf[i].ext);
+			s->vfsurf.push_back(&vfsurf[i]);
 		}
 	}
 	else {
 		// process volume res forms
-		for (unsigned i = 0; i < rfvol.size(); i++) {
-			int ii = rfvol[i].i;
+		for (unsigned i = 0; i < vfvol.size(); i++) {
+			int ii = vfvol[i].i;
 			Mesh *m = spaces[ii]->get_mesh();
-			Stage *s = find_stage(stages, ii, ii, m, m, rfvol[i].ext);
-			s->rfvol.push_back(&rfvol[i]);
+			Stage *s = find_stage(stages, ii, ii, m, m, vfvol[i].ext);
+			s->vfvol.push_back(&vfvol[i]);
 		}
 
 		// process surface res forms
-		for (unsigned i = 0; i < rfsurf.size(); i++) {
-			int ii = rfsurf[i].i;
+		for (unsigned i = 0; i < vfsurf.size(); i++) {
+			int ii = vfsurf[i].i;
 			Mesh *m = spaces[ii]->get_mesh();
-			Stage *s = find_stage(stages, ii, ii, m, m, rfsurf[i].ext);
-			s->rfsurf.push_back(&rfsurf[i]);
+			Stage *s = find_stage(stages, ii, ii, m, m, vfsurf[i].ext);
+			s->vfsurf.push_back(&vfsurf[i]);
 		}
 	}
 
@@ -321,24 +271,24 @@ bool **WeakForm::get_blocks()
 			blocks[i][j] = false;
 
 	if (is_linear()) {
-		for (unsigned i = 0; i < bfvol.size(); i++) {
-			blocks[bfvol[i].i][bfvol[i].j] = true;
-			if (bfvol[i].sym)
-				blocks[bfvol[i].j][bfvol[i].i] = true;
+		for (unsigned i = 0; i < mfvol.size(); i++) {
+			blocks[mfvol[i].i][mfvol[i].j] = true;
+			if (mfvol[i].sym)
+				blocks[mfvol[i].j][mfvol[i].i] = true;
 		}
 
-		for (unsigned i = 0; i < bfsurf.size(); i++)
-			blocks[bfsurf[i].i][bfsurf[i].j] = true;
+		for (unsigned i = 0; i < mfsurf.size(); i++)
+			blocks[mfsurf[i].i][mfsurf[i].j] = true;
 	}
 	else {
-		for (unsigned i = 0; i < jfvol.size(); i++) {
-			blocks[jfvol[i].i][jfvol[i].j] = true;
-			if (jfvol[i].sym)
-				blocks[jfvol[i].j][jfvol[i].i] = true;
+		for (unsigned i = 0; i < mfvol.size(); i++) {
+			blocks[mfvol[i].i][mfvol[i].j] = true;
+			if (mfvol[i].sym)
+				blocks[mfvol[i].j][mfvol[i].i] = true;
 		}
 
-		for (unsigned i = 0; i < jfsurf.size(); i++)
-			blocks[jfsurf[i].i][jfsurf[i].j] = true;
+		for (unsigned i = 0; i < mfsurf.size(); i++)
+			blocks[mfsurf[i].i][mfsurf[i].j] = true;
 	}
 
 	return blocks;

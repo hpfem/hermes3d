@@ -74,51 +74,51 @@ BCType bc_types_z(int marker) {
 // 1. equation
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_0_0(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_0_0(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return int_a_dx_b_dy_c_dz<f_t, res_t>(lambda + 2*mu, mu, mu, n, wt, u, v, e);
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_0_1(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_0_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return int_a_dudx_dvdy_b_dudy_dvdx<f_t, res_t>(lambda, mu, n, wt, v, u, e);
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_0_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_0_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return int_a_dudx_dvdz_b_dudz_dvdx<f_t, res_t>(lambda, mu, n, wt, v, u, e);
 }
 
 template<typename f_t, typename res_t>
-res_t surf_linear_form_0(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t surf_linear_form_0(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return 0.0;
 }
 
 // 2. equation
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_1_1(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_1_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return int_a_dx_b_dy_c_dz<f_t, res_t>(mu, lambda + 2*mu, mu, n, wt, u, v, e);
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_1_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_1_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return int_a_dudy_dvdz_b_dudz_dvdy<f_t, res_t>(lambda, mu, n, wt, v, u, e);
 }
 
 template<typename f_t, typename res_t>
-res_t surf_linear_form_1(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t surf_linear_form_1(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return 0.0;
 }
 
 // 3. equation
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_2_2(int n, double *wt, fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t bilinear_form_2_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	return int_a_dx_b_dy_c_dz<f_t, res_t>(mu, mu, lambda + 2*mu, n, wt, u, v, e);
 }
 
 template<typename f_t, typename res_t>
-res_t surf_linear_form_2(int n, double *wt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
+res_t surf_linear_form_2(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
 		res += wt[i] * (f * v->fn[i]);

@@ -146,16 +146,16 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 
 			fn_cache.free();
 			// assemble volume bilinear forms //////////////////////////////////////
-			for (unsigned ww = 0; ww < s->bfvol.size(); ww++) {
-				WeakForm::BiFormVol *bfv = s->bfvol[ww];
-				if (isempty[bfv->i] || isempty[bfv->j]) continue;
-				if (bfv->area != ANY && !wf->is_in_area(marker, bfv->area)) continue;
-				int m = bfv->i; fv = test_fn + m; am = al + m;
-				int n = bfv->j; fu = base_fn + n; an = al + n;
-				bool tra = (m != n) && (bfv->sym != UNSYM);
-				bool sym = (m == n) && (bfv->sym == SYM);
+			for (unsigned ww = 0; ww < s->mfvol.size(); ww++) {
+				WeakForm::MatrixFormVol *mfv = s->mfvol[ww];
+				if (isempty[mfv->i] || isempty[mfv->j]) continue;
+				if (mfv->area != ANY && !wf->is_in_area(marker, mfv->area)) continue;
+				int m = mfv->i; fv = test_fn + m; am = al + m;
+				int n = mfv->j; fu = base_fn + n; an = al + n;
+				bool tra = (m != n) && (mfv->sym != UNSYM);
+				bool sym = (m == n) && (mfv->sym == SYM);
 
-				// assemble the local stiffness matrix for the form bfv
+				// assemble the local stiffness matrix for the form mfv
 				scalar **mat = get_matrix_buffer(std::max(am->cnt, an->cnt));
 
 				for (int i = 0; i < am->cnt; i++) {
@@ -166,7 +166,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 					if (!sym) { // unsymmetric block
 						for (int j = 0; j < an->cnt; j++) {
 							fu->set_active_shape(an->idx[j]);
-							scalar bi = eval_form(bfv, fu, fv, refmap + n, refmap + m)
+							scalar bi = eval_form(mfv, NULL, fu, fv, refmap + n, refmap + m)
 								* an->coef[j] * am->coef[i];
 							if (an->dof[j] == DIRICHLET_DOF) rhs->add(k, -bi);
 							else mat[i][j] = bi;
@@ -176,7 +176,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 						for (int j = 0; j < an->cnt; j++) {
 							if (j < i && an->dof[j] >= 0) continue;
 							fu->set_active_shape(an->idx[j]);
-							scalar bi = eval_form(bfv, fu, fv, refmap + n, refmap + m)
+							scalar bi = eval_form(mfv, NULL, fu, fv, refmap + n, refmap + m)
 								* an->coef[j] * am->coef[i];
 							if (an->dof[j] == DIRICHLET_DOF) rhs->add(k, -bi);
 							else mat[i][j] = mat[j][i] = bi;
@@ -189,7 +189,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 
 				// insert also the off-diagonal (anti-)symmetric block, if required
 				if (tra) {
-					if (bfv->sym < 0) chsgn(mat, am->cnt, an->cnt);
+					if (mfv->sym < 0) chsgn(mat, am->cnt, an->cnt);
 					transpose(mat, am->cnt, an->cnt);
 					matrix->add(an->cnt, am->cnt, mat, an->dof, am->dof);
 
@@ -203,16 +203,16 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 			}
 
 			// assemble volume linear forms ////////////////////////////////////////
-			for (unsigned ww = 0; ww < s->lfvol.size(); ww++) {
-				WeakForm::LiFormVol *lfv = s->lfvol[ww];
-				if (isempty[lfv->i]) continue;
-				if (lfv->area != ANY && !wf->is_in_area(marker, lfv->area)) continue;
-				int m = lfv->i;  fv = test_fn + m;  am = al + m;
+			for (unsigned ww = 0; ww < s->vfvol.size(); ww++) {
+				WeakForm::VectorFormVol *vfv = s->vfvol[ww];
+				if (isempty[vfv->i]) continue;
+				if (vfv->area != ANY && !wf->is_in_area(marker, vfv->area)) continue;
+				int m = vfv->i;  fv = test_fn + m;  am = al + m;
 
 				for (int i = 0; i < am->cnt; i++) {
 					if (am->dof[i] == DIRICHLET_DOF) continue;
 					fv->set_active_shape(am->idx[i]);
-					rhs->add(am->dof[i], eval_form(lfv, fv, refmap + m) * am->coef[i]);
+					rhs->add(am->dof[i], eval_form(vfv, NULL, fv, refmap + m) * am->coef[i]);
 				}
 			}
 
@@ -231,12 +231,12 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 				}
 
 				// assemble surface bilinear forms ///////////////////////////////////
-				for (unsigned ww = 0; ww < s->bfsurf.size(); ww++) {
-					WeakForm::BiFormSurf *bfs = s->bfsurf[ww];
-					if (isempty[bfs->i] || isempty[bfs->j]) continue;
-					if (bfs->area != ANY && !wf->is_in_area(marker, bfs->area)) continue;
-					int m = bfs->i; fv = test_fn + m; am = al + m;
-					int n = bfs->j; fu = base_fn + n; an = al + n;
+				for (unsigned ww = 0; ww < s->mfsurf.size(); ww++) {
+					WeakForm::MatrixFormSurf *mfs = s->mfsurf[ww];
+					if (isempty[mfs->i] || isempty[mfs->j]) continue;
+					if (mfs->area != ANY && !wf->is_in_area(marker, mfs->area)) continue;
+					int m = mfs->i; fv = test_fn + m; am = al + m;
+					int n = mfs->j; fu = base_fn + n; an = al + n;
 
 					if (!nat[m] || !nat[n]) continue;
 					fp[iface].base = trav.get_base();
@@ -250,7 +250,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 						fv->set_active_shape(am->idx[i]);
 						for (int j = 0; j < an->cnt; j++) {
 							fu->set_active_shape(an->idx[j]);
-							scalar bi = eval_form(bfs, fu, fv, refmap + n, refmap + m, fp + iface)
+							scalar bi = eval_form(mfs, NULL, fu, fv, refmap + n, refmap + m, fp + iface)
 								* an->coef[j] * am->coef[i];
 							if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
 							else rhs->add(k, -bi);
@@ -260,11 +260,11 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 				}
 
 				// assemble surface linear forms /////////////////////////////////////
-				for (unsigned ww = 0; ww < s->lfsurf.size(); ww++) {
-					WeakForm::LiFormSurf *lfs = s->lfsurf[ww];
-					if (isempty[lfs->i]) continue;
-					if (lfs->area != ANY && !wf->is_in_area(marker, lfs->area)) continue;
-					int m = lfs->i; fv = test_fn + m; am = al + m;
+				for (unsigned ww = 0; ww < s->vfsurf.size(); ww++) {
+					WeakForm::VectorFormSurf *vfs = s->vfsurf[ww];
+					if (isempty[vfs->i]) continue;
+					if (vfs->area != ANY && !wf->is_in_area(marker, vfs->area)) continue;
+					int m = vfs->i; fv = test_fn + m; am = al + m;
 
 					if (!nat[m]) continue;
 					fp[iface].base = trav.get_base();
@@ -273,7 +273,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 					for (int i = 0; i < am->cnt; i++) {
 						if (am->dof[i] == DIRICHLET_DOF) continue;
 						fv->set_active_shape(am->idx[i]);
-						rhs->add(am->dof[i], eval_form(lfs, fv, refmap + m, fp + iface)
+						rhs->add(am->dof[i], eval_form(vfs, NULL, fv, refmap + m, fp + iface)
 						         * am->coef[i]);
 					}
 				}
@@ -436,7 +436,7 @@ sfn_t *LinProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, c
 	return u;
 }
 
-scalar LinProblem::eval_form(WeakForm::BiFormVol *bf, ShapeFunction *fu, ShapeFunction *fv,
+scalar LinProblem::eval_form(WeakForm::MatrixFormVol *mfv, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv,
                              RefMap *ru, RefMap *rv)
 {
 	_F_
@@ -447,11 +447,11 @@ scalar LinProblem::eval_form(WeakForm::BiFormVol *bf, ShapeFunction *fu, ShapeFu
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 
 	user_data_t<ord_t> fake_ud;
-	init_ext_fns(fake_ud, bf->ext);
+	init_ext_fns(fake_ud, mfv->ext);
 
 	double fake_wt = 1.0;
 	geom_t<ord_t> fake_e = init_geom(elem->marker);
-	ord_t o = bf->ord(1, &fake_wt, &ou, &ov, &fake_e, &fake_ud);
+	ord_t o = mfv->ord(1, &fake_wt, NULL, &ou, &ov, &fake_e, &fake_ud);
 	order3_t order = ru->get_inv_ref_order();
 	switch (order.type) {
 		case MODE_TETRAHEDRON: order += order3_t(o.get_order()); break;
@@ -481,12 +481,12 @@ scalar LinProblem::eval_form(WeakForm::BiFormVol *bf, ShapeFunction *fu, ShapeFu
 	sfn_t *v = get_fn(fv, ord_idx, rv, np, pt);
 
 	user_data_t<scalar> ud;
-	init_ext_fns(ud, bf->ext, ord_idx, rv, np, pt);
+	init_ext_fns(ud, mfv->ext, ord_idx, rv, np, pt);
 
-	return bf->fn(np, jwt, u, v, &e, &ud);
+	return mfv->fn(np, jwt, u_ext, u, v, &e, &ud);
 }
 
-scalar LinProblem::eval_form(WeakForm::LiFormVol *lf, ShapeFunction *fv, RefMap *rv)
+scalar LinProblem::eval_form(WeakForm::VectorFormVol *vfv, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv)
 {
 	_F_
 	Element *elem = fv->get_active_element();
@@ -495,11 +495,11 @@ scalar LinProblem::eval_form(WeakForm::LiFormVol *lf, ShapeFunction *fv, RefMap 
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 
 	user_data_t<ord_t> fake_ud;
-	init_ext_fns(fake_ud, lf->ext);
+	init_ext_fns(fake_ud, vfv->ext);
 
 	double fake_wt = 1.0;
 	geom_t<ord_t> fake_e = init_geom(elem->marker);
-	ord_t o = lf->ord(1, &fake_wt, &ov, &fake_e, &fake_ud);
+	ord_t o = vfv->ord(1, &fake_wt, NULL, &ov, &fake_e, &fake_ud);
 	order3_t order = rv->get_inv_ref_order();
 	switch (order.type) {
 		case MODE_TETRAHEDRON: order += order3_t(o.get_order()); break;
@@ -527,12 +527,12 @@ scalar LinProblem::eval_form(WeakForm::LiFormVol *lf, ShapeFunction *fv, RefMap 
 	sfn_t *v = get_fn(fv, ord_idx, rv, np, pt);
 
 	user_data_t<scalar> ud;
-	init_ext_fns(ud, lf->ext, ord_idx, rv, np, pt);
+	init_ext_fns(ud, vfv->ext, ord_idx, rv, np, pt);
 
-	return lf->fn(np, jwt, v, &e, &ud);
+	return vfv->fn(np, jwt, u_ext, v, &e, &ud);
 }
 
-scalar LinProblem::eval_form(WeakForm::BiFormSurf *bf, ShapeFunction *fu, ShapeFunction *fv,
+scalar LinProblem::eval_form(WeakForm::MatrixFormSurf *mfs, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv,
                              RefMap *ru, RefMap *rv, FacePos *fp)
 {
 	_F_
@@ -542,11 +542,11 @@ scalar LinProblem::eval_form(WeakForm::BiFormSurf *bf, ShapeFunction *fu, ShapeF
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 
 	user_data_t<ord_t> fake_ud;
-	init_ext_fns(fake_ud, bf->ext);
+	init_ext_fns(fake_ud, mfs->ext);
 
 	double fake_wt = 1.0;
 	geom_t<ord_t> fake_e = init_geom(fp->marker);
-	ord_t o = bf->ord(1, &fake_wt, &ou, &ov, &fake_e, &fake_ud);
+	ord_t o = mfs->ord(1, &fake_wt, NULL, &ou, &ov, &fake_e, &fake_ud);
 	order3_t order = ru->get_inv_ref_order();
 	switch (order.type) {
 		case MODE_TETRAHEDRON: order += order3_t(o.get_order()); break;
@@ -577,23 +577,23 @@ scalar LinProblem::eval_form(WeakForm::BiFormSurf *bf, ShapeFunction *fu, ShapeF
 	sfn_t *v = get_fn(fv, ord_idx, rv, fp->face, np, pt);
 
 	user_data_t<scalar> ud;
-	init_ext_fns(ud, bf->ext, ord_idx, rv, np, pt);
+	init_ext_fns(ud, mfs->ext, ord_idx, rv, np, pt);
 
-	return bf->fn(np, jwt, u, v, &e, &ud);
+	return mfs->fn(np, jwt, u_ext, u, v, &e, &ud);
 }
 
-scalar LinProblem::eval_form(WeakForm::LiFormSurf *lf, ShapeFunction *fv, RefMap *rv, FacePos *fp)
+scalar LinProblem::eval_form(WeakForm::VectorFormSurf *vfs, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv, FacePos *fp)
 {
 	_F_
 
 	// determine the integration order
 	user_data_t<ord_t> fake_ud;
-	init_ext_fns(fake_ud, lf->ext);
+	init_ext_fns(fake_ud, vfs->ext);
 
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 	double fake_wt = 1.0;
 	geom_t<ord_t> fake_e = init_geom(fp->marker);
-	ord_t o = lf->ord(1, &fake_wt, &ov, &fake_e, &fake_ud);
+	ord_t o = vfs->ord(1, &fake_wt, NULL, &ov, &fake_e, &fake_ud);
 	order3_t order = rv->get_inv_ref_order();
 	switch (order.type) {
 		case MODE_TETRAHEDRON: order += order3_t(o.get_order()); break;
@@ -622,7 +622,7 @@ scalar LinProblem::eval_form(WeakForm::LiFormSurf *lf, ShapeFunction *fv, RefMap
 	sfn_t *v = get_fn(fv, ord_idx, rv, fp->face, np, pt);
 
 	user_data_t<scalar> ud;
-	init_ext_fns(ud, lf->ext, ord_idx, rv, np, pt);
+	init_ext_fns(ud, vfs->ext, ord_idx, rv, np, pt);
 
-	return lf->fn(np, jwt, v, &e, &ud);
+	return vfs->fn(np, jwt, u_ext, v, &e, &ud);
 }

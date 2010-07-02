@@ -31,7 +31,7 @@
 #include "function.h"
 #include "forms.h"
 
-// Bilinear form symmetry flag, see WeakForm::add_biform
+// Bilinear form symmetry flag, see WeakForm::add_matrix_form
 enum SymFlag {
 	ANTISYM = -1,
 	UNSYM = 0,
@@ -50,26 +50,14 @@ enum SymFlag {
 ///
 /// @ingroup assembling
 class WeakForm {
-	// linear case
-	typedef scalar (*biform_val_t)(int n, double *wt, fn_t<double> *u, fn_t<double> *v,
-	                               geom_t<double> *e, user_data_t<scalar> *);
-	typedef ord_t (*biform_ord_t)(int n, double *wt, fn_t<ord_t> *u, fn_t<ord_t> *v,
-	                              geom_t<ord_t> *e, user_data_t<ord_t> *);
-
-	typedef scalar (*liform_val_t)(int n, double *wt, fn_t<double> *v, geom_t<double> *e,
-	                               user_data_t<scalar> *);
-	typedef ord_t (*liform_ord_t)(int n, double *wt, fn_t<ord_t> *v, geom_t<ord_t> *e,
-	                              user_data_t<ord_t> *);
-
-	// non-linear case
-	typedef scalar (*jacform_val_t)(int n, double *wt, fn_t<scalar> *u[], fn_t<double> *vi,
+	typedef scalar (*matrix_form_val_t)(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *vi,
 	                                fn_t<double> *vj, geom_t<double> *e, user_data_t<scalar> *);
-	typedef ord_t (*jacform_ord_t)(int n, double *wt, fn_t<ord_t> *u[], fn_t<ord_t> *vi,
+	typedef ord_t (*matrix_form_ord_t)(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *vi,
 	                               fn_t<ord_t> *vj, geom_t<ord_t> *e, user_data_t<ord_t> *);
 
-	typedef scalar (*resform_val_t)(int n, double *wt, fn_t<scalar> *u[], fn_t<double> *vi,
+	typedef scalar (*vector_form_val_t)(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *vi,
 	                                geom_t<double> *e, user_data_t<scalar> *);
-	typedef ord_t (*resform_ord_t)(int n, double *wt, fn_t<ord_t> *u[], fn_t<ord_t> *vi,
+	typedef ord_t (*vector_form_ord_t)(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *vi,
 	                               geom_t<ord_t> *e, user_data_t<ord_t> *);
 
 public:
@@ -78,21 +66,13 @@ public:
 
 	int def_area(int n, ...);
 
-	// linear case
-	void add_matrix_form(int i, int j, biform_val_t fn, biform_ord_t ord, SymFlag sym = UNSYM,
-	                int area = ANY, int nx = 0, ...);
-	void add_matrix_form_surf(int i, int j, biform_val_t fn, biform_ord_t ord, int area = ANY,
-	                     int nx = 0, ...);
-	void add_vector_form(int i, liform_val_t fn, liform_ord_t ord, int area = ANY, int nx = 0, ...);
-	void add_vector_form_surf(int i, liform_val_t fn, liform_ord_t ord, int area = ANY, int nx = 0, ...);
-	// non-linear case
-	void add_jacform(int i, int j, jacform_val_t fn, jacform_ord_t ord, SymFlag sym = UNSYM,
+	void add_matrix_form(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, SymFlag sym = UNSYM,
 	                 int area = ANY, int nx = 0, ...);
-	void add_jacform_surf(int i, int j, jacform_val_t fn, jacform_ord_t ord, int area = ANY,
+	void add_matrix_form_surf(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, int area = ANY,
 	                      int nx = 0, ...);
 
-	void add_resform(int i, resform_val_t fn, resform_ord_t ord, int area = ANY, int nx = 0, ...);
-	void add_resform_surf(int i, resform_val_t fn, resform_ord_t ord, int area = ANY, int nx = 0,
+	void add_vector_form(int i, vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, int nx = 0, ...);
+	void add_vector_form_surf(int i, vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, int nx = 0,
 	                      ...);
 
 	void set_ext_fns(void *fn, int nx, ...);
@@ -110,67 +90,35 @@ protected:
 
 	std::vector<Area> areas;
 
-	// linear case
-	struct BiFormVol {
+	struct MatrixFormVol {
 		int i, j, sym, area;
-		biform_val_t fn; // callback for evaluating the form
-		biform_ord_t ord; // callback to determine the integration order
+		matrix_form_val_t fn; // callback for evaluating the form
+		matrix_form_ord_t ord; // callback to determine the integration order
 		std::vector<MeshFunction *> ext; // external functions
 	};
-	struct BiFormSurf {
+	struct MatrixFormSurf {
 		int i, j, area;
-		biform_val_t fn;
-		biform_ord_t ord;
+		matrix_form_val_t fn;
+		matrix_form_ord_t ord;
 		std::vector<MeshFunction *> ext;
 	};
-	struct LiFormVol {
+	struct VectorFormVol {
 		int i, area;
-		liform_val_t fn;
-		liform_ord_t ord;
+		vector_form_val_t fn;
+		vector_form_ord_t ord;
 		std::vector<MeshFunction *> ext;
 	};
-	struct LiFormSurf {
+	struct VectorFormSurf {
 		int i, area;
-		liform_val_t fn;
-		liform_ord_t ord;
-		std::vector<MeshFunction *> ext;
-	};
-	// non-linear case
-	struct JacFormVol {
-		int i, j, sym, area;
-		jacform_val_t fn; // callback for evaluating the form
-		jacform_ord_t ord; // callback to determine the integration order
-		std::vector<MeshFunction *> ext; // external functions
-	};
-	struct JacFormSurf {
-		int i, j, area;
-		jacform_val_t fn;
-		jacform_ord_t ord;
-		std::vector<MeshFunction *> ext;
-	};
-	struct ResFormVol {
-		int i, area;
-		resform_val_t fn;
-		resform_ord_t ord;
-		std::vector<MeshFunction *> ext;
-	};
-	struct ResFormSurf {
-		int i, area;
-		resform_val_t fn;
-		resform_ord_t ord;
+		vector_form_val_t fn;
+		vector_form_ord_t ord;
 		std::vector<MeshFunction *> ext;
 	};
 
-	// linear case
-	std::vector<BiFormVol> bfvol;
-	std::vector<BiFormSurf> bfsurf;
-	std::vector<LiFormVol> lfvol;
-	std::vector<LiFormSurf> lfsurf;
-	// non-linear case
-	std::vector<JacFormVol> jfvol;
-	std::vector<JacFormSurf> jfsurf;
-	std::vector<ResFormVol> rfvol;
-	std::vector<ResFormSurf> rfsurf;
+	std::vector<MatrixFormVol> mfvol;
+	std::vector<MatrixFormSurf> mfsurf;
+	std::vector<VectorFormVol> vfvol;
+	std::vector<VectorFormSurf> vfsurf;
 
 	struct Stage {
 		std::vector<int> idx;
@@ -178,16 +126,10 @@ protected:
 		std::vector<Transformable *> fns;
 		std::vector<MeshFunction *> ext;
 
-		// linear case
-		std::vector<BiFormVol *> bfvol;
-		std::vector<BiFormSurf *> bfsurf;
-		std::vector<LiFormVol *> lfvol;
-		std::vector<LiFormSurf *> lfsurf;
-		// non-linear case
-		std::vector<JacFormVol *> jfvol;
-		std::vector<JacFormSurf *> jfsurf;
-		std::vector<ResFormVol *> rfvol;
-		std::vector<ResFormSurf *> rfsurf;
+		std::vector<MatrixFormVol *> mfvol;
+		std::vector<MatrixFormSurf *> mfsurf;
+		std::vector<VectorFormVol *> vfvol;
+		std::vector<VectorFormSurf *> vfsurf;
 
 		std::set<int> idx_set;
 		std::set<unsigned> seq_set;
@@ -215,7 +157,7 @@ private:
 
 	// FIXME: pretty dumb to test this in such a way
 	bool is_linear() {
-		return bfvol.size() > 0 || bfsurf.size() > 0 || lfvol.size() > 0 || lfsurf.size() > 0;
+		return mfvol.size() > 0 || mfsurf.size() > 0 || vfvol.size() > 0 || vfsurf.size() > 0;
 	}
 
 	friend class LinProblem;

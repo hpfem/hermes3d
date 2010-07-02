@@ -71,19 +71,19 @@ scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 }
 
 template<typename f_t, typename res_t>
-res_t jacobi_form(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
+res_t jacobi_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *vi, fn_t<f_t> *vj, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	return int_grad_u_grad_v<f_t, res_t>(n, wt, vi, vj, e);
 }
 
 template<typename f_t, typename res_t>
-res_t resid_form(int n, double *wt, fn_t<f_t> *u[], fn_t<f_t> *vi, geom_t<f_t> *e,
+res_t resid_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *vi, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
 	for (int i = 0; i < n; i++)
-		res += wt[i] * (grad_grad(u[0], vi) + 6.0 * vi->fn[i]);
+		res += wt[i] * (grad_grad(u_ext[0], vi) + 6.0 * vi->fn[i]);
 	return res;
 }
 
@@ -122,7 +122,7 @@ scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z)
 }
 
 template<typename f_t, typename res_t>
-res_t jacobi_form(int n, double *wt, fn_t<f_t> *itr[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
+res_t jacobi_form(int n, double *wt, fn_t<res_t> *itr[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e,
                   user_data_t<res_t> *data)
 {
 	res_t res = 0.0;
@@ -134,7 +134,7 @@ res_t jacobi_form(int n, double *wt, fn_t<f_t> *itr[], fn_t<f_t> *u, fn_t<f_t> *
 }
 
 template<typename f_t, typename res_t>
-res_t resid_form(int n, double *wt, fn_t<f_t> *itr[], fn_t<f_t> *v, geom_t<f_t> *e,
+res_t resid_form(int n, double *wt, fn_t<res_t> *itr[], fn_t<f_t> *v, geom_t<f_t> *e,
                  user_data_t<res_t> *data)
 {
 	res_t res = 0.0;

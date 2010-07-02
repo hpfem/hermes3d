@@ -124,22 +124,22 @@ scalar essential_bc_values(int ess_bdy_marker, double x, double y, double z) {
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form(int np, double *jwt, fn_t<f_t> *fu, fn_t<f_t> *fv, geom_t<f_t> *e, user_data_t<res_t> *ud) {
+res_t bilinear_form(int np, double *jwt, fn_t<res_t> *u_ext[], fn_t<f_t> *fu, fn_t<f_t> *fv, geom_t<f_t> *e, user_data_t<res_t> *ud) {
 	return int_grad_u_grad_v<f_t, res_t>(np, jwt, fu, fv, e);
 }
 
 template<typename f_t, typename res_t>
-res_t bilinear_form_surf(int np, double *jwt, fn_t<f_t> *fu, fn_t<f_t> *fv, geom_t<f_t> *e, user_data_t<res_t> *ud) {
+res_t bilinear_form_surf(int np, double *jwt, fn_t<res_t> *u_ext[], fn_t<f_t> *fu, fn_t<f_t> *fv, geom_t<f_t> *e, user_data_t<res_t> *ud) {
 	return int_u_v<f_t, res_t>(np, jwt, fu, fv, e);
 }
 
 template<typename f_t, typename res_t>
-res_t linear_form(int np, double *jwt, fn_t<f_t> *fv, geom_t<f_t> *e, user_data_t<res_t> *ud) {
+res_t linear_form(int np, double *jwt, fn_t<res_t> *u_ext[], fn_t<f_t> *fv, geom_t<f_t> *e, user_data_t<res_t> *ud) {
 	return int_F_v<f_t, res_t>(np, jwt, dfnc, fv, e);
 }
 
 template<typename f_t, typename res_t>
-res_t linear_form_surf(int np, double *jwt, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *ud) {
+res_t linear_form_surf(int np, double *jwt, fn_t<res_t> *u_ext[], fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *ud) {
 	res_t result = 0;
 #ifdef XM_YN_ZO
 	for (int i = 0; i < np; i++) {

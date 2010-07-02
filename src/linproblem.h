@@ -25,6 +25,7 @@
 
 #include <common/array.h>
 #include "weakform.h"
+#include "tuple.h"
 
 class Space;
 class Matrix;
@@ -99,10 +100,10 @@ protected:
 		}
 	} fn_cache;
 
-	scalar eval_form(WeakForm::BiFormVol *bf, ShapeFunction *fu, ShapeFunction *fv, RefMap *ru, RefMap *rv);
-	scalar eval_form(WeakForm::LiFormVol *lf, ShapeFunction *fv, RefMap *rv);
-	scalar eval_form(WeakForm::BiFormSurf *bf, ShapeFunction *fu, ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp);
-	scalar eval_form(WeakForm::LiFormSurf *lf, ShapeFunction *fv, RefMap *rv, FacePos *fp);
+	scalar eval_form(WeakForm::MatrixFormVol *mfv, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv, RefMap *ru, RefMap *rv);
+	scalar eval_form(WeakForm::VectorFormVol *vfv, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv);
+	scalar eval_form(WeakForm::MatrixFormSurf *mfs, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp);
+	scalar eval_form(WeakForm::VectorFormSurf *vfs, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv, FacePos *fp);
 
 	sfn_t *get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt);
 	sfn_t *get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, const int np, const QuadPt3D *pt);

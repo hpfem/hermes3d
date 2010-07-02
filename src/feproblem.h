@@ -25,7 +25,7 @@
 
 #include <common/array.h>
 #include "weakform.h"
-#include "../hermes_common/tuple.h"
+#include "tuple.h"
 
 class Space;
 class Matrix;
@@ -46,8 +46,8 @@ public:
 	void set_spaces(int n, ...);
 
 	void create(SparseMatrix *mat);
-	void assemble(Vector* rhs, Matrix* jac, const Vector* x = NULL);
-	void assemble(Vector* rhs, Matrix* jac, Tuple<Solution*> solutions =  Tuple<Solution*> ());
+	void assemble(Vector* rhs, Matrix* jac, Vector* x = NULL);
+	void assemble(Vector* rhs, Matrix* jac, Tuple<Solution*> u_ext =  Tuple<Solution*> ());
 
 	int get_num_dofs();
 	bool is_matrix_free() { return wf->is_matrix_free(); }
@@ -92,12 +92,12 @@ protected:
 		void free();
 	} fn_cache;
 
-	scalar eval_form(WeakForm::JacFormVol *bf, Solution *sln[], ShapeFunction *fu,
+	scalar eval_form(WeakForm::MatrixFormVol *mfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
 	                 ShapeFunction *fv, RefMap *ru, RefMap *rv);
-	scalar eval_form(WeakForm::ResFormVol *lf, Solution *sln[], ShapeFunction *fv, RefMap *rv);
-	scalar eval_form(WeakForm::JacFormSurf *bf, Solution *sln[], ShapeFunction *fu,
+	scalar eval_form(WeakForm::VectorFormVol *vfv, Tuple<Solution *> u_ext, ShapeFunction *fv, RefMap *rv);
+	scalar eval_form(WeakForm::MatrixFormSurf *mfs, Tuple<Solution *> u_ext, ShapeFunction *fu,
 	                 ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp);
-	scalar eval_form(WeakForm::ResFormSurf *lf, Solution *sln[], ShapeFunction *fv, RefMap *rv,
+	scalar eval_form(WeakForm::VectorFormSurf *vfs, Tuple<Solution *> u_ext, ShapeFunction *fv, RefMap *rv,
 	                 FacePos *fp);
 
 	sfn_t *get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt);
