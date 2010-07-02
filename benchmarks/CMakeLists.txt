@@ -9,7 +9,7 @@ if(WITH_HEX)
     # H1
 	if(REAL)
 #		add_subdirectory(elastostatics)
-#		add_subdirectory(fichera)
+		add_subdirectory(fichera)
 #		add_subdirectory(heat-conduction)
 #		add_subdirectory(heat-cubit)
 		add_subdirectory(layer)

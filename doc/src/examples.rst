@@ -9,7 +9,4 @@ This is a list of examples which show what you can do with hermes3d.
     :maxdepth: 2
 
     examples/heat-conduction
-    examples/fichera-corner
     examples/singpert-aniso
-    examples/bessel
-..  examples/layer
