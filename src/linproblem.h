@@ -38,7 +38,10 @@ public:
 	virtual ~LinProblem();
 	void free();
 
-	void set_spaces(int n, ...);
+	void set_spaces(Tuple<Space *> sp);
+	void set_space(Space* sp) {
+          this->set_spaces(Tuple<Space *> (sp));
+        };
 
 	// @return true if successful, otherwise false
 	bool assemble(Matrix *matrix, Vector *rhs = NULL);

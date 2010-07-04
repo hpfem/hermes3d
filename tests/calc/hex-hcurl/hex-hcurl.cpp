@@ -164,12 +164,12 @@ int main(int argc, char **args) {
 	MumpsSolver solver(&mat, &rhs);
 #endif
 
-	WeakForm wf(1);
-	wf.add_matrix_form(0, 0, FORM_CB(bilinear_form), SYM);
-	wf.add_vector_form(0, FORM_CB(linear_form));
+	WeakForm wf;
+	wf.add_matrix_form(FORM_CB(bilinear_form), SYM);
+	wf.add_vector_form(FORM_CB(linear_form));
 
 	LinProblem lp(&wf);
-	lp.set_spaces(1, &space);
+	lp.set_space(&space);
 
 	// assemble stiffness matrix
 	Timer assemble_timer("Assembling stiffness matrix");

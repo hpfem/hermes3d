@@ -456,19 +456,19 @@ int main(int argc, char **args) {
 				MumpsSolver solver(&mat, &rhs);
 #endif
 
-				WeakForm wf(1);
+				WeakForm wf;
 #ifdef DIRICHLET
-				wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-				wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>);
+				wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+				wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>);
 #elif defined NEWTON
-				wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-				wf.add_matrix_form_surf(0, 0, bilinear_form_surf<double, scalar>, bilinear_form_surf<ord_t, ord_t>);
-				wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>);
-				wf.add_vector_form_surf(0, linear_form_surf<double, scalar>, linear_form_surf<ord_t, ord_t>);
+				wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+				wf.add_matrix_form_surf(bilinear_form_surf<double, scalar>, bilinear_form_surf<ord_t, ord_t>);
+				wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>);
+				wf.add_vector_form_surf(linear_form_surf<double, scalar>, linear_form_surf<ord_t, ord_t>);
 #endif
 
 				LinProblem lp(&wf);
-				lp.set_spaces(1, &space);
+				lp.set_space(&space);
 
 				// assemble stiffness matrix
 				lp.assemble(&mat, &rhs);

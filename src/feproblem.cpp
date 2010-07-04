@@ -83,16 +83,14 @@ void FeProblem::free()
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
 }
 
-void FeProblem::set_spaces(int n, ...)
+void FeProblem::set_spaces(Tuple<Space *> sp)
 {
 	_F_
+	  int n = sp.size();
 	if (n <= 0 || n > wf->neq) error("Bad number of spaces.");
-	va_list ap;
-	va_start(ap, n);
-	for (int i = 0; i < wf->neq; i++) {
-		spaces[i] = (i < n) ? va_arg(ap, Space*) : spaces[n - 1];
-	}
-	va_end(ap);
+        if (n != this->wf->neq) 
+          error("Number of spaces must match the number of equations in LinProblem::set_spaces()"); 
+	for (int i = 0; i < wf->neq; i++) this->spaces[i] = sp[i];
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
 	have_spaces = true;
 }
@@ -511,7 +509,7 @@ mfn_t *FeProblem::get_fn(Solution *fu, int order, RefMap *rm, const int np, cons
 	return u;
 }
 
-scalar FeProblem::eval_form(WeakForm::MatrixFormVol *bfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
+scalar FeProblem::eval_form(WeakForm::MatrixFormVol *mfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
                             ShapeFunction *fv, RefMap *ru, RefMap *rv)
 {
 	_F_
@@ -524,11 +522,11 @@ scalar FeProblem::eval_form(WeakForm::MatrixFormVol *bfv, Tuple<Solution *> u_ex
 	fn_t<ord_t> ov = init_fn(fv->get_fn_order());
 
 	user_data_t<ord_t> fake_ud;
-	init_ext_fns(fake_ud, bfv->ext);
+	init_ext_fns(fake_ud, mfv->ext);
 
 	double fake_wt = 1.0;
 	geom_t<ord_t> fake_e = init_geom(elem->marker);
-	ord_t o = bfv->ord(1, &fake_wt, &oi, &ou, &ov, &fake_e, &fake_ud);
+	ord_t o = mfv->ord(1, &fake_wt, &oi, &ou, &ov, &fake_e, &fake_ud);
 	order3_t order = ru->get_inv_ref_order();
 	switch (order.type) {
 		case MODE_TETRAHEDRON: order += order3_t(o.get_order()); break;
@@ -559,12 +557,12 @@ scalar FeProblem::eval_form(WeakForm::MatrixFormVol *bfv, Tuple<Solution *> u_ex
 	mfn_t *prev[wf->neq];
 	for (int i = 0; i < wf->neq; i++) prev[i] = get_fn(u_ext[i], ord_idx, rv, np, pt);
 	sfn_t *u = get_fn(fu, ord_idx, ru, np, pt);
-	sfn_t *v = get_fn(fv, ord_idx, rv, np, pt);
+        sfn_t *v = get_fn(fv, ord_idx, rv, np, pt);
 
 	user_data_t<scalar> ud;
-	init_ext_fns(ud, bfv->ext, ord_idx, rv, np, pt);
+	init_ext_fns(ud, mfv->ext, ord_idx, rv, np, pt);
 
-	return bfv->fn(np, jwt, prev, u, v, &e, &ud);
+	return mfv->fn(np, jwt, prev, u, v, &e, &ud);
 }
 
 scalar FeProblem::eval_form(WeakForm::VectorFormVol *vfv, Tuple<Solution *> u_ext, ShapeFunction *fv, RefMap *rv)

@@ -165,12 +165,12 @@ int main(int argc, char **argv) {
 	uprev.set_zero();
 
 	// discretization
-	WeakForm wf(1);
-	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 1, &uprev);
+	WeakForm wf;
+	wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, &uprev);
 
 	LinProblem lp(&wf);
-	lp.set_spaces(1, &space);
+	lp.set_spaces(&space);
 
 	Solution sln(&mesh);
 

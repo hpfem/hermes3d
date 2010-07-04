@@ -37,7 +37,7 @@
 //#define DEBUG_PRINT
 
 template<typename f_t, typename res_t>
-res_t h1_form(int n, double *wt, fn_t<res_t> *u, fn_t<res_t> *v, geom_t<f_t> *e,
+res_t h1_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<res_t> *u, fn_t<res_t> *v, geom_t<f_t> *e,
               user_data_t<res_t> *ext)
 {
 	res_t result = 0;
@@ -52,23 +52,19 @@ res_t h1_form(int n, double *wt, fn_t<res_t> *u, fn_t<res_t> *v, geom_t<f_t> *e,
 
 // H1 adapt ///////////////////////////////////////////////////////////////////////////////////////
 
-H1Adapt::H1Adapt(int num, ...)
+void H1Adapt::init(Tuple<Space *> sp)
 {
 	_F_
-	this->num = num;
+	this->num = sp.size();
 
-	va_list ap;
-	va_start(ap, num);
-	this->spaces = new Space *[num];
-	for (int i = 0; i < num; i++)
-		spaces[i] = va_arg(ap, Space *);
-	va_end(ap);
+	this->spaces = new Space *[this->num];
+	for (int i = 0; i < this->num; i++) spaces[i] = sp[i];
 
-	this->sln = new Solution *[num];
-	this->rsln = new Solution *[num];
-	this->errors = new double *[num];
-	this->norms = new double [num];
-	for (int i = 0; i < num; i++) {
+	this->sln = new Solution *[this->num];
+	this->rsln = new Solution *[this->num];
+	this->errors = new double *[this->num];
+	this->norms = new double [this->num];
+	for (int i = 0; i < this->num; i++) {
 		this->sln[i] = NULL;
 		this->rsln[i] = NULL;
 		this->errors[i] = NULL;
@@ -118,7 +114,7 @@ H1Adapt::~H1Adapt()
 	delete [] esort;
 }
 
-void H1Adapt::set_biform(int i, int j, biform_val_t bi_form, biform_ord_t bi_ord)
+void H1Adapt::set_error_form(int i, int j, biform_val_t bi_form, biform_ord_t bi_ord)
 {
 	if (i < 0 || i >= num || j < 0 || j >= num)
 		error("Invalid equation number.");
@@ -725,7 +721,7 @@ static int compare(const void* p1, const void* p2)
 }
 
 order3_t H1Adapt::get_form_order(int marker, const order3_t &ordu, const order3_t &ordv, RefMap *ru,
-                                 biform_ord_t bf_ord)
+                                 matrix_form_ord_t mf_ord)
 {
 	_F_
 	// determine the integration order
@@ -734,7 +730,7 @@ order3_t H1Adapt::get_form_order(int marker, const order3_t &ordu, const order3_
 
 	double fake_wt = 1.0;
 	geom_t<ord_t> fake_e = init_geom(marker);
-	ord_t o = bf_ord(1, &fake_wt, &ou, &ov, &fake_e, NULL);
+	ord_t o = mf_ord(1, &fake_wt, NULL, &ou, &ov, &fake_e, NULL);
 	order3_t order = ru->get_inv_ref_order();
 	switch (order.type) {
 		case MODE_TETRAHEDRON: order += order3_t(o.get_order()); break;
@@ -784,7 +780,7 @@ scalar H1Adapt::eval_error(int marker, biform_val_t bi_fn, biform_ord_t bi_ord, 
 		err2->dz[i] = err2->dz[i] - v2->dz[i];
 	}
 
-	scalar res = bi_fn(np, jwt, err1, err2, &e, NULL);
+	scalar res = bi_fn(np, jwt, NULL, err1, err2, &e, NULL);
 
 	delete [] jwt;
 	free_geom(&e);
@@ -815,10 +811,10 @@ scalar H1Adapt::eval_norm(int marker, biform_val_t bi_fn, biform_ord_t bi_ord, M
 	double *jwt = rv1->get_jacobian(np, pt);
 	geom_t<double> e = init_geom(marker, rv1, np, pt);
 
-	mfn_t *v1 = init_fn(rsln1, rv1, np, pt);
-	mfn_t *v2 = init_fn(rsln2, rv2, np, pt);
+	fn_t<scalar> *v1 = init_fn(rsln1, rv1, np, pt);
+	fn_t<scalar> *v2 = init_fn(rsln2, rv2, np, pt);
 
-	scalar res = bi_fn(np, jwt, v1, v2, &e, NULL);
+	scalar res = bi_fn(np, jwt, NULL, v1, v2, &e, NULL);
 
 	delete [] jwt;
 	free_geom(&e);
@@ -828,27 +824,25 @@ scalar H1Adapt::eval_norm(int marker, biform_val_t bi_fn, biform_ord_t bi_ord, M
 	return res;
 }
 
-double H1Adapt::calc_error_n(int n, ...)
+double H1Adapt::calc_error_n(Tuple<Solution *> slns, Tuple<Solution *> rslns)
 {
 	_F_
 	int i, j, k;
 
-	if (n != num) EXIT("Wrong number of solutions.");
+	int n = slns.size();
+	if (n != this->num) EXIT("Wrong number of solutions.");
 
 	Timer tmr;
 	tmr.start();
 
-	va_list ap;
-	va_start(ap, n);
 	for (i = 0; i < n; i++) {
-		sln[i] = va_arg(ap, Solution *);
-		sln[i]->enable_transform(true);
+	  this->sln[i] = slns[i];
+	  this->sln[i]->enable_transform(true);
 	}
 	for (i = 0; i < n; i++) {
-		rsln[i] = va_arg(ap, Solution *);
-		rsln[i]->enable_transform(true);
+	  this->rsln[i] = rslns[i];
+	  this->rsln[i]->enable_transform(true);
 	}
-	va_end(ap);
 
 	// prepare multi-mesh traversal and error arrays
 	Mesh *meshes[2 * num];

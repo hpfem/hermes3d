@@ -262,18 +262,18 @@ int main(int argc, char **args) {
 	MumpsSolver solver(&mat, &rhs);
 #endif
 
-	WeakForm wf(1);
-	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, UNSYM);
-	wf.add_matrix_form_surf(0, 0, bilinear_form_surf<double, scalar>, bilinear_form_surf<ord_t, ord_t>);
-	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>);
-	wf.add_vector_form_surf(0, linear_form_surf<double, scalar>, linear_form_surf<ord_t, ord_t>);
-//	wf.add_biform(0, 0, bilinear_form, SYM);
-//	wf.add_biform_surf(0, 0, bilinear_form_surf);
-//	wf.add_liform(0, linear_form);
-//	wf.add_liform_surf(0, linear_form_surf);
+	WeakForm wf;
+	wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, UNSYM);
+	wf.add_matrix_form_surf(bilinear_form_surf<double, scalar>, bilinear_form_surf<ord_t, ord_t>);
+	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>);
+	wf.add_vector_form_surf(linear_form_surf<double, scalar>, linear_form_surf<ord_t, ord_t>);
+//	wf.add_biform(bilinear_form, SYM);
+//	wf.add_biform_surf(bilinear_form_surf);
+//	wf.add_liform(linear_form);
+//	wf.add_liform_surf(linear_form_surf);
 
 	LinProblem lp(&wf);
-	lp.set_spaces(1, &space);
+	lp.set_space(&space);
 
 	// assemble stiffness matrix
 	Timer assemble_timer("Assembling stiffness matrix");

@@ -135,14 +135,14 @@ int main(int argc, char **argv)
   printf("  - Number of DOFs: %d\n", ndof);
 
   //  Initialize the weak formulation.
-  WeakForm wf(1);
-  wf.add_matrix_form(0, 0, biform<double, scalar>, biform<ord_t, ord_t>, SYM);
-  wf.add_matrix_form_surf(0, 0, biform_surf, biform_surf_ord);
-  wf.add_vector_form_surf(0, liform_surf, liform_surf_ord);
+  WeakForm wf;
+  wf.add_matrix_form(biform<double, scalar>, biform<ord_t, ord_t>, SYM);
+  wf.add_matrix_form_surf(biform_surf, biform_surf_ord);
+  wf.add_vector_form_surf(liform_surf, liform_surf_ord);
 
   // Initialize the coarse mesh problem. 
   LinProblem lp(&wf);
-  lp.set_spaces(1, &sp);
+  lp.set_space(&sp);
 
   // Assemble stiffness matrix.
   printf("  - assembling... "); fflush(stdout);

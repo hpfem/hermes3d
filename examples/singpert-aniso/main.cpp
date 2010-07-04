@@ -181,13 +181,13 @@ int main(int argc, char **args) {
 	space.set_essential_bc_values(essential_bc_values);
 	space.set_uniform_order(order3_t(1, 1, 1));
 
-	WeakForm wf(1);
-	wf.add_matrix_form(0, 0, biform<double, double>, biform<ord_t, ord_t>, SYM, ANY, 0);
-	wf.add_vector_form(0, liform<double, double>, liform<ord_t, ord_t>, ANY, 0);
+	WeakForm wf;
+	wf.add_matrix_form(biform<double, double>, biform<ord_t, ord_t>, SYM, ANY);
+	wf.add_vector_form(liform<double, double>, liform<ord_t, ord_t>, ANY);
 
 	// ADAPT loop
 	LinProblem lp(&wf);
-	lp.set_spaces(1, &space);
+	lp.set_space(&space);
 
 	int iter = 0;
 	bool done = false;
@@ -245,7 +245,7 @@ int main(int argc, char **args) {
 		rspace->copy_orders(space, 1);
 
 		LinProblem rlp(&wf);
-		rlp.set_spaces(1, rspace);
+		rlp.set_space(rspace);
 
 		// assign DOFs
 		int rndofs = rspace->assign_dofs();
@@ -284,7 +284,7 @@ int main(int argc, char **args) {
 		// do the hp-adaptivity
 		printf("Adaptivity\n");
 		printf("  - tolerance: "); fflush(stdout);
-		H1Adapt hp(1, &space);
+		H1Adapt hp(&space);
 		hp.set_aniso(true);
 		double tol = hp.calc_error(&sln, &rsln) * 100;		// calc error estimates on elements
 		printf("% lf\n", tol);

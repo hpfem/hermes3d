@@ -120,12 +120,12 @@ int main(int argc, char **argv) {
 	printf("  - Setting uniform order to (%d, %d, %d)\n", order.x, order.y, order.z);
 	space.set_uniform_order(order);
 
-	WeakForm wf(1);
-	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM, ANY, 0);
-	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 0);
+	WeakForm wf;
+	wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM, ANY);
+	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY);
 
 	LinProblem lp(&wf);
-	lp.set_spaces(1, &space);
+	lp.set_space(&space);
 
 	bool done = false;
 	int iter = 0;
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
 		rspace->copy_orders(space, 1);
 
 		LinProblem rlp(&wf);
-		rlp.set_spaces(1, rspace);
+		rlp.set_space(rspace);
 
 		int rndofs = rspace->assign_dofs();
 		printf("  - Number of DOFs: %d\n", rndofs);
@@ -232,7 +232,7 @@ int main(int argc, char **argv) {
 		rsln.set_fe_solution(rspace, rsolver.get_solution());
 
 		printf("Adaptivity:\n");
-		H1Adapt hp(1, &space);
+		H1Adapt hp(&space);
 		double tol = hp.calc_error(&sln, &rsln) * 100;
 		printf("  - tolerance: "); fflush(stdout);
 		printf("% lf\n", tol);

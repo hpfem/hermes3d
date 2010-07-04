@@ -181,7 +181,7 @@ int main(int argc, char **args) {
 	wf.add_vector_form(1, linear_form_2<double, scalar>, linear_form_2<ord_t, ord_t>);
 
 	LinProblem lp(&wf);
-	lp.set_spaces(2, &space1, &space2);
+	lp.set_spaces(Tuple<Space *>(&space1, &space2));
 
 	// assemble stiffness matrix
 	Timer assemble_timer("Assembling stiffness matrix");

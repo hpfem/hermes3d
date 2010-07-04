@@ -140,13 +140,13 @@ int main(int argc, char **args)
   space.set_uniform_order(order3_t(P_INIT, P_INIT, P_INIT)); 
 
   // Initialize the weak formulation.
-  WeakForm wf(1);
-  wf.add_matrix_form(0, 0, bilinear_form<double, double>, bilinear_form<ord_t, ord_t>, SYM, ANY, 0);
-  wf.add_vector_form(0, linear_form<double, double>, linear_form<ord_t, ord_t>, ANY, 0);
+  WeakForm wf;
+  wf.add_matrix_form(bilinear_form<double, double>, bilinear_form<ord_t, ord_t>, SYM, ANY);
+  wf.add_vector_form(linear_form<double, double>, linear_form<ord_t, ord_t>, ANY);
 
   // Initialize the coarse mesh problem. 
   LinProblem lp(&wf);
-  lp.set_spaces(1, &space);
+  lp.set_space(&space);
 
   // Adaptivity loop. 
   int as = 0; bool done = false;
@@ -219,7 +219,7 @@ int main(int argc, char **args)
 
     // Initialize the mesh problem for reference solution. 
     LinProblem rlp(&wf);
-    rlp.set_spaces(1, rspace);
+    rlp.set_space(rspace);
 
     // Assign DOF. 
     int rndof = rspace->assign_dofs();
@@ -263,7 +263,7 @@ int main(int argc, char **args)
     // Calculate error estimates for adaptivity. 
     printf("Adaptivity\n");
     printf("  - calculating error: "); fflush(stdout);
-    H1Adapt hp(1, &space);
+    H1Adapt hp(&space);
     Timer t_err;
     t_err.start();
     double err_est = hp.calc_error(&sln, &rsln) * 100;		// Calc error estimates on elements.

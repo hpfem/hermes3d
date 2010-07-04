@@ -511,12 +511,12 @@ int main(int argc, char **args)
 #endif
 
 #ifdef RHS2
-	WeakForm wf(1);
-	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 1, &fsln);
+	WeakForm wf;
+	wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, &fsln);
 
 	LinProblem lp(&wf);
-	lp.set_spaces(1, &space);
+	lp.set_space(&space);
 #elif defined SYS3
 	WeakForm wf(3);
 	wf.add_matrix_form(0, 0, biform_1_1<double, scalar>, biform_1_1<ord_t, ord_t>, SYM);
@@ -530,7 +530,7 @@ int main(int argc, char **args)
 	wf.add_matrix_form(2, 2, biform_3_3<double, scalar>, biform_3_3<ord_t, ord_t>, SYM);
 
 	LinProblem lp(&wf);
-	lp.set_spaces(3, &space1, &space2, &space3);
+	lp.set_spaces(Tuple<Space *>(&space1, &space2, &space3));
 #endif
 
 	// assemble stiffness matrix

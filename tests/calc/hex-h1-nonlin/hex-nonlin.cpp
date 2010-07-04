@@ -266,12 +266,12 @@ int main(int argc, char **argv)
 
 #if defined NONLIN2
 	// do L2 projection of zero function
-	WeakForm proj_wf(1);
-	proj_wf.add_biform(0, 0, biproj_form<double, scalar>, biproj_form<ord_t, ord_t>, SYM);
-	proj_wf.add_liform(0, liproj_form<double, scalar>, liproj_form<ord_t, ord_t>);
+	WeakForm proj_wf;
+	proj_wf.add_biform(biproj_form<double, scalar>, biproj_form<ord_t, ord_t>, SYM);
+	proj_wf.add_liform(liproj_form<double, scalar>, liproj_form<ord_t, ord_t>);
 
 	LinProblem lp(&proj_wf);
-	lp.set_spaces(1, &space);
+	lp.set_space(&space);
 
 #ifdef WITH_UMFPACK
 	UMFPackMatrix m;

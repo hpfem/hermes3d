@@ -291,18 +291,18 @@ int main(int argc, char **argv) {
 
 	printf("* Calculating a solution\n");
 
-	WeakForm wf(1, true);
-	wf.add_resform(0, form_0<double, scalar>, form_0<ord_t, ord_t>);
+	WeakForm wf(true);
+	wf.add_resform(form_0<double, scalar>, form_0<ord_t, ord_t>);
 #if defined LIN_NEUMANN || defined LIN_NEWTON
-	wf.add_resform_surf(0, form_0_surf<double, scalar>, form_0_surf<ord_t, ord_t>);
+	wf.add_resform_surf(form_0_surf<double, scalar>, form_0_surf<ord_t, ord_t>);
 #endif
 #if defined LIN_DIRICHLET || defined NLN_DIRICHLET
 	// preconditioner
-	wf.add_jacform(0, 0, precond_0_0<double, scalar>, precond_0_0<ord_t, ord_t>, SYM);
+	wf.add_jacform(precond_0_0<double, scalar>, precond_0_0<ord_t, ord_t>, SYM);
 #endif
 
 	FeProblem fep(&wf);
-	fep.set_spaces(1, &space);
+	fep.set_space(&space);
 
 #if defined LIN_DIRICHLET || defined NLN_DIRICHLET
 	// use ML preconditioner to speed-up things

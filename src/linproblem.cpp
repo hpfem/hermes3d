@@ -54,15 +54,14 @@ void LinProblem::free()
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
 }
 
-void LinProblem::set_spaces(int n, ...)
+void LinProblem::set_spaces(Tuple<Space *> sp)
 {
 	_F_
+	int n = sp.size();
 	if (n <= 0 || n > wf->neq) EXIT("Bad number of spaces.");
-	va_list ap;
-	va_start(ap, n);
-	for (int i = 0; i < wf->neq; i++)
-		spaces[i] = (i < n) ? va_arg(ap, Space*) : spaces[n - 1];
-	va_end(ap);
+        if (n != this->wf->neq) 
+          error("Number of spaces must match the number of equations in LinProblem::set_spaces()");
+	for (int i = 0; i < n; i++) spaces[i] = sp[i];
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
 }
 

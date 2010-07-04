@@ -39,19 +39,21 @@ WeakForm::WeakForm(int neq, bool mat_free)
 	this->is_matfree = mat_free;
 }
 
+// single equation case
+WeakForm::WeakForm(bool mat_free)
+{
+	_F_
+	this->neq = 1;
+	this->is_matfree = mat_free;
+}
+
 WeakForm::~WeakForm()
 {
 	_F_
 }
 
-#define init_ext_fns \
-	va_list ap; va_start(ap, nx); \
-	for (int i = 0; i < nx; i++) \
-		form.ext.push_back(va_arg(ap, MeshFunction*)); \
-	va_end(ap)
-
 void WeakForm::add_matrix_form(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, SymFlag sym, int area,
-                               int nx, ...)
+                               Tuple<MeshFunction*> ext)
 {
 	_F_
 	if (i < 0 || i >= neq || j < 0 || j >= neq) error("Invalid equation number.");
@@ -61,45 +63,51 @@ void WeakForm::add_matrix_form(int i, int j, matrix_form_val_t fn, matrix_form_o
 	if (mfvol.size() > 100) warning("Large number of forms (> 100). Is this the intent?");
 
 	MatrixFormVol form = { i, j, sym, area, fn, ord };
-	init_ext_fns;
+	int nx = ext.size();
+	for (int i = 0; i < nx; i++) form.ext.push_back(ext[i]);
 	mfvol.push_back(form);
 }
 
-void WeakForm::add_matrix_form_surf(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, int area, int nx,
-                                ...)
+void WeakForm::add_matrix_form_surf(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, int area, 
+                                    Tuple<MeshFunction*> ext)
 {
 	_F_
 	if (i < 0 || i >= neq || j < 0 || j >= neq) error("Invalid equation number.");
 	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
 
 	MatrixFormSurf form = { i, j, area, fn, ord };
-	init_ext_fns;
+	int nx = ext.size();
+	for (int i = 0; i < nx; i++) form.ext.push_back(ext[i]);
 	mfsurf.push_back(form);
 }
 
-void WeakForm::add_vector_form(int i, vector_form_val_t fn, vector_form_ord_t ord, int area, int nx, ...)
+void WeakForm::add_vector_form(int i, vector_form_val_t fn, vector_form_ord_t ord, int area, 
+                               Tuple<MeshFunction*> ext)
 {
 	_F_
 	if (i < 0 || i >= neq) error("Invalid equation number.");
 	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
 
 	VectorFormVol form = { i, area, fn, ord };
-	init_ext_fns;
+	int nx = ext.size();
+	for (int i = 0; i < nx; i++) form.ext.push_back(ext[i]);
 	vfvol.push_back(form);
 }
 
-void WeakForm::add_vector_form_surf(int i, vector_form_val_t fn, vector_form_ord_t ord, int area, int nx, ...)
+void WeakForm::add_vector_form_surf(int i, vector_form_val_t fn, vector_form_ord_t ord, int area, 
+                                    Tuple<MeshFunction*> ext)
 {
 	_F_
 	if (i < 0 || i >= neq) error("Invalid equation number.");
 	if (area != ANY && area < 0 && -area > (signed) areas.size()) error("Invalid area number.");
 
 	VectorFormSurf form = { i, area, fn, ord };
-	init_ext_fns;
+	int nx = ext.size();
+	for (int i = 0; i < nx; i++) form.ext.push_back(ext[i]);
 	vfsurf.push_back(form);
 }
 
-void WeakForm::set_ext_fns(void *fn, int nx, ...)
+void WeakForm::set_ext_fns(void *fn, Tuple<MeshFunction*> ext)
 {
 	EXIT(ERR_NOT_IMPLEMENTED);
 }
@@ -296,14 +304,12 @@ bool **WeakForm::get_blocks()
 
 //// areas /////////////////////////////////////////////////////////////////////////////////////////
 
-int WeakForm::def_area(int n, ...)
+int WeakForm::def_area(Tuple<int> area_markers)
 {
 	_F_
 	Area newarea;
-	va_list ap; va_start(ap, n);
-	for (int i = 0; i < n; i++)
-		newarea.markers.push_back(va_arg(ap, int));
-	va_end(ap);
+        int n = area_markers.size();
+	for (int i = 0; i < n; i++) newarea.markers.push_back(area_markers[i]);
 
 	areas.push_back(newarea);
 	return -areas.size();

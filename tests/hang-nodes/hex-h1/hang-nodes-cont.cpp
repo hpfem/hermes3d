@@ -443,7 +443,7 @@ int main(int argc, char **args) {
 
 	// assemble stiffness matrix
 	LinProblem lp(&wf);
-	lp.set_spaces(1, &space);
+	lp.set_space(&space);
 
 	lp.assemble(&mat, &rhs);
 

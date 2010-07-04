@@ -23,6 +23,9 @@
 #ifndef _ADAPT_H1_H_
 #define _ADAPT_H1_H_
 
+#include "../tuple.h"
+#include "../weakform.h"
+
 /// hp-Adaptivity module for H1 space
 ///
 /// TODO
@@ -33,34 +36,29 @@ class H1Adapt {
 public:
 	/// Initializes the class. 'num' is the number of mesh-space pairs to be adapted.
 	/// After 'num', exactly that many space pointers must follow.
-	H1Adapt(int num, ...);
+        H1Adapt(Tuple<Space *> sp) {this->init(sp);};
+        H1Adapt(Space* sp) {this->init(Tuple<Space *> (sp));};
+	void init(Tuple<Space *> sp);
 	~H1Adapt();
 
 	typedef
-		scalar (*biform_val_t)(int n, double *wt, fn_t<scalar> *u, fn_t<scalar> *v,
+		scalar (*biform_val_t)(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<scalar> *u, fn_t<scalar> *v,
 		                       geom_t<double> *e, user_data_t<scalar> *);
 	typedef
-		ord_t (*biform_ord_t)(int n, double *wt, fn_t<ord_t> *u, fn_t<ord_t> *v,
+		ord_t (*biform_ord_t)(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *u, fn_t<ord_t> *v,
 		                      geom_t<ord_t> *e, user_data_t<ord_t> *);
 
 	/// Type-safe version of calc_error_n() for one solution.
 	double calc_error(Solution *sln, Solution *rsln)
 	{
 		if (num != 1) EXIT("Wrong number of solutions.");
-		return calc_error_n(1, sln, rsln);
-	}
-
-	/// Type-safe version of calc_error_n() for two solutions.
-	double calc_error_2(Solution *sln1,  Solution *sln2, Solution *rsln1, Solution *rsln2)
-	{
-		if (num != 2) EXIT("Wrong number of solutions.");
-		return calc_error_n(2, sln1, sln2, rsln1, rsln2);
+		return calc_error_n(Tuple<Solution *> (sln), Tuple<Solution *> (rsln));
 	}
 
 	/// Calculates the error of the solution. 'n' must be the same
 	/// as 'num' in the constructor. After that, n coarse solution
 	/// pointers are passed, followed by n fine solution pointers.
-	double calc_error_n(int n, ...);
+	double calc_error_n(Tuple<Solution *> slns, Tuple<Solution *> rslns);
 
 	/// Selects elements to refine (based on results from calc_error() or calc_energy_error())
 	/// and performs their optimal hp-refinement.
@@ -99,7 +97,7 @@ public:
 
 	/// Set the bilinear form on position [i,j]
 	/// TODO: be more verbose here
-	void set_biform(int i, int j, biform_val_t bi_form, biform_ord_t bi_ord);
+	void set_error_form(int i, int j, biform_val_t biform, biform_ord_t biform_ord);
 
 	/// Set maximal order to be used
 	void set_max_order(int order)

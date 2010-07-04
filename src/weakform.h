@@ -30,6 +30,7 @@
 
 #include "function.h"
 #include "forms.h"
+#include "tuple.h"
 
 // Bilinear form symmetry flag, see WeakForm::add_matrix_form
 enum SymFlag {
@@ -38,6 +39,15 @@ enum SymFlag {
 	SYM = 1
 };
 
+/// Matrix and vector forms.
+typedef scalar (*matrix_form_val_t)(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *vi,
+	        fn_t<double> *vj, geom_t<double> *e, user_data_t<scalar> *);
+typedef ord_t (*matrix_form_ord_t)(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *vi,
+	       fn_t<ord_t> *vj, geom_t<ord_t> *e, user_data_t<ord_t> *);
+typedef scalar (*vector_form_val_t)(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *vi,
+	        geom_t<double> *e, user_data_t<scalar> *);
+typedef ord_t (*vector_form_ord_t)(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *vi,
+	       geom_t<ord_t> *e, user_data_t<ord_t> *);
 
 /// Represents the weak formulation of a problem.
 ///
@@ -50,32 +60,52 @@ enum SymFlag {
 ///
 /// @ingroup assembling
 class WeakForm {
-	typedef scalar (*matrix_form_val_t)(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *vi,
-	                                fn_t<double> *vj, geom_t<double> *e, user_data_t<scalar> *);
-	typedef ord_t (*matrix_form_ord_t)(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *vi,
-	                               fn_t<ord_t> *vj, geom_t<ord_t> *e, user_data_t<ord_t> *);
-
-	typedef scalar (*vector_form_val_t)(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *vi,
-	                                geom_t<double> *e, user_data_t<scalar> *);
-	typedef ord_t (*vector_form_ord_t)(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *vi,
-	                               geom_t<ord_t> *e, user_data_t<ord_t> *);
 
 public:
 	WeakForm(int neq, bool mat_free = false);
+	WeakForm(bool mat_free = false);            // single equation case
 	virtual ~WeakForm();
 
-	int def_area(int n, ...);
+	int def_area(Tuple<int> area_markers);
 
 	void add_matrix_form(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, SymFlag sym = UNSYM,
-	                 int area = ANY, int nx = 0, ...);
+	                 int area = ANY, Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ());
+        // single equation case
+	void add_matrix_form(matrix_form_val_t fn, matrix_form_ord_t ord, SymFlag sym = UNSYM,
+	                 int area = ANY, Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ())
+        {
+	  add_matrix_form(0, 0, fn, ord, sym, area, ext);
+
+        }
 	void add_matrix_form_surf(int i, int j, matrix_form_val_t fn, matrix_form_ord_t ord, int area = ANY,
-	                      int nx = 0, ...);
+	                          Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ());
+        // single equation case
+	void add_matrix_form_surf(matrix_form_val_t fn, matrix_form_ord_t ord, int area = ANY,
+	                 Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ())
+        {
+	  add_matrix_form_surf(0, 0, fn, ord, area, ext);
 
-	void add_vector_form(int i, vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, int nx = 0, ...);
-	void add_vector_form_surf(int i, vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, int nx = 0,
-	                      ...);
+        }
 
-	void set_ext_fns(void *fn, int nx, ...);
+	void add_vector_form(int i, vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, 
+                             Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ());
+        // single equation case
+	void add_vector_form(vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, 
+                             Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ())
+        {
+  	  add_vector_form(0, fn, ord, area, ext);
+        };
+	void add_vector_form_surf(int i, vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, 
+                                  Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ());
+        // single equation case
+	void add_vector_form_surf(vector_form_val_t fn, vector_form_ord_t ord, int area = ANY, 
+                                  Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ()) 
+        {
+	  add_vector_form_surf(0, fn, ord, area, ext); 
+
+        };
+
+	void set_ext_fns(void *fn, Tuple<MeshFunction*> ext = Tuple<MeshFunction*> ());
 
 	order3_t get_int_order();
 	bool is_matrix_free() { return is_matfree; }

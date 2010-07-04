@@ -201,7 +201,7 @@ int main(int argc, char **argv) {
 	wf.add_vector_form_surf(2, surf_linear_form_2<double, scalar>, surf_linear_form_2<ord_t, ord_t>, 5);
 
 	LinProblem lp(&wf);
-	lp.set_spaces(3, &xdisp, &ydisp, &zdisp);
+	lp.set_spaces(Tuple<Space *>(&xdisp, &ydisp, &zdisp));
 
 #if defined WITH_UMFPACK
 	UMFPackMatrix mat;

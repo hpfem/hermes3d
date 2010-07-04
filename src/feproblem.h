@@ -43,7 +43,8 @@ public:
 	virtual ~FeProblem();
 	void free();
 
-	void set_spaces(int n, ...);
+	void set_spaces(Tuple<Space *> sp);
+	void set_space(Space* sp);
 
 	void create(SparseMatrix *mat);
 	void assemble(Vector* rhs, Matrix* jac, Vector* x = NULL);
