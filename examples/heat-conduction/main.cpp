@@ -2,255 +2,187 @@
 #ifdef WITH_PETSC
 #include <petsc.h>
 #endif
+#ifdef WITH_UMFPACK
+#include <umfpack.h>
+#endif
 #include <getopt.h>
 #include <hermes3d.h>
-#include <common/trace.h>
-#include <common/timer.h>
-#include <common/error.h>
-
-double tm = 0.0;							// "global" time
-const double tau = 0.05;					// time step
-
-
-// error should be smaller than this epsilon
-#define EPS								10e-10F
-
-// commnad line arguments
-bool do_output = true;				// generate output files (if true)
-char *mesh_file_name = NULL;		// the name of the mesh file
-
-// usage info
-
-void usage() {
-	printf("Usage\n");
-	printf("\n");
-	printf("  heat-conduction [options] <mesh-file>\n");
-	printf("\n");
-	printf("Options:\n");
-	printf("  --no-output         - do not generate output files\n");
-	printf("\n");
-}
-
-bool process_cmd_line(int argc, char **argv)
-{
-	static struct option long_options[] = {
-		{ "no-output", no_argument, (int *) &do_output, false },
-		{ 0, 0, 0, 0 }
-	};
-
-	// getopt_long stores the option index here.
-	int option_index = 0;
-	int c;
-	while ((c = getopt_long(argc, argv, "", long_options, &option_index)) != -1) {
-		switch (c) {
-            case 0:
-				break;
-
-			case '?':
-				// getopt_long already printed an error message
-				break;
-
-			default:
-				return false;
-		}
-	}
-
-	if (optind < argc) {
-		mesh_file_name = argv[optind++];
-		return true;
-	}
-	else
-		return false;
-}
-
-// needed for calculation norms and used by visualizator
-double exact_solution(double x, double y, double z, double &dx, double &dy, double &dz) {
-	dx = -2 * sin(tm) * x * (1 - y*y) * (1 - z*z);
-	dy = -2 * sin(tm) * (1 - x*x) * y * (1 - z*z);
-	dz = -2 * sin(tm) * (1 - x*x) * (1 - y*y) * z;
-
-	return sin(tm) * (1 - x*x) * (1 - y*y) * (1 - z*z);
-}
-
-double exact_solution_prev(double x, double y, double z, double &dx, double &dy, double &dz) {
-	dx = -2 * sin(tm - tau) * x * (1 - y*y) * (1 - z*z);
-	dy = -2 * sin(tm - tau) * (1 - x*x) * y * (1 - z*z);
-	dz = -2 * sin(tm - tau) * (1 - x*x) * (1 - y*y) * z;
-
-	return sin(tm - tau) * (1 - x*x) * (1 - y*y) * (1 - z*z);
-}
-
+//  This example shows how to solve a time-dependent PDE discretized
+//  in time via the implicit Euler method on a fixed mesh. 
+//  You will also learn how to use the
+//  solution calculated in the previous time step.
 //
+//  PDE: stationary heat transfer equation
+//  dT/dt - Laplace T = f.
+//
+//  Domain: (0, 0, 1)x(0, 1, 0)x(1, 0, 0), see the file hexahedron.mesh3d. 
+//
+//  Known exact solution, see unctions fn() and fndd(). 
+//
+//  IC:  T = 0.
+//  BC:  T = 0. ... Dirichlet,
+//
+//  Time-stepping: implicit Euler.
+//
+//  The following parameters can be changed:
 
+const int INIT_REF_NUM = 2;					// Number of initial uniform mesh refinements.
+const int P_INIT = 4;						// Initial polynomial degree of all mesh elements.
+const double TAU = 0.05;					// Time step in seconds. 
+bool do_output = true;						// Generate output files (if true).
+
+// Problem parameters. 
+const double FINAL_TIME = 2 * M_PI;				// Length of time inveral in seconds. 
+
+// Global time variable. 
+double TIME = TAU;
+
+// Exact solution. 
+#include "exact_solution.cpp"
+
+// Boundary condition types.
 BCType bc_types(int marker) {
-	return BC_ESSENTIAL;
+  return BC_ESSENTIAL;
 }
 
-template<typename f_t, typename res_t>
-res_t bilinear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, fn_t<f_t> *v, geom_t<f_t> *e, user_data_t<res_t> *data) {
-	return
-		int_grad_u_grad_v<f_t, res_t>(n, wt, u, v, e) +
-		int_u_v<f_t, res_t>(n, wt, u, v, e) / tau;
+// Weak forms. 
+#include "forms.cpp"
+
+// Output the solutions. 
+void out_fn(MeshFunction *fn, const char *name, int iter) 
+{
+  char fname[1024];
+  sprintf(fname, "iter-%s-%d.vtk", name, iter);
+  FILE *f = fopen(fname, "w");
+  if (f != NULL) {
+    VtkOutputEngine vtk(f);
+    vtk.out(fn, name);
+    fclose(f);
+  }
+  else 
+    warning("Can not not open '%s' for writing.", fname);
 }
 
-template<typename T>
-T f(T x, T y, T z) {
-	T ddxx = -2 * sin(tm) * (1 - y*y) * (1 - z*z);
-	T ddyy = -2 * sin(tm) * (1 - x*x) * (1 - z*z);
-	T ddzz = -2 * sin(tm) * (1 - x*x) * (1 - y*y);
-	T dt = cos(tm) * (1 - x*x) * (1 - y*y) * (1 - z*z);
-
-	return dt - (ddxx + ddyy + ddzz);
-}
-
-template<typename f_t, typename res_t>
-res_t linear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, geom_t<f_t> *e, user_data_t<res_t> *data) {
-	return
-		int_F_v<f_t, res_t>(n, wt, f, u, e) +
-		int_u_v<f_t, res_t>(n, wt, data->ext + 0, u, e) / tau;
-}
-
-//
-
-void out_fn(MeshFunction *x, const char *name, int i) {
-	char of_name[1024];
-	FILE *ofile;
-	// mesh out
-	sprintf(of_name, "%s-%d.vtk", name, i);
-	ofile = fopen(of_name, "w");
-	if (ofile != NULL) {
-		VtkOutputEngine output(ofile);
-		output.out(x, name);
-		fclose(ofile);
-	}
-	else {
-		warning("Can not open '%s' for writing.", of_name);
-	}
-}
-
-
-// main ///////////////////////////////////////////////////////////////////////////////////////////
-
+/***********************************************************************************
+ * main program                                                                    *
+ ***********************************************************************************/
 int main(int argc, char **argv) {
 #ifdef WITH_PETSC
-	PetscInitialize(&argc, &argv, (char *) PETSC_NULL, PETSC_NULL);
+  PetscInitialize(NULL, NULL, (char *) PETSC_NULL, PETSC_NULL);
+  PetscPushErrorHandler(PetscIgnoreErrorHandler, PETSC_NULL);			// Disable PETSc error handler.
 #endif
 
-	if (!process_cmd_line(argc, argv)) {
-		usage();
-		return 0;
-	}
+  // Load the initial mesh. 
+  Mesh mesh;
+  Mesh3DReader mesh_loader;
+  mesh_loader.load("hexahedron.mesh3d", &mesh);
 
-	printf("* Loading mesh '%s'\n", mesh_file_name);
-	Mesh mesh;
-	Mesh3DReader mesh_loader;
-	if (!mesh_loader.load(mesh_file_name, &mesh)) error("Loading mesh file '%s'\n", mesh_file_name);
+  // Initial uniform mesh refinements. 
+  printf("Performing %d initial mesh refinements.\n", INIT_REF_NUM);
+  for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements(REFT_HEX_XYZ);
+  Word_t (nelem) = mesh.get_num_elements();
+  printf("New number of elements is %d.\n", (int) nelem);
 
-	mesh.refine_all_elements(REFT_HEX_XYZ);
-	mesh.refine_all_elements(REFT_HEX_XYZ);
-
-	H1ShapesetLobattoHex shapeset;
-
-	Solution uprev(&mesh);
-
-	printf("* Setting the space up\n");
-	H1Space space(&mesh, &shapeset);
-	space.set_bc_types(bc_types);
-	space.set_uniform_order(order3_t(2, 2, 2));
-
-	int ndofs = space.assign_dofs();
-	printf("  - Number of DOFs: %d\n", ndofs);
-
-	// initial condition is zero
-	uprev.set_zero();
-
-	// discretization
-	WeakForm wf;
-	wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, &uprev);
-
-	LinProblem lp(&wf);
-	lp.set_spaces(&space);
-
-	Solution sln(&mesh);
+  // Initialize the shapset and the cache. 
+  H1ShapesetLobattoHex shapeset;
 
 #if defined WITH_UMFPACK
-	UMFPackMatrix mat;
-	UMFPackVector rhs;
-	UMFPackLinearSolver solver(&mat, &rhs);
+  UMFPackMatrix mat;
+  UMFPackVector rhs;
+  UMFPackLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PARDISO
-	PardisoMatrix mat;
-	PardisoVector rhs;
-	PardisoLinearSolver solver(&mat, &rhs);
+  PardisoMatrix mat;
+  PardisoVector rhs;
+  PardisoLinearSolver solver(&mat, &rhs);
 #elif defined WITH_PETSC
-	PetscMatrix mat;
-	PetscVector rhs;
-	PetscLinearSolver solver(&mat, &rhs);
+  PetscMatrix mat;
+  PetscVector rhs;
+  PetscLinearSolver solver(&mat, &rhs);
 #elif defined WITH_MUMPS
-	MumpsMatrix mat;
-	MumpsVector rhs;
-	MumpsSolver solver(&mat, &rhs);
+  MumpsMatrix mat;
+  MumpsVector rhs;
+  MumpsSolver solver(&mat, &rhs);
 #endif
 
-	// main loop
-	int n_iter = 2 * M_PI / tau;
-	tm = tau;
-	for (int i = 0; i < n_iter; i++) 	{
-		printf("\n-- Iteration %d ---------------------\n", i);
+  // Create H1 space to setup the problem. 
+  H1Space space(&mesh, &shapeset);
+  space.set_bc_types(bc_types);
+  space.set_uniform_order(order3_t(P_INIT, P_INIT, P_INIT));
 
-		// assemble stiffness matrix
-		printf("  - assembling... "); fflush(stdout);
-		Timer tmr_assemble;
-		tmr_assemble.start();
-		bool assembled = lp.assemble(&mat, &rhs);
-		tmr_assemble.stop();
-		if (assembled)
-			printf("done in %s (%lf secs)\n", tmr_assemble.get_human_time(), tmr_assemble.get_seconds());
-		else
-			error("failed!");
+  // Assign DOF.
+  int ndof = space.assign_dofs();
+  printf("  - Number of DOFs: %d\n", ndof);
 
-		// solve the stiffness matrix
-		printf("  - solving... "); fflush(stdout);
-		Timer tmr_solve;
-		tmr_solve.start();
-		bool solved = solver.solve();
-		tmr_solve.stop();
+  // Construct initial solution and set zero.
+  Solution sln_prev(&mesh);
+  sln_prev.set_zero();
 
-		if (solved) {
-			printf("done in %s (%lf secs)\n", tmr_solve.get_human_time(), tmr_solve.get_seconds());
-		}
-		else {
-			printf("failed\n");
-			break;
-		}
+  // Initialize the weak formulation. 
+  WeakForm wf;
+  wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+  wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, &sln_prev);
 
-		double *s = solver.get_solution();
-		sln.set_fe_solution(&space, s);
+  // Initialize the coarse mesh problem. 
+  LinProblem lp(&wf);
+  lp.set_spaces(&space);
 
-		ExactSolution esln(&mesh, exact_solution);
+  // Time stepping. 
+  int nsteps = (int) (FINAL_TIME/TAU + 0.5);
+  for (int ts = 0; ts < nsteps;  ts++)
+  {
+    printf("\n---- Time step %d, time %3.5f\n", ts, TIME);
 
-		if (do_output) {
-			printf("  - output... "); fflush(stdout);
-			out_fn(&sln, "temp", i);
-			out_fn(&esln, "ex", i);
-			printf("done\n");
-		}
+    // Assemble stiffness matrix and rhs. 
+    printf("  - Assembling... "); fflush(stdout);
+    Timer tmr_assemble;
+    tmr_assemble.start();
+    bool assembled = lp.assemble(&mat, &rhs);
+    tmr_assemble.stop();
+    if (assembled)
+      printf("done in %s (%lf secs)\n", tmr_assemble.get_human_time(), tmr_assemble.get_seconds());
+    else
+      error("failed!");
 
-		// check our solution
-		// norm
-		double h1_err_norm = h1_error(&sln, &esln);
-		printf("  - H1 error norm:      % le\n", h1_err_norm);
+    // Solve the stiffness matrix. 
+    printf("  - Solving... "); fflush(stdout);
+    Timer tmr_solve;
+    tmr_solve.start();
+    bool solved = solver.solve();
+    tmr_solve.stop();
 
-		// next step
-		uprev = sln;
-		tm += tau;
-	}
+    if (solved) 
+      printf("done in %s (%lf secs)\n", tmr_solve.get_human_time(), tmr_solve.get_seconds());
+    else {
+      error("failed\n");
+      break;
+    }
+
+    // Construct a solution. 
+    Solution sln(&mesh);
+    sln.set_fe_solution(&space, solver.get_solution());
+
+    // Output the solution. 
+    if (do_output)
+    {
+      out_fn(&sln, "sln", ts);
+    }
+
+    // Calculate error wrt. exact solution. 
+    printf("  - Calculating exact error ...\n"); fflush(stdout);
+    ExactSolution esln(&mesh, fndd);
+    double err_exact = h1_error(&sln, &esln) * 100; 
+    printf("  - err. exact: %le\n", err_exact);
+
+    // next step
+    sln_prev = sln;
+    TIME += TAU;
+  }
 
 #ifdef WITH_PETSC
-	mat.free();
-	rhs.free();
-	PetscFinalize();
+  mat.free();
+  rhs.free();
+  PetscFinalize();
 #endif
 
-	return 0;
+  return 1;
 }

@@ -134,5 +134,5 @@ Solution and hp-mesh:
 
 .. seealso::
 
-   :ref:`benchmark-bessel`
+   :ref:`benchmark-fichera-corner`
 
