@@ -116,18 +116,18 @@ Code for the weak forms:
 
         // Weak forms.
         template<typename real, typename scalar>
-        scalar biform(int n, double *wt, fn_t<real> *u, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *ext)
+        scalar biform(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<real> *u, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *ext)
         {
           return 1.0/mu_r * hcurl_int_curl_u_curl_v<real, scalar>(n, wt, u, v, e)
             - sqr(kappa) * hcurl_int_u_v<real, scalar>(n, wt, u, v, e);
         }
 
-        ord_t biform_surf_ord(int n, double *wt, fn_t<ord_t> *u, fn_t<ord_t> *v, geom_t<ord_t> *e, user_data_t<ord_t> *ext)
+        ord_t biform_surf_ord(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *u, fn_t<ord_t> *v, geom_t<ord_t> *e, user_data_t<ord_t> *ext)
         {
           return ord_t(v->fn[0].get_max_order());
         }
 
-        scalar biform_surf(int n, double *wt, fn_t<double> *u, fn_t<double> *v, geom_t<double> *e, user_data_t<scalar> *ext)
+        scalar biform_surf(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *u, fn_t<double> *v, geom_t<double> *e, user_data_t<scalar> *ext)
         {
           // j * kappa * E_T * F_T
           // E_T = nu x E x nu  (nu is outer normal)
@@ -149,8 +149,7 @@ Code for the weak forms:
         }
 
 
-
-        scalar liform_surf(int n, double *wt, fn_t<double> *v, geom_t<double> *e, user_data_t<scalar> *ext)
+        scalar liform_surf(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<double> *v, geom_t<double> *e, user_data_t<scalar> *ext)
         {
           std::complex<double> ii = std::complex<double>(0.0, 1.0);
           scalar result = 0;
@@ -181,7 +180,7 @@ Code for the weak forms:
         }
 
         // Maximal polynomial order to integrate surface linear form.
-        ord_t liform_surf_ord(int n, double *wt, fn_t<ord_t> *v, geom_t<ord_t> *e, user_data_t<ord_t> *ext)
+        ord_t liform_surf_ord(int n, double *wt, fn_t<ord_t> *u_ext[], fn_t<ord_t> *v, geom_t<ord_t> *e, user_data_t<ord_t> *ext)
         {
           return ord_t(v->fn[0].get_max_order());
         }

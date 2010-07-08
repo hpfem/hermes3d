@@ -94,7 +94,7 @@ Code for the exact solution and the weak forms:
 
     // Weak forms
     template<typename real, typename scalar>
-    scalar biform(int n, double *wt, fn_t<real> *u, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
+    scalar biform(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<real> *u, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
     {
       return int_grad_u_grad_v<real, scalar>(n, wt, u, v, e);
     }
@@ -112,7 +112,7 @@ Code for the exact solution and the weak forms:
     }
 
     template<typename real, typename scalar>
-    scalar liform(int n, double *wt, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
+    scalar liform(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
     {
       return -int_F_v<real, scalar>(n, wt, rhs, v, e);
     }

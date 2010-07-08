@@ -99,7 +99,7 @@ Code for the exact solution and the weak forms:
      }
 
      template<typename real, typename scalar>
-     scalar bilinear_form(int n, double *wt, fn_t<real> *u, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
+     scalar bilinear_form(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<real> *u, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
      {
        return int_grad_u_grad_v<real, scalar>(n, wt, u, v, e) + int_u_v<real, scalar>(n, wt, u, v, e) / TAU;
      }
@@ -115,7 +115,7 @@ Code for the exact solution and the weak forms:
      }
 
      template<typename real, typename scalar>
-     scalar linear_form(int n, double *wt, fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
+     scalar linear_form(int n, double *wt, fn_t<scalar> *u_ext[], fn_t<real> *v, geom_t<real> *e, user_data_t<scalar> *data)
      {
        return int_F_v<real, scalar>(n, wt, rhs, v, e) + int_u_v<real, scalar>(n, wt, data->ext + 0, v, e) / TAU;
      }
@@ -138,9 +138,10 @@ Next, the weak forms above are registered as following:
 ::
 
    // Initialize the weak formulation.
-   WeakForm wf(1);
-   wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
-   wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, 1, &sln_prev);
+
+   WeakForm wf;
+   wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
+   wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, &sln_prev);
 
 Since the Stiffness matrix does not dependend on the solution, so assembling only need to be done once 
 in the first time step. For all remaining time step it will be the same, and we just need to 
