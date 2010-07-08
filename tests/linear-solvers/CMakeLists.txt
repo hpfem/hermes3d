@@ -6,23 +6,23 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${TESTS_INCLUDE_DIRS})
 include_directories(${hermes3d_SOURCE_DIR})
 
-if(REAL)
+if(H3D_REAL)
 	add_executable(${PROJECT_NAME}
 		main.cpp
 		${HERMES_COMMON_DIR}/trace.cpp
 	)
 	target_link_libraries(${PROJECT_NAME} ${TESTS_LIBRARIES})
 	target_link_libraries(${PROJECT_NAME} ${HERMES_REAL_BIN})
-endif(REAL)
-if(COMPLEX)
+endif(H3D_REAL)
+if(H3D_COMPLEX)
 	add_executable(${PROJECT_NAME}-cplx
 		main.cpp
 		${HERMES_COMMON_DIR}/trace.cpp
 	)
-	set_target_properties(${PROJECT_NAME}-cplx PROPERTIES COMPILE_FLAGS -DCOMPLEX)
+	set_target_properties(${PROJECT_NAME}-cplx PROPERTIES COMPILE_FLAGS -DH3D_COMPLEX)
 	target_link_libraries(${PROJECT_NAME}-cplx ${TESTS_LIBRARIES})
 	target_link_libraries(${PROJECT_NAME}-cplx ${HERMES_CPLX_BIN})
-endif(COMPLEX)
+endif(H3D_COMPLEX)
 
 configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
@@ -32,7 +32,7 @@ configure_file(
 # Tests
 
 set(BIN ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
-if(REAL)
+if(H3D_REAL)
 if(WITH_PETSC)
 	add_test(petsc-solver-1 sh -c "${BIN} petsc ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-1 | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-1")
 #	add_test(petsc-solver-2 sh -c "${BIN} petsc ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-singular | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-singular")
@@ -96,9 +96,9 @@ if(WITH_MUMPS)
 	add_test(mumps-solver-b-4 sh -c "${BIN} mumps-block ${CMAKE_CURRENT_SOURCE_DIR}/in/linsys-singular | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-singular")
 endif(WITH_MUMPS)
 
-endif(REAL)
+endif(H3D_REAL)
 
-if(COMPLEX)
+if(H3D_COMPLEX)
 set(BIN ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-cplx)
 
 if(WITH_UMFPACK)
@@ -117,4 +117,4 @@ if(WITH_MUMPS)
 	add_test(mumps-solver-cplx-b-1 sh -c "${BIN} mumps-block | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/linsys-cplx-1")
 endif(WITH_MUMPS)
 
-endif(COMPLEX)
+endif(H3D_COMPLEX)

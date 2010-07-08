@@ -241,7 +241,7 @@ H1ShapesetLobattoHex::H1ShapesetLobattoHex() : Shapeset(1)
 	// vertices
 	vertex_indices = lobatto_hex_vertex_indices;
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 

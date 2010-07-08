@@ -46,7 +46,7 @@ void H1Projection::precalc_fn_prods(double fn[N_FNS][N_FNS])
 {
 	Quad1D *quad_1d = get_quadrature_1d();
 
-	int order = MAX_QUAD_ORDER;
+	int order = H3D_MAX_QUAD_ORDER;
 	QuadPt1D *pt = quad_1d->get_points(order);
 	int np = quad_1d->get_num_points(order);
 
@@ -66,7 +66,7 @@ void H1Projection::precalc_dx_prods(double dx[N_FNS][N_FNS])
 {
 	Quad1D *quad_1d = get_quadrature_1d();
 
-	int order = MAX_QUAD_ORDER;
+	int order = H3D_MAX_QUAD_ORDER;
 	QuadPt1D *pt = quad_1d->get_points(order);
 	int np = quad_1d->get_num_points(order);
 
@@ -122,7 +122,7 @@ double H1Projection::get_error(int split, int son, const order3_t &order)
 		memset(prdz, 0, np * sizeof(double));
 
 		for (int i = 0; i < n_fns; i++) {
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 			double tmp[np];
 			ss->get_fn_values(fn_idx[i], np, tpt, 0, tmp);
 			blas_axpy(np, proj_coef[i], tmp, 1, prfn, 1);

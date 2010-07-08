@@ -109,7 +109,7 @@ void WeakForm::add_vector_form_surf(int i, vector_form_val_t fn, vector_form_ord
 
 void WeakForm::set_ext_fns(void *fn, Tuple<MeshFunction*> ext)
 {
-	EXIT(ERR_NOT_IMPLEMENTED);
+	EXIT(H3D_ERR_NOT_IMPLEMENTED);
 }
 
 

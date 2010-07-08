@@ -3,8 +3,8 @@ set(DEBUG_ORDER YES)	# integrate with maximal possible quadrature order
 set(PROFILING   YES)	# turn on prifiling support
 
 # real/complex version of the library
-set(REAL        YES)	# build real version of H3D
-set(COMPLEX     NO)		# build complex version of H3D
+set(H3D_REAL        YES)	# build real version of H3D
+set(H3D_COMPLEX     NO)		# build complex version of H3D
 
 # supported element types
 set(WITH_TETRA  YES)	# build with tetrahedra

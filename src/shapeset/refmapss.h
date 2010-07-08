@@ -42,7 +42,7 @@ public:
 	/// @param [in] ori - orientation of the edge (0 or 1)
 	/// @param [in] order - order on the edge
 	virtual int *get_edge_indices(int edge, int ori, order1_t order) {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return NULL;
 	}
 
@@ -51,29 +51,29 @@ public:
 	/// @param [in] ori - orinetation of the face
 	/// @param [in] order - order on the face
 	virtual int *get_face_indices(int face, int ori, order2_t order) {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return NULL;
 	}
 
 	/// @return indices of bubble functions
 	/// @param order - order of the bubble function
 	virtual int *get_bubble_indices(order3_t order) {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return NULL;
 	}
 
 	virtual int get_num_edge_fns(order1_t order) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 
 	virtual int get_num_face_fns(order2_t order) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 
 	virtual int get_num_bubble_fns(order3_t order) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 
@@ -88,7 +88,7 @@ public:
 	virtual order3_t get_dcmp(int index) const { return order3_t(-1); }
 
 	virtual int get_shape_type(int index) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 
@@ -130,7 +130,7 @@ public:
 	/// @param [in] ori - orientation of the edge (0 or 1)
 	/// @param [in] order - order on the edge
 	virtual int *get_edge_indices(int edge, int ori, order1_t order) {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return NULL;
 	}
 
@@ -139,29 +139,29 @@ public:
 	/// @param [in] ori - orinetation of the face
 	/// @param [in] order - order on the face
 	virtual int *get_face_indices(int face, int ori, order2_t order) {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return NULL;
 	}
 
 	/// @return indices of bubble functions
 	/// @param order - order of the bubble function
 	virtual int *get_bubble_indices(order3_t order) {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return NULL;
 	}
 
 	virtual int get_num_edge_fns(order1_t order) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 
 	virtual int get_num_face_fns(order2_t order) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 
 	virtual int get_num_bubble_fns(order3_t order) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 
@@ -176,7 +176,7 @@ public:
 	virtual order3_t get_dcmp(int index) const { return order3_t(-1); }
 
 	virtual int get_shape_type(int index) const {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return 0;
 	}
 

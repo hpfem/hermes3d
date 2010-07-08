@@ -32,14 +32,14 @@
 static Epetra_SerialComm seq_comm;
 #endif
 
-#define EPETRA_NOT_COMPILED "hermes3d was not built with Epetra support."
+#define H3D_EPETRA_NOT_COMPILED "hermes3d was not built with Epetra support."
 
 EpetraMatrix::EpetraMatrix()
 {
 	_F_
 #ifdef HAVE_EPETRA
 	this->mat = NULL;
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	this->mat_im = NULL;
 #endif
 	this->grph = NULL;
@@ -49,7 +49,7 @@ EpetraMatrix::EpetraMatrix()
 	this->row_storage = true;
 	this->col_storage = false;
 #else
-	error(EPETRA_NOT_COMPILED);
+	error(H3D_EPETRA_NOT_COMPILED);
 #endif
 }
 
@@ -100,7 +100,7 @@ void EpetraMatrix::finish()
 	_F_
 #ifdef HAVE_EPETRA
 	mat->FillComplete();
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	mat_im->FillComplete();
 #endif
 #endif
@@ -113,7 +113,7 @@ void EpetraMatrix::alloc()
 	grph->FillComplete();
 	// create the matrix
 	mat = new Epetra_CrsMatrix(Copy, *grph); MEM_CHECK(mat);
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	mat_im = new Epetra_CrsMatrix(Copy, *grph); MEM_CHECK(mat_im);
 #endif
 #endif
@@ -125,7 +125,7 @@ void EpetraMatrix::free()
 #ifdef HAVE_EPETRA
 	if (owner) {
 		delete mat; mat = NULL;
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 		delete mat_im; mat_im = NULL;
 #endif
 		delete grph; grph = NULL;
@@ -170,7 +170,7 @@ void EpetraMatrix::zero()
 	_F_
 #ifdef HAVE_EPETRA
 	mat->PutScalar(0.0);
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	mat_im->PutScalar(0.0);
 #endif
 #endif
@@ -180,8 +180,8 @@ void EpetraMatrix::add(int m, int n, scalar v)
 {
 	_F_
 #ifdef HAVE_EPETRA
-	if (v != 0.0 && m != DIRICHLET_DOF && n != DIRICHLET_DOF) {		// ignore dirichlet DOFs
-#ifndef COMPLEX
+	if (v != 0.0 && m != H3D_DIRICHLET_DOF && n != H3D_DIRICHLET_DOF) {		// ignore dirichlet DOFs
+#ifndef H3D_COMPLEX
 		int ierr = mat->SumIntoGlobalValues(m, 1, &v, &n);
 		if (ierr != 0) error("Failed to insert into Epetra matrix");
 #else
@@ -241,7 +241,7 @@ EpetraVector::EpetraVector()
 #ifdef HAVE_EPETRA
 	this->std_map = NULL;
 	this->vec = NULL;
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	this->vec_im = NULL;
 #endif
 	this->size = 0;
@@ -276,7 +276,7 @@ void EpetraVector::alloc(int n)
 	size = n;
 	std_map = new Epetra_Map(size, 0, seq_comm); MEM_CHECK(std_map);
 	vec = new Epetra_Vector(*std_map); MEM_CHECK(vec);
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	vec_im = new Epetra_Vector(*std_map); MEM_CHECK(vec_im);
 #endif
 	zero();
@@ -288,7 +288,7 @@ void EpetraVector::zero()
 	_F_
 #ifdef HAVE_EPETRA
 	for (int i = 0; i < size; i++) (*vec)[i] = 0.0;
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	for (int i = 0; i < size; i++) (*vec_im)[i] = 0.0;
 #endif
 #endif
@@ -300,7 +300,7 @@ void EpetraVector::free()
 #ifdef HAVE_EPETRA
 	delete std_map; std_map = NULL;
 	delete vec; vec = NULL;
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 	delete vec_im; vec_im = NULL;
 #endif
 	size = 0;
@@ -311,7 +311,7 @@ void EpetraVector::set(int idx, scalar y)
 {
 	_F_
 #ifdef HAVE_EPETRA
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 	if (idx >= 0) (*vec)[idx] = y;
 #else
 	if (idx >= 0) {
@@ -326,7 +326,7 @@ void EpetraVector::add(int idx, scalar y)
 {
 	_F_
 #ifdef HAVE_EPETRA
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 	if (idx >= 0) (*vec)[idx] += y;
 #else
 	if (idx >= 0) {

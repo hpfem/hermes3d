@@ -280,10 +280,10 @@ static void make_dx_coefs(int mode, order3_t ord, scalar *mono, scalar *result) 
 			break;
 
 		case MODE_PRISM:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 
 		default:
-			EXIT(ERR_UNKNOWN_MODE);
+			EXIT(H3D_ERR_UNKNOWN_MODE);
 	}
 
 }
@@ -316,10 +316,10 @@ static void make_dy_coefs(int mode, order3_t ord, scalar *mono, scalar *result) 
 			break;
 
 		case MODE_PRISM:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 
 		default:
-			EXIT(ERR_UNKNOWN_MODE);
+			EXIT(H3D_ERR_UNKNOWN_MODE);
 	}
 }
 
@@ -349,10 +349,10 @@ static void make_dz_coefs(int mode, order3_t ord, scalar *mono, scalar *result) 
 			break;
 
 		case MODE_PRISM:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 
 		default:
-			EXIT(ERR_UNKNOWN_MODE);
+			EXIT(H3D_ERR_UNKNOWN_MODE);
 	}
 }
 
@@ -374,7 +374,7 @@ void Solution::set_active_element(Element *e) {
 		switch (mode) {
 			case MODE_TETRAHEDRON: np = (order.order + 1) * (order.order + 2) * (order.order + 3) / 6; break;
 			case MODE_HEXAHEDRON: np = (order.x + 1) * (order.y + 1) * (order.z + 1); break;
-			default: EXIT(ERR_NOT_IMPLEMENTED); break;
+			default: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
 		}
 
 		for (int i = 0, m = 0; i < num_components; i++) {
@@ -388,16 +388,16 @@ void Solution::set_active_element(Element *e) {
 	}
 	else if (type == EXACT) {
 		switch (mode) {
-			case MODE_TETRAHEDRON: order = order3_t(MAX_QUAD_ORDER_TETRA); break;
-			case MODE_HEXAHEDRON: order = order3_t(MAX_QUAD_ORDER, MAX_QUAD_ORDER, MAX_QUAD_ORDER); break;
-			default: EXIT(ERR_NOT_IMPLEMENTED); break;
+			case MODE_TETRAHEDRON: order = order3_t(H3D_MAX_QUAD_ORDER_TETRA); break;
+			case MODE_HEXAHEDRON: order = order3_t(H3D_MAX_QUAD_ORDER, H3D_MAX_QUAD_ORDER, H3D_MAX_QUAD_ORDER); break;
+			default: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
 		}
 	}
 	else if (type == CONST) {
 		switch (mode) {
 			case MODE_TETRAHEDRON: order = order3_t(0); break;
 			case MODE_HEXAHEDRON: order = order3_t(0, 0, 0); break;
-			default: EXIT(ERR_NOT_IMPLEMENTED); break;
+			default: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
 		}
 	}
 	else
@@ -475,7 +475,7 @@ void calc_mono_matrix(const order3_t &ord, mono_lu_init &mono) {
 			break;
 
 		default:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 			break;
 	}
 
@@ -490,21 +490,21 @@ void calc_mono_matrix(const order3_t &ord, mono_lu_init &mono) {
 
 #ifdef WITH_TETRA
 	static QuadChebTetra		quad_cheb_tetra;
-	#define QUAD_CHEB_TETRA		&quad_cheb_tetra
+	#define H3D_QUAD_CHEB_TETRA		&quad_cheb_tetra
 #else
-	#define QUAD_CHEB_TETRA		NULL
+	#define H3D_QUAD_CHEB_TETRA		NULL
 #endif
 
 #ifdef WITH_HEX
 	static QuadChebHex			quad_cheb_hex;
-	#define QUAD_CHEB_HEX		&quad_cheb_hex
+	#define H3D_QUAD_CHEB_HEX		&quad_cheb_hex
 #else
-	#define QUAD_CHEB_HEX		NULL
+	#define H3D_QUAD_CHEB_HEX		NULL
 #endif
 
-#define QUAD_CHEB_PRISM		NULL
+#define H3D_QUAD_CHEB_PRISM		NULL
 
-static Quad3D *cheb_quad[] = { QUAD_CHEB_TETRA, QUAD_CHEB_HEX, QUAD_CHEB_PRISM };
+static Quad3D *cheb_quad[] = { H3D_QUAD_CHEB_TETRA, H3D_QUAD_CHEB_HEX, H3D_QUAD_CHEB_PRISM };
 
 void Solution::set_fe_solution(Space *space, scalar *vec, double dir) {
 	_F_
@@ -866,7 +866,7 @@ order3_t Solution::get_order()
 			break;
 
 		default:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 			break;
 	}
 

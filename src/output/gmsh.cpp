@@ -76,7 +76,7 @@ public:
 
 	virtual QuadPt3D *get_face_points(int face, const order2_t &order) {
 		_F_
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		return NULL;
 	}
 
@@ -110,11 +110,11 @@ OutputQuadTetra::OutputQuadTetra() {
 	_F_
 #ifdef WITH_TETRA
 	mode = MODE_TETRAHEDRON;
-	max_order = MAX_QUAD_ORDER;
+	max_order = H3D_MAX_QUAD_ORDER;
 
 	output_precision = 1;
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 
@@ -217,10 +217,10 @@ OutputQuadHex::OutputQuadHex() {
 	_F_
 #ifdef WITH_HEX
 	mode = MODE_HEXAHEDRON;
-	max_order = MAX_QUAD_ORDER;
+	max_order = H3D_MAX_QUAD_ORDER;
 	output_precision = 0;
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 
@@ -429,8 +429,8 @@ void GmshOutputEngine::out(MeshFunction *fn, const char *name, int item/* = FN_V
 		switch (mode) {
 			case MODE_TETRAHEDRON: order = order3_t(1); break;
 			case MODE_HEXAHEDRON: order = order3_t(1, 1, 1); break;
-			case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
-			default: EXIT(ERR_UNKNOWN_MODE); break;
+			case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+			default: EXIT(H3D_ERR_UNKNOWN_MODE); break;
 		}
 
 		Gmsh::OutputQuad *quad = output_quad[mode];
@@ -458,8 +458,8 @@ void GmshOutputEngine::out(MeshFunction *fn, const char *name, int item/* = FN_V
 			switch (mode) {
 				case MODE_TETRAHEDRON: np = Tetra::NUM_VERTICES; break;
 				case MODE_HEXAHEDRON: np = Hex::NUM_VERTICES; break;
-				case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
-				default: EXIT(ERR_UNKNOWN_MODE); break;
+				case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+				default: EXIT(H3D_ERR_UNKNOWN_MODE); break;
 			}
 
 			// small buffers to hold values for one sub-element
@@ -472,7 +472,7 @@ void GmshOutputEngine::out(MeshFunction *fn, const char *name, int item/* = FN_V
 				phys_pt[j].z = phys_z[pt_idx];
 
 				for (int ic = 0; ic < nc; ic++) {
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 					v[ic][j] = val[ic][pt_idx];
 #else
 					assert(fabs(IMAG(val[ic][pt_idx])) < 1e-12); // output only for real numbers
@@ -518,8 +518,8 @@ void GmshOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *f
 		switch (mode) {
 			case MODE_TETRAHEDRON: order = order3_t(1); break;
 			case MODE_HEXAHEDRON: order = order3_t(1, 1, 1); break;
-			case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
-			default: EXIT(ERR_UNKNOWN_MODE); break;
+			case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+			default: EXIT(H3D_ERR_UNKNOWN_MODE); break;
 		}
 
 		Gmsh::OutputQuad *quad = output_quad[mode];
@@ -555,8 +555,8 @@ void GmshOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *f
 			switch (mode) {
 				case MODE_TETRAHEDRON: np = Tetra::NUM_VERTICES; break;
 				case MODE_HEXAHEDRON: np = Hex::NUM_VERTICES; break;
-				case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
-				default: EXIT(ERR_UNKNOWN_MODE); break;
+				case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+				default: EXIT(H3D_ERR_UNKNOWN_MODE); break;
 			}
 
 			// small buffers to hold values for one sub-element
@@ -569,7 +569,7 @@ void GmshOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *f
 				phys_pt[j].z = phys_z[pt_idx];
 
 				for (int ic = 0; ic < COMPONENTS; ic++) {
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 					v[ic][j] = val[ic][pt_idx];
 #else
 					v[ic][j] = REAL(val[ic][pt_idx]);
@@ -629,11 +629,11 @@ void GmshOutputEngine::out(Mesh *mesh) {
 				break;
 
 			case MODE_PRISM:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 				break;
 
 			default:
-				EXIT(ERR_UNKNOWN_MODE);
+				EXIT(H3D_ERR_UNKNOWN_MODE);
 				break;
 		}
 	}
@@ -730,7 +730,7 @@ void GmshOutputEngine::out_bc(Mesh *mesh, const char *name) {
 					break;
 
 				default:
-					EXIT(ERR_NOT_IMPLEMENTED);
+					EXIT(H3D_ERR_NOT_IMPLEMENTED);
 					break;
 			}
 		}
@@ -761,7 +761,7 @@ void GmshOutputEngine::out_bc(Mesh *mesh, const char *name) {
 					break;
 
 				default:
-					EXIT(ERR_NOT_IMPLEMENTED);
+					EXIT(H3D_ERR_NOT_IMPLEMENTED);
 					break;
 			}
 		}
@@ -894,5 +894,5 @@ void GmshOutputEngine::out_orders(Space *space, const char *name) {
 void GmshOutputEngine::out(Matrix *mat)
 {
 	_F_
-	error(ERR_NOT_IMPLEMENTED);
+	error(H3D_ERR_NOT_IMPLEMENTED);
 }

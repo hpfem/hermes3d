@@ -71,159 +71,159 @@ static int get_hex_split_and_sons(Element *e, Box *cr, Box *er, int *sons) {
 	PRINTF(" * xmid = %llx, ymid = %llx, zmid = %llx\n", xmid, ymid, zmid);
 
 	switch (e->reft) {
-		case REFT_HEX_X:
+		case H3D_REFT_HEX_X:
 			if (cr->x_hi <= xmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 20), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 20), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 21), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 21), H3D_SPLIT_NONE;
 			else
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 20, sons[1] = sons[2] = sons[5] = sons[6] = 21), SPLIT_HEX_X;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 20, sons[1] = sons[2] = sons[5] = sons[6] = 21), H3D_SPLIT_HEX_X;
 			break;
 
-		case REFT_HEX_Y:
+		case H3D_REFT_HEX_Y:
 			if (cr->y_hi <= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 22), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 22), H3D_SPLIT_NONE;
 			else if (cr->y_lo >= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 23), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 23), H3D_SPLIT_NONE;
 			else
-				return (sons[0] = sons[1] = sons[4] = sons[5] = 22, sons[2] = sons[3] = sons[6] = sons[7] = 23), SPLIT_HEX_Y;
+				return (sons[0] = sons[1] = sons[4] = sons[5] = 22, sons[2] = sons[3] = sons[6] = sons[7] = 23), H3D_SPLIT_HEX_Y;
 			break;
 
-		case REFT_HEX_Z:
+		case H3D_REFT_HEX_Z:
 			if (cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 24), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 24), H3D_SPLIT_NONE;
 			else if (cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 25), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 25), H3D_SPLIT_NONE;
 			else
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 24, sons[4] = sons[5] = sons[6] = sons[7] = 25), SPLIT_HEX_Z;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 24, sons[4] = sons[5] = sons[6] = sons[7] = 25), H3D_SPLIT_HEX_Z;
 			break;
 
-		case REFT_HEX_XY:
+		case H3D_H3D_REFT_HEX_XY:
 			if (cr->x_hi <= xmid && cr->y_hi <= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] =  8), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] =  8), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->y_hi <= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] =  9), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] =  9), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->y_lo >= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 10), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 10), H3D_SPLIT_NONE;
 			else if (cr->x_hi <= xmid && cr->y_lo >= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 11), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 11), H3D_SPLIT_NONE;
 			else if (cr->x_hi <= xmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] =  8, sons[2] = sons[3] = sons[6] = sons[7] = 11), SPLIT_HEX_X;
+				return (sons[0] = sons[1] = sons[4] = sons[5] =  8, sons[2] = sons[3] = sons[6] = sons[7] = 11), H3D_SPLIT_HEX_X;
 			else if (cr->x_lo >= xmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] =  9, sons[2] = sons[3] = sons[6] = sons[7] = 10), SPLIT_HEX_X;
+				return (sons[0] = sons[1] = sons[4] = sons[5] =  9, sons[2] = sons[3] = sons[6] = sons[7] = 10), H3D_SPLIT_HEX_X;
 			else if (cr->y_hi <= ymid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] =  8, sons[1] = sons[2] = sons[5] = sons[6] =  9), SPLIT_HEX_Y;
+				return (sons[0] = sons[3] = sons[4] = sons[7] =  8, sons[1] = sons[2] = sons[5] = sons[6] =  9), H3D_SPLIT_HEX_Y;
 			else if (cr->y_lo >= ymid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 11, sons[1] = sons[2] = sons[5] = sons[6] = 10), SPLIT_HEX_Y;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 11, sons[1] = sons[2] = sons[5] = sons[6] = 10), H3D_SPLIT_HEX_Y;
 			else
-				return (sons[0] = sons[4] = 8, sons[1] = sons[5] = 9, sons[2] = sons[6] = 10, sons[3] = sons[7] = 11), SPLIT_HEX_XY;
+				return (sons[0] = sons[4] = 8, sons[1] = sons[5] = 9, sons[2] = sons[6] = 10, sons[3] = sons[7] = 11), H3D_H3D_SPLIT_HEX_XY;
 			break;
 
-		case REFT_HEX_XZ:
+		case H3D_H3D_REFT_HEX_XZ:
 			if (cr->x_hi <= xmid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 12), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 12), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 13), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 13), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 14), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 14), H3D_SPLIT_NONE;
 			else if (cr->x_hi <= xmid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 15), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 15), H3D_SPLIT_NONE;
 			else if (cr->x_hi <= xmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 12, sons[4] = sons[5] = sons[6] = sons[7] = 15), SPLIT_HEX_X;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 12, sons[4] = sons[5] = sons[6] = sons[7] = 15), H3D_SPLIT_HEX_X;
 			else if (cr->x_lo >= xmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 13, sons[4] = sons[5] = sons[6] = sons[7] = 14), SPLIT_HEX_X;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 13, sons[4] = sons[5] = sons[6] = sons[7] = 14), H3D_SPLIT_HEX_X;
 			else if (cr->z_hi <= zmid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 12, sons[1] = sons[2] = sons[6] = sons[5] = 13), SPLIT_HEX_Z;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 12, sons[1] = sons[2] = sons[6] = sons[5] = 13), H3D_SPLIT_HEX_Z;
 			else if (cr->z_lo >= zmid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 15, sons[1] = sons[2] = sons[6] = sons[5] = 14), SPLIT_HEX_Z;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 15, sons[1] = sons[2] = sons[6] = sons[5] = 14), H3D_SPLIT_HEX_Z;
 			else
-				return (sons[0] = sons[3] = 12, sons[1] = sons[2] = 13, sons[4] = sons[7] = 15, sons[5] = sons[6] = 14), SPLIT_HEX_XZ;
+				return (sons[0] = sons[3] = 12, sons[1] = sons[2] = 13, sons[4] = sons[7] = 15, sons[5] = sons[6] = 14), H3D_H3D_SPLIT_HEX_XZ;
 			break;
 
-		case REFT_HEX_YZ:
+		case H3D_H3D_REFT_HEX_YZ:
 			if (cr->y_hi <= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 16), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 16), H3D_SPLIT_NONE;
 			else if (cr->y_lo >= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 17), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 17), H3D_SPLIT_NONE;
 			else if (cr->y_lo >= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 18), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 18), H3D_SPLIT_NONE;
 			else if (cr->y_hi <= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 19), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 19), H3D_SPLIT_NONE;
 			else if (cr->y_hi <= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 16, sons[4] = sons[5] = sons[6] = sons[7] = 19), SPLIT_HEX_Y;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 16, sons[4] = sons[5] = sons[6] = sons[7] = 19), H3D_SPLIT_HEX_Y;
 			else if (cr->y_lo >= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 17, sons[4] = sons[5] = sons[6] = sons[7] = 18), SPLIT_HEX_Y;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 17, sons[4] = sons[5] = sons[6] = sons[7] = 18), H3D_SPLIT_HEX_Y;
 			else if (cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] = 16, sons[2] = sons[3] = sons[6] = sons[7] = 17), SPLIT_HEX_Z;
+				return (sons[0] = sons[1] = sons[4] = sons[5] = 16, sons[2] = sons[3] = sons[6] = sons[7] = 17), H3D_SPLIT_HEX_Z;
 			else if (cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] = 19, sons[2] = sons[3] = sons[6] = sons[7] = 18), SPLIT_HEX_Z;
+				return (sons[0] = sons[1] = sons[4] = sons[5] = 19, sons[2] = sons[3] = sons[6] = sons[7] = 18), H3D_SPLIT_HEX_Z;
 			else
-				return (sons[0] = sons[1] = 16, sons[2] = sons[3] = 17, sons[4] = sons[5] = 19, sons[6] = sons[7] = 18), SPLIT_HEX_YZ;
+				return (sons[0] = sons[1] = 16, sons[2] = sons[3] = 17, sons[4] = sons[5] = 19, sons[6] = sons[7] = 18), H3D_H3D_SPLIT_HEX_YZ;
 			break;
 
-		case REFT_HEX_XYZ:
+		case H3D_H3D_H3D_REFT_HEX_XYZ:
 			// 8 sub-elements
 			if (cr->x_hi <= xmid && cr->y_hi <= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 0), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 0), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->y_hi <= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 1), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 1), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->y_lo >= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 2), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 2), H3D_SPLIT_NONE;
 			else if (cr->x_hi <= xmid && cr->y_lo <= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 3), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 3), H3D_SPLIT_NONE;
 			else if (cr->x_hi <= xmid && cr->y_hi <= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 4), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 4), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->y_hi <= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 5), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 5), H3D_SPLIT_NONE;
 			else if (cr->x_lo >= xmid && cr->y_lo >= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 6), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 6), H3D_SPLIT_NONE;
 			else if (cr->x_hi <= xmid && cr->y_lo <= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 7), SPLIT_NONE;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = sons[4] = sons[5] = sons[6] = sons[7] = 7), H3D_SPLIT_NONE;
 			// 4 sub-elements
 			else if (cr->x_hi <= xmid && cr->y_hi <= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 0, sons[4] = sons[5] = sons[6] = sons[7] = 4), SPLIT_HEX_XY;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 0, sons[4] = sons[5] = sons[6] = sons[7] = 4), H3D_H3D_SPLIT_HEX_XY;
 			else if (cr->x_lo >= xmid && cr->y_hi <= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 1, sons[4] = sons[5] = sons[6] = sons[7] = 5), SPLIT_HEX_XY;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 1, sons[4] = sons[5] = sons[6] = sons[7] = 5), H3D_H3D_SPLIT_HEX_XY;
 			else if (cr->x_lo >= xmid && cr->y_lo >= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 2, sons[4] = sons[5] = sons[6] = sons[7] = 6), SPLIT_HEX_XY;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 2, sons[4] = sons[5] = sons[6] = sons[7] = 6), H3D_H3D_SPLIT_HEX_XY;
 			else if (cr->x_hi <= xmid && cr->y_lo >= ymid)
-				return (sons[0] = sons[1] = sons[2] = sons[3] = 3, sons[4] = sons[5] = sons[6] = sons[7] = 7), SPLIT_HEX_XY;
+				return (sons[0] = sons[1] = sons[2] = sons[3] = 3, sons[4] = sons[5] = sons[6] = sons[7] = 7), H3D_H3D_SPLIT_HEX_XY;
 			else if (cr->x_hi <= xmid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] = 0, sons[2] = sons[3] = sons[6] = sons[7] = 3), SPLIT_HEX_XZ;
+				return (sons[0] = sons[1] = sons[4] = sons[5] = 0, sons[2] = sons[3] = sons[6] = sons[7] = 3), H3D_H3D_SPLIT_HEX_XZ;
 			else if (cr->x_lo >= xmid && cr->z_hi <= zmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] = 1, sons[2] = sons[3] = sons[6] = sons[7] = 2), SPLIT_HEX_XZ;
+				return (sons[0] = sons[1] = sons[4] = sons[5] = 1, sons[2] = sons[3] = sons[6] = sons[7] = 2), H3D_H3D_SPLIT_HEX_XZ;
 			else if (cr->x_lo >= xmid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] = 5, sons[2] = sons[3] = sons[6] = sons[7] = 6), SPLIT_HEX_XZ;
+				return (sons[0] = sons[1] = sons[4] = sons[5] = 5, sons[2] = sons[3] = sons[6] = sons[7] = 6), H3D_H3D_SPLIT_HEX_XZ;
 			else if (cr->x_hi <= xmid && cr->z_lo >= zmid)
-				return (sons[0] = sons[1] = sons[4] = sons[5] = 4, sons[2] = sons[3] = sons[6] = sons[7] = 7), SPLIT_HEX_XZ;
+				return (sons[0] = sons[1] = sons[4] = sons[5] = 4, sons[2] = sons[3] = sons[6] = sons[7] = 7), H3D_H3D_SPLIT_HEX_XZ;
 			else if (cr->y_hi <= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 0, sons[1] = sons[2] = sons[5] = sons[6] = 1), SPLIT_HEX_YZ;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 0, sons[1] = sons[2] = sons[5] = sons[6] = 1), H3D_H3D_SPLIT_HEX_YZ;
 			else if (cr->y_lo >= ymid && cr->z_hi <= zmid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 3, sons[1] = sons[2] = sons[5] = sons[6] = 2), SPLIT_HEX_YZ;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 3, sons[1] = sons[2] = sons[5] = sons[6] = 2), H3D_H3D_SPLIT_HEX_YZ;
 			else if (cr->y_lo >= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 7, sons[1] = sons[2] = sons[5] = sons[6] = 6), SPLIT_HEX_YZ;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 7, sons[1] = sons[2] = sons[5] = sons[6] = 6), H3D_H3D_SPLIT_HEX_YZ;
 			else if (cr->y_hi <= ymid && cr->z_lo >= zmid)
-				return (sons[0] = sons[3] = sons[4] = sons[7] = 4, sons[1] = sons[2] = sons[5] = sons[6] = 5), SPLIT_HEX_YZ;
+				return (sons[0] = sons[3] = sons[4] = sons[7] = 4, sons[1] = sons[2] = sons[5] = sons[6] = 5), H3D_H3D_SPLIT_HEX_YZ;
 			// 2 sub-element
 			else if (cr->x_hi <= xmid)
-				return (sons[0] = sons[1] = 0, sons[2] = sons[3] = 3, sons[4] = sons[5] = 4, sons[6] = sons[7] = 7), SPLIT_HEX_X;
+				return (sons[0] = sons[1] = 0, sons[2] = sons[3] = 3, sons[4] = sons[5] = 4, sons[6] = sons[7] = 7), H3D_SPLIT_HEX_X;
 			else if (cr->x_lo >= xmid)
-				return (sons[0] = sons[1] = 1, sons[2] = sons[3] = 2, sons[4] = sons[5] = 5, sons[6] = sons[7] = 6), SPLIT_HEX_X;
+				return (sons[0] = sons[1] = 1, sons[2] = sons[3] = 2, sons[4] = sons[5] = 5, sons[6] = sons[7] = 6), H3D_SPLIT_HEX_X;
 			else if (cr->y_hi <= ymid)
-				return (sons[0] = sons[3] = 0, sons[1] = sons[2] = 1, sons[4] = sons[7] = 4, sons[5] = sons[6] = 5), SPLIT_HEX_Y;
+				return (sons[0] = sons[3] = 0, sons[1] = sons[2] = 1, sons[4] = sons[7] = 4, sons[5] = sons[6] = 5), H3D_SPLIT_HEX_Y;
 			else if (cr->y_lo >= ymid)
-				return (sons[0] = sons[3] = 3, sons[1] = sons[2] = 2, sons[4] = sons[7] = 7, sons[5] = sons[6] = 6), SPLIT_HEX_Y;
+				return (sons[0] = sons[3] = 3, sons[1] = sons[2] = 2, sons[4] = sons[7] = 7, sons[5] = sons[6] = 6), H3D_SPLIT_HEX_Y;
 			else if (cr->z_hi <= zmid)
-				return (sons[0] = sons[4] = 0, sons[1] = sons[5] = 1, sons[2] = sons[6] = 2, sons[3] = sons[7] = 3), SPLIT_HEX_Z;
+				return (sons[0] = sons[4] = 0, sons[1] = sons[5] = 1, sons[2] = sons[6] = 2, sons[3] = sons[7] = 3), H3D_SPLIT_HEX_Z;
 			else if (cr->z_lo >= zmid)
-				return (sons[0] = sons[4] = 4, sons[1] = sons[5] = 5, sons[2] = sons[6] = 6, sons[3] = sons[7] = 7), SPLIT_HEX_Z;
+				return (sons[0] = sons[4] = 4, sons[1] = sons[5] = 5, sons[2] = sons[6] = 6, sons[3] = sons[7] = 7), H3D_SPLIT_HEX_Z;
 			// 0 sub-elements
 			else
-				return (sons[0] = 0, sons[1] = 1, sons[2] = 2, sons[3] = 3, sons[4] = 4, sons[5] = 5, sons[6] = 6, sons[7] = 7), SPLIT_HEX_XYZ;
+				return (sons[0] = 0, sons[1] = 1, sons[2] = 2, sons[3] = 3, sons[4] = 4, sons[5] = 5, sons[6] = 6, sons[7] = 7), H3D_H3D_H3D_SPLIT_HEX_XYZ;
 			break;
 	}
 
-	EXIT(ERR_NOT_IMPLEMENTED);
+	EXIT(H3D_ERR_NOT_IMPLEMENTED);
 	return -1;
 }
 
@@ -327,7 +327,7 @@ static int trans_to_son_idx(int trans) {
 	else if (trans < 22) return trans & 1;
 	else if (trans < 24) return trans & 1;
 	else if (trans < 26) return trans & 1;
-	else EXIT(ERR_NOT_IMPLEMENTED);
+	else EXIT(H3D_ERR_NOT_IMPLEMENTED);
 }
 
 static void init_transforms(Transformable *fn, Box *cr, Box *er) {
@@ -402,11 +402,11 @@ void Traverse::set_boundary_info(State *s, bool *bnd, FacePos *fp) {
 			break;
 
 		case MODE_PRISM:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 			break;
 
 		default:
-			EXIT(ERR_UNKNOWN_MODE);
+			EXIT(H3D_ERR_UNKNOWN_MODE);
 			break;
 	}
 
@@ -437,20 +437,20 @@ void Traverse::hex_push_son_states(State *s) {
 	int son0, son1;
 	State *ns = NULL;
 	switch (split) {
-		case SPLIT_HEX_X:
-		case SPLIT_HEX_Y:
-		case SPLIT_HEX_Z:
-		case SPLIT_HEX_XY:
-		case SPLIT_HEX_XZ:
-		case SPLIT_HEX_YZ:
+		case H3D_SPLIT_HEX_X:
+		case H3D_SPLIT_HEX_Y:
+		case H3D_SPLIT_HEX_Z:
+		case H3D_H3D_SPLIT_HEX_XY:
+		case H3D_H3D_SPLIT_HEX_XZ:
+		case H3D_H3D_SPLIT_HEX_YZ:
 			int sidx[4];
 			switch (split) {
-				case SPLIT_HEX_X:  son0 = 20; son1 = 21; sidx[0] = 0; sidx[1] = 6; break;
-				case SPLIT_HEX_Y:  son0 = 22; son1 = 23; sidx[0] = 0; sidx[1] = 6; break;
-				case SPLIT_HEX_Z:  son0 = 24; son1 = 25; sidx[0] = 0; sidx[1] = 6; break;
-				case SPLIT_HEX_XY: son0 =  8; son1 = 11; sidx[0] = 0; sidx[1] = 1; sidx[2] = 2; sidx[3] = 3; break;
-				case SPLIT_HEX_XZ: son0 = 12; son1 = 15; sidx[0] = 0; sidx[1] = 1; sidx[2] = 5; sidx[3] = 4; break;
-				case SPLIT_HEX_YZ: son0 = 16; son1 = 19; sidx[0] = 0; sidx[1] = 2; sidx[2] = 6; sidx[3] = 4; break;
+				case H3D_SPLIT_HEX_X:  son0 = 20; son1 = 21; sidx[0] = 0; sidx[1] = 6; break;
+				case H3D_SPLIT_HEX_Y:  son0 = 22; son1 = 23; sidx[0] = 0; sidx[1] = 6; break;
+				case H3D_SPLIT_HEX_Z:  son0 = 24; son1 = 25; sidx[0] = 0; sidx[1] = 6; break;
+				case H3D_H3D_SPLIT_HEX_XY: son0 =  8; son1 = 11; sidx[0] = 0; sidx[1] = 1; sidx[2] = 2; sidx[3] = 3; break;
+				case H3D_H3D_SPLIT_HEX_XZ: son0 = 12; son1 = 15; sidx[0] = 0; sidx[1] = 1; sidx[2] = 5; sidx[3] = 4; break;
+				case H3D_H3D_SPLIT_HEX_YZ: son0 = 16; son1 = 19; sidx[0] = 0; sidx[1] = 2; sidx[2] = 6; sidx[3] = 4; break;
 			}
 
 			for (int son = son0, k = 0; son <= son1; son++, k++) {
@@ -473,7 +473,7 @@ void Traverse::hex_push_son_states(State *s) {
 			}
 			break;
 
-		case SPLIT_HEX_XYZ:
+		case H3D_H3D_H3D_SPLIT_HEX_XYZ:
 			for (int son = 0; son <= 7; son++) {
 				State *ns = push_state();
 				hex_move_to_son(&ns->cr, &s->cr, son);
@@ -592,11 +592,11 @@ Element **Traverse::get_next_state(bool *bnd, FacePos *fp) {
 
 			case MODE_TETRAHEDRON:
 			case MODE_PRISM:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 				break;
 
 			default:
-				EXIT(ERR_UNKNOWN_MODE);
+				EXIT(H3D_ERR_UNKNOWN_MODE);
 				break;
 		}
 	}
@@ -691,19 +691,19 @@ void Traverse::hex_union_rec(Box *cr, Element **e, Box *er, uint64 *idx, Element
 	int sidx[4];
 	int son0, son1, reft;
 	switch (split) {
-		case SPLIT_HEX_X:
-		case SPLIT_HEX_Y:
-		case SPLIT_HEX_Z:
-		case SPLIT_HEX_XY:
-		case SPLIT_HEX_XZ:
-		case SPLIT_HEX_YZ:
+		case H3D_SPLIT_HEX_X:
+		case H3D_SPLIT_HEX_Y:
+		case H3D_SPLIT_HEX_Z:
+		case H3D_H3D_SPLIT_HEX_XY:
+		case H3D_H3D_SPLIT_HEX_XZ:
+		case H3D_H3D_SPLIT_HEX_YZ:
 			switch (split) {
-				case SPLIT_HEX_X:  reft = REFT_HEX_X;  son0 = 20; son1 = 21; sidx[0] = 0; sidx[1] = 1; break;
-				case SPLIT_HEX_Y:  reft = REFT_HEX_Y;  son0 = 22; son1 = 23; sidx[0] = 0; sidx[1] = 2; break;
-				case SPLIT_HEX_Z:  reft = REFT_HEX_Z;  son0 = 24; son1 = 25; sidx[0] = 0; sidx[1] = 4; break;
-				case SPLIT_HEX_XY: reft = REFT_HEX_XY; son0 =  8; son1 = 11; sidx[0] = 0; sidx[1] = 1; sidx[2] = 2; sidx[3] = 3; break;
-				case SPLIT_HEX_XZ: reft = REFT_HEX_XZ; son0 = 12; son1 = 15; sidx[0] = 0; sidx[1] = 1; sidx[2] = 4; sidx[3] = 5; break;
-				case SPLIT_HEX_YZ: reft = REFT_HEX_YZ; son0 = 16; son1 = 19; sidx[0] = 0; sidx[1] = 2; sidx[2] = 4; sidx[3] = 6; break;
+				case H3D_SPLIT_HEX_X:  reft = H3D_REFT_HEX_X;  son0 = 20; son1 = 21; sidx[0] = 0; sidx[1] = 1; break;
+				case H3D_SPLIT_HEX_Y:  reft = H3D_REFT_HEX_Y;  son0 = 22; son1 = 23; sidx[0] = 0; sidx[1] = 2; break;
+				case H3D_SPLIT_HEX_Z:  reft = H3D_REFT_HEX_Z;  son0 = 24; son1 = 25; sidx[0] = 0; sidx[1] = 4; break;
+				case H3D_H3D_SPLIT_HEX_XY: reft = H3D_H3D_REFT_HEX_XY; son0 =  8; son1 = 11; sidx[0] = 0; sidx[1] = 1; sidx[2] = 2; sidx[3] = 3; break;
+				case H3D_H3D_SPLIT_HEX_XZ: reft = H3D_H3D_REFT_HEX_XZ; son0 = 12; son1 = 15; sidx[0] = 0; sidx[1] = 1; sidx[2] = 4; sidx[3] = 5; break;
+				case H3D_H3D_SPLIT_HEX_YZ: reft = H3D_H3D_REFT_HEX_YZ; son0 = 16; son1 = 19; sidx[0] = 0; sidx[1] = 2; sidx[2] = 4; sidx[3] = 6; break;
 			}
 
 			unimesh->refine_element(uni->id, reft);
@@ -729,8 +729,8 @@ void Traverse::hex_union_rec(Box *cr, Element **e, Box *er, uint64 *idx, Element
 			break;
 
 		// 8 elements
-		case SPLIT_HEX_XYZ:
-			unimesh->refine_element(uni->id, REFT_HEX_XYZ);
+		case H3D_H3D_H3D_SPLIT_HEX_XYZ:
+			unimesh->refine_element(uni->id, H3D_H3D_H3D_REFT_HEX_XYZ);
 			for (int son = 0; son < 8; son++) {
 				hex_move_to_son(&cr_new, cr, son);
 				for (int i = 0; i < num; i++) {
@@ -792,9 +792,9 @@ void Traverse::union_recurrent(Box *cr, Element **e, Box *er, uint64 *idx, Eleme
 	else {
 		switch (base->get_mode()) {
 			case MODE_HEXAHEDRON:  hex_union_rec(cr, e, er, idx, uni); break;
-			case MODE_TETRAHEDRON: EXIT(ERR_NOT_IMPLEMENTED); break;
- 			case MODE_PRISM:       EXIT(ERR_NOT_IMPLEMENTED); break;
-			default: EXIT(ERR_UNKNOWN_MODE); break;
+			case MODE_TETRAHEDRON: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+ 			case MODE_PRISM:       EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+			default: EXIT(H3D_ERR_UNKNOWN_MODE); break;
 		}
 	}
 }

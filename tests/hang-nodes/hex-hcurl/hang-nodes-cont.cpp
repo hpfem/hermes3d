@@ -177,14 +177,14 @@ res_t linear_form(int n, double *wt, fn_t<res_t> *u_ext[], fn_t<f_t> *u, geom_t<
 // helpers ////////////////////////////////////////////////////////////////////////////////////////
 
 int parse_reft(char *str) {
-	if (strcasecmp(str, "x") == 0) return REFT_HEX_X;
-	else if (strcasecmp(str, "y") == 0) return REFT_HEX_Y;
-	else if (strcasecmp(str, "z") == 0) return REFT_HEX_Z;
-	else if (strcasecmp(str, "xy") == 0 || strcasecmp(str, "yx") == 0) return REFT_HEX_XY;
-	else if (strcasecmp(str, "xz") == 0 || strcasecmp(str, "zx") == 0) return REFT_HEX_XZ;
-	else if (strcasecmp(str, "yz") == 0 || strcasecmp(str, "zy") == 0) return REFT_HEX_YZ;
-	else if (strcasecmp(str, "xyz") == 0) return REFT_HEX_XYZ;
-	else return REFT_HEX_NONE;
+	if (strcasecmp(str, "x") == 0) return H3D_REFT_HEX_X;
+	else if (strcasecmp(str, "y") == 0) return H3D_REFT_HEX_Y;
+	else if (strcasecmp(str, "z") == 0) return H3D_REFT_HEX_Z;
+	else if (strcasecmp(str, "xy") == 0 || strcasecmp(str, "yx") == 0) return H3D_H3D_REFT_HEX_XY;
+	else if (strcasecmp(str, "xz") == 0 || strcasecmp(str, "zx") == 0) return H3D_H3D_REFT_HEX_XZ;
+	else if (strcasecmp(str, "yz") == 0 || strcasecmp(str, "zy") == 0) return H3D_H3D_REFT_HEX_YZ;
+	else if (strcasecmp(str, "xyz") == 0) return H3D_H3D_H3D_REFT_HEX_XYZ;
+	else return H3D_REFT_HEX_NONE;
 }
 
 

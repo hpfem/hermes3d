@@ -109,7 +109,7 @@ void UMFPackMatrix::zero() {
 
 void UMFPackMatrix::add(int m, int n, scalar v) {
 	_F_
-	if (v != 0.0 && m != DIRICHLET_DOF && n != DIRICHLET_DOF)		// ignore dirichlet DOFs
+	if (v != 0.0 && m != H3D_DIRICHLET_DOF && n != H3D_DIRICHLET_DOF)		// ignore dirichlet DOFs
 		insert_value(Ai + Ap[n], Ax + Ap[n], Ap[n + 1] - Ap[n], m, v);
 }
 
@@ -148,7 +148,7 @@ bool UMFPackMatrix::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt
 		}
 
 		case DF_PLAIN_ASCII:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 			return false;
 
 		default:
@@ -257,7 +257,7 @@ bool UMFPackVector::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt
 		}
 
 		case DF_PLAIN_ASCII:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 			return false;
 
 		default:
@@ -267,7 +267,7 @@ bool UMFPackVector::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt
 
 // UMFPack solver //////
 
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 // real case
 #define umfpack_symbolic(m, n, Ap, Ai, Ax, S, C, I)		umfpack_di_symbolic(m, n, Ap, Ai, Ax, S, C, I)
 #define umfpack_numeric(Ap, Ai, Ax, S, N, C, I)			umfpack_di_numeric(Ap, Ai, Ax, S, N, C, I)

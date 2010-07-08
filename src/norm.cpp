@@ -29,7 +29,7 @@
 #include "traverse.h"
 #include <common/callstack.h>
 
-#define TINY			10e-15
+#define H3D_TINY			10e-15
 
 #define INTEGRATE_EXPRESSION(exp) \
 	double *jac = ru->get_jacobian(np, pt); \
@@ -62,7 +62,7 @@ double calc_error(double (*fn)(MeshFunction*, MeshFunction*, int, QuadPt3D*), Me
 	}
 	trav.finish();
 
-	return error > TINY ? sqrt(error) : error;		// do not ruin the precision by taking the sqrt
+	return error > H3D_TINY ? sqrt(error) : error;		// do not ruin the precision by taking the sqrt
 }
 
 /// Calculates the norm of sln using function fn
@@ -86,7 +86,7 @@ double calc_norm(double (*fn)(MeshFunction*, int, QuadPt3D*), MeshFunction *sln)
 		norm += fn(sln, np, pt);
 	}
 
-	return norm > TINY ? sqrt(norm) : norm;			// do not ruin the precision by taking the sqrt
+	return norm > H3D_TINY ? sqrt(norm) : norm;			// do not ruin the precision by taking the sqrt
 }
 
 // H1 space /////////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ double h1_error(MeshFunction *sln1, MeshFunction *sln2) {
 	_F_
 	double error = calc_error(error_fn_h1, sln1, sln2);
 	double norm = calc_norm(norm_fn_h1, sln2);
-	if (norm > TINY) return error / norm;
+	if (norm > H3D_TINY) return error / norm;
 	else return error;
 }
 
@@ -178,7 +178,7 @@ double l2_error(MeshFunction *sln1, MeshFunction *sln2) {
 	_F_
 	double error = calc_error(error_fn_l2, sln1, sln2);
 	double norm = calc_norm(norm_fn_l2, sln2);
-	if (norm > TINY) return error / norm;
+	if (norm > H3D_TINY) return error / norm;
 	else return error;
 }
 
@@ -256,7 +256,7 @@ double hcurl_error(MeshFunction *sln1, MeshFunction *sln2) {
 	_F_
 	double error = calc_error(error_fn_hcurl, sln1, sln2);
 	double norm = calc_norm(norm_fn_hcurl, sln2);
-	if (norm > TINY) return error / norm;
+	if (norm > H3D_TINY) return error / norm;
 	else return error;
 }
 
@@ -310,7 +310,7 @@ double l2_error_hcurl(MeshFunction *sln1, MeshFunction *sln2) {
 	_F_
 	double error = calc_error(error_fn_l2_hcurl, sln1, sln2);
 	double norm = calc_norm(norm_fn_l2_hcurl, sln2);
-	if (norm > TINY) return error / norm;
+	if (norm > H3D_TINY) return error / norm;
 	else return error;
 }
 

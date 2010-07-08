@@ -29,7 +29,7 @@
 #include <Komplex_LinearProblem.h>
 #endif
 
-#define AZTECOO_NOT_COMPILED "hermes3d was not built with AztecOO support."
+#define H3D_AZTECOO_NOT_COMPILED "hermes3d was not built with AztecOO support."
 
 // AztecOO solver //////////////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +43,7 @@ AztecOOSolver::AztecOOSolver(EpetraMatrix *m, EpetraVector *rhs)
 	tolerance = 10e-8;
 	pc = NULL;
 #else
-	warning(AZTECOO_NOT_COMPILED);
+	warning(H3D_AZTECOO_NOT_COMPILED);
 	exit(128);
 #endif
 }
@@ -61,7 +61,7 @@ AztecOOSolver::AztecOOSolver(LinProblem *lp)
 	tolerance = 10e-8;
 	pc = NULL;
 #else
-	warning(AZTECOO_NOT_COMPILED);
+	warning(H3D_AZTECOO_NOT_COMPILED);
 	exit(128);
 #endif
 }
@@ -142,7 +142,7 @@ bool AztecOOSolver::solve()
 	// no output
 	aztec.SetAztecOption(AZ_output, AZ_none);	// AZ_all | AZ_warnings | AZ_last | AZ_summary
 
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 	// setup the problem
 	aztec.SetUserMatrix(m->mat);
 	aztec.SetRHS(rhs->vec);

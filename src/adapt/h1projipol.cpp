@@ -84,7 +84,7 @@ double H1ProjectionIpol::get_error(int split, int son, const order3_t &order)
 		memset(prdz, 0, np * sizeof(double));
 
 		for (int i = 0; i < proj_fns; i++) {
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 			double tmp[np];
 			ss->get_fn_values(proj[i]->idx, np, tpt, 0, tmp);
 			blas_axpy(np, proj[i]->coef, tmp, 1, prfn, 1);
@@ -236,7 +236,7 @@ void H1ProjectionIpol::calc_edge_proj(int iedge, int split, int son, const order
 			scalar sctmp[np];
 			scalar g[np];						// interpolant
 			memset(g, 0, np * sizeof(scalar));
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 			ss->get_fn_values(vtxp[0].idx, np, tpt, 0, tmp);
 			blas_axpy(np, vtxp[0].coef, tmp, 1, g, 1);
 			ss->get_fn_values(vtxp[1].idx, np, tpt, 0, tmp);

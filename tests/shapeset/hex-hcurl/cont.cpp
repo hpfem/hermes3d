@@ -324,7 +324,7 @@ bool test_cont_values_of_edge_fns(Mesh *mesh, Word_t fid, int pos0, int pos1, Sh
 
 		// loop through edge functions
 		// get all face functions on the face
-		order1_t order(MAX_ELEMENT_ORDER);
+		order1_t order(H3D_MAX_ELEMENT_ORDER);
 		int *edge_fn[] = {
 			shapeset->get_edge_indices(face_edges[0][i1], edge_ori[0][i1], order),
 			shapeset->get_edge_indices(face_edges[1][i2], edge_ori[1][i2], order)
@@ -422,7 +422,7 @@ bool test_cont_values_of_face_fns(Mesh *mesh, Word_t fid, int pos0, int pos1, Sh
 	}
 
 	// get all face functions on the face
-	order2_t order(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+	order2_t order(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 	int *face_fn[] = {
 		shapeset->get_face_indices(facet->left_face_num, face_ori[0], order),
 		shapeset->get_face_indices(facet->right_face_num, face_ori[1], order)

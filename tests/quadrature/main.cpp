@@ -109,7 +109,7 @@ int test_quadrature_3d_tetra(fn3d_t fn, double exact, int min_order, const char 
 
 	// !!! std. quadrature works on std. reference domain !!!
 	QuadStdTetra quad;
-	for (int order = min_order; order <= MAX_QUAD_ORDER_TETRA; order++) {
+	for (int order = min_order; order <= H3D_MAX_QUAD_ORDER_TETRA; order++) {
 		int np = quad.get_num_points(order);
 		QuadPt3D *pt = quad.get_points(order);
 
@@ -135,9 +135,9 @@ int test_quadrature_3d_hex(fn3d_t fn, double exact, int min_h, int min_v, int mi
 
 	// !!! std. quadrature works on std. reference domain !!!
 	QuadStdHex quad;
-	for (int horder = min_h; horder <= MAX_QUAD_ORDER; horder++) {
-		for (int vorder = min_v; vorder <= MAX_QUAD_ORDER; vorder++) {
-			for (int uorder = min_u; uorder <= MAX_QUAD_ORDER; uorder++) {
+	for (int horder = min_h; horder <= H3D_MAX_QUAD_ORDER; horder++) {
+		for (int vorder = min_v; vorder <= H3D_MAX_QUAD_ORDER; vorder++) {
+			for (int uorder = min_u; uorder <= H3D_MAX_QUAD_ORDER; uorder++) {
 				order3_t order(horder, vorder, uorder);
 
 				int np = quad.get_num_points(order);
@@ -169,9 +169,9 @@ int test_quadrature_3d_hex_surf(fn3d_t fn, double exact, int min_h, int min_v, i
 
 	// !!! std. quadrature works on std. reference domain !!!
 	QuadStdHex quad;
-	for (int horder = min_h; horder <= MAX_QUAD_ORDER; horder++) {
-		for (int vorder = min_v; vorder <= MAX_QUAD_ORDER; vorder++) {
-			for (int uorder = min_u; uorder <= MAX_QUAD_ORDER; uorder++) {
+	for (int horder = min_h; horder <= H3D_MAX_QUAD_ORDER; horder++) {
+		for (int vorder = min_v; vorder <= H3D_MAX_QUAD_ORDER; vorder++) {
+			for (int uorder = min_u; uorder <= H3D_MAX_QUAD_ORDER; uorder++) {
 				order2_t face_order[] = {
 					order2_t(vorder, uorder),
 					order2_t(vorder, uorder),

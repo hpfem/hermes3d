@@ -99,7 +99,7 @@ OutputQuadTetra::OutputQuadTetra()
 #ifdef WITH_TETRA
 	mode = MODE_TETRAHEDRON;
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 
@@ -148,7 +148,7 @@ OutputQuadHex::OutputQuadHex() {
 #ifdef WITH_HEX
 	mode = MODE_HEXAHEDRON;
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 
@@ -514,11 +514,11 @@ void VtkOutputEngine::out(MeshFunction *fn, const char *name, int item)
 				break;
 
 			case MODE_PRISM:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 				break;
 
 			default:
-				EXIT(ERR_UNKNOWN_MODE);
+				EXIT(H3D_ERR_UNKNOWN_MODE);
 				break;
 		} // switch
 
@@ -530,7 +530,7 @@ void VtkOutputEngine::out(MeshFunction *fn, const char *name, int item)
 			val[ic] = fn->get_values(ic, FN);
 
 		for (int i = 0; i < np; i++) {
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 			if (nc == 1) l.set_point_data(vtx_pt[i], val[0][i]);
 			else l.set_point_data(vtx_pt[i], val[0][i], val[1][i], val[2][i]);
 #else
@@ -639,11 +639,11 @@ void VtkOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *fn
 				break;
 
 			case MODE_PRISM:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 				break;
 
 			default:
-				EXIT(ERR_UNKNOWN_MODE);
+				EXIT(H3D_ERR_UNKNOWN_MODE);
 				break;
 		} // switch
 
@@ -657,7 +657,7 @@ void VtkOutputEngine::out(MeshFunction *fn1, MeshFunction *fn2, MeshFunction *fn
 			val[ic] = fn[ic]->get_values(0, b);
 
 		for (int i = 0; i < np; i++) {
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 			l.set_point_data(vtx_pt[i], val[0][i], val[1][i], val[2][i]);
 #else
 			l.set_point_data(vtx_pt[i], REAL(val[0][i]), REAL(val[1][i]), REAL(val[2][i]));
@@ -705,7 +705,7 @@ void VtkOutputEngine::out(Mesh *mesh)
 				break;
 
 			default:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 				break;
 		}
 		l.set_cell_data(id, 0);
@@ -748,7 +748,7 @@ void VtkOutputEngine::out_bc(Mesh *mesh, const char *name)
 					id = l.add_cell(Vtk::Linearizer::Cell::Quad, Quad::NUM_VERTICES, vtx_pt);
 					break;
 				default:
-					EXIT(ERR_NOT_IMPLEMENTED);
+					EXIT(H3D_ERR_NOT_IMPLEMENTED);
 					break;
 			}
 
@@ -823,7 +823,7 @@ void VtkOutputEngine::out_orders(Space *space, const char *name)
 				break;
 
 			default:
-				error(ERR_NOT_IMPLEMENTED);
+				error(H3D_ERR_NOT_IMPLEMENTED);
 		}
 	}
 
@@ -860,7 +860,7 @@ void VtkOutputEngine::out_elem_markers(Mesh *mesh, const char *name)
 				break;
 
 			default:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 				break;
 		}
 		l.set_cell_data(id, element->marker);
@@ -893,7 +893,7 @@ void VtkOutputEngine::out(Matrix *mat, bool structure)
 	SparseMatrix *m = dynamic_cast<SparseMatrix *>(mat);
 	if (m == NULL) {
 		// dense matrix
-		warning(ERR_NOT_IMPLEMENTED);
+		warning(H3D_ERR_NOT_IMPLEMENTED);
 	}
 	else {
 		if (m->row_storage) {

@@ -1,6 +1,6 @@
 project(mesh-loader)
 
-if(REAL)
+if(H3D_REAL)
 
 include(CMake.vars OPTIONAL)
 
@@ -81,4 +81,4 @@ endif(WITH_HEX)
 
 endif(WITH_EXODUSII)
 
-endif(REAL)
+endif(H3D_REAL)

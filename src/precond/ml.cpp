@@ -26,7 +26,7 @@
 #include <common/error.h>
 #include <common/timer.h>
 
-#define ML_NOT_COMPILED "hermes3d was not built with ML support."
+#define H3D_ML_NOT_COMPILED "hermes3d was not built with ML support."
 
 MlPrecond::MlPrecond(const char *type)
 {
@@ -40,7 +40,7 @@ MlPrecond::MlPrecond(const char *type)
 	if (strcmp(type, "sa") == 0) ML_Epetra::SetDefaults("SA", mlist);
 	else if (strcmp(type, "dd") == 0) ML_Epetra::SetDefaults("DD", mlist);
 #else
-	error(ML_NOT_COMPILED);
+	error(H3D_ML_NOT_COMPILED);
 #endif
 }
 

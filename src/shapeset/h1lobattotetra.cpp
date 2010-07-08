@@ -4826,7 +4826,7 @@ H1ShapesetLobattoTetra::H1ShapesetLobattoTetra() : Shapeset(2)
 	bubble_indices = lobatto_tetra_bubble_indices;
 	bubble_count = lobatto_tetra_bubble_count;
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 

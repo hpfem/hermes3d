@@ -32,7 +32,7 @@
 #define PRINTF(...)
 //#define PRINTF printf
 
-#define INVALID_EDGE_ORDER						-1
+#define H3D_INVALID_EDGE_ORDER						-1
 
 #define CHECK_ELEMENT_ID(id) \
 	if ((id) < 1 || (id) > mesh->elements.count())\
@@ -52,7 +52,7 @@ void Space::VertexData::dump(int id) {
 	}
 	else {
 		printf("dof = %d, n = %d", dof, n);
-		if (dof == DIRICHLET_DOF) printf(", bc_proj = " SCALAR_FMT, SCALAR(bc_proj));
+		if (dof == H3D_DIRICHLET_DOF) printf(", bc_proj = " SCALAR_FMT, SCALAR(bc_proj));
 	}
 	printf("\n");
 }
@@ -228,7 +228,7 @@ void Space::set_order_recurrent(Word_t eid, order3_t order) {
 
 inline int LIMIT_ELEMENT_ORDER(int a) {
 	_F_
-	if (a > MAX_ELEMENT_ORDER) return MAX_ELEMENT_ORDER;
+	if (a > H3D_MAX_ELEMENT_ORDER) return H3D_MAX_ELEMENT_ORDER;
 	else return a;
 }
 
@@ -243,7 +243,7 @@ void Space::copy_orders(const Space &space, int inc) {
 		switch (cmesh->elements[eid]->get_mode()) {
 			case MODE_TETRAHEDRON: order = oo + order3_t(inc); break;
 			case MODE_HEXAHEDRON: order = oo + order3_t(inc, inc, inc); break;
-			default: EXIT(ERR_NOT_IMPLEMENTED); break;
+			default: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
 		}
 		order.limit();
 
@@ -278,7 +278,7 @@ void Space::enforce_minimum_rule() {
 
 					EdgeData *enode = en_data[eidx];
 					order1_t eorder = elem_node->order.get_edge_order(iedge);
-					if (enode->order == INVALID_EDGE_ORDER || eorder < enode->order)
+					if (enode->order == H3D_INVALID_EDGE_ORDER || eorder < enode->order)
 						enode->order = eorder;
 				}
 				break;
@@ -308,7 +308,7 @@ void Space::enforce_minimum_rule() {
 						EdgeData *enode = en_data[eidx];
 						if (!enode->ced) {
 							order1_t eorder = elem_node->order.get_edge_order(iedge);
-							if (enode->order == INVALID_EDGE_ORDER || eorder < enode->order)
+							if (enode->order == H3D_INVALID_EDGE_ORDER || eorder < enode->order)
 								enode->order = eorder;
 						}
 					}
@@ -316,7 +316,7 @@ void Space::enforce_minimum_rule() {
 				break;
 
 			default:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 		}
 	}
 }
@@ -328,7 +328,7 @@ void Space::assign_vertex_dofs(Word_t vid) {
 	VertexData *node = vn_data[vid];
 	int ndofs = get_vertex_ndofs();
 	if (node->bc_type == BC_ESSENTIAL) {
-		node->dof = DIRICHLET_DOF;
+		node->dof = H3D_DIRICHLET_DOF;
 	}
 	else {
 		node->dof = next_dof;
@@ -342,7 +342,7 @@ void Space::assign_edge_dofs(Word_t idx) {
 	EdgeData *node = en_data[idx];
 	int ndofs = get_edge_ndofs(node->order);
 	if (node->bc_type == BC_ESSENTIAL) {
-		node->dof = DIRICHLET_DOF;
+		node->dof = H3D_DIRICHLET_DOF;
 	}
 	else {
 		node->dof = next_dof;
@@ -356,7 +356,7 @@ void Space::assign_face_dofs(Word_t idx) {
 	FaceData *node = fn_data[idx];
 	int ndofs = get_face_ndofs(node->order);
 	if (node->bc_type == BC_ESSENTIAL) {
-		node->dof = DIRICHLET_DOF;
+		node->dof = H3D_DIRICHLET_DOF;
 	}
 	else {
 		node->dof = next_dof;
@@ -385,13 +385,13 @@ void Space::get_vertex_assembly_list(Element *e, int ivertex, AsmList *al) {
 	if (vnode->ced) {
 		for (int i = 0; i < vnode->ncomponents; i++) {
 			int dof = vnode->baselist[i].dof;
-			assert(dof == DIRICHLET_DOF || (dof >= first_dof && dof < next_dof));
+			assert(dof == H3D_DIRICHLET_DOF || (dof >= first_dof && dof < next_dof));
 			al->add(index, dof, vnode->baselist[i].coef);
 		}
 	}
 	else {
 		scalar coef = vnode->dof >= 0 ? 1.0 : vnode->bc_proj;
-		assert(vnode->dof == DIRICHLET_DOF || (vnode->dof >= first_dof && vnode->dof < next_dof));
+		assert(vnode->dof == H3D_DIRICHLET_DOF || (vnode->dof >= first_dof && vnode->dof < next_dof));
 		al->add(index, vnode->dof, coef);
 	}
 }
@@ -423,7 +423,7 @@ void Space::get_edge_assembly_list(Element *elem, int iedge, AsmList *al) {
 					for (int j = 0; j < cng_enode->n; j++) {
 						order1_t order = shapeset->get_order(indices[j]).get_edge_order(iedge);
 						int idx = shapeset->get_constrained_edge_index(iedge, ecomp->ori, order, ecomp->part);
-						al->add(idx, DIRICHLET_DOF, ecomp->coef * cng_enode->bc_proj[j]);
+						al->add(idx, H3D_DIRICHLET_DOF, ecomp->coef * cng_enode->bc_proj[j]);
 					}
 				}
 			}
@@ -448,7 +448,7 @@ void Space::get_edge_assembly_list(Element *elem, int iedge, AsmList *al) {
 					for (int j = 0; j < cng_fnode->n; j++) {
 						order2_t order = shapeset->get_order(indices[j]).get_face_order(fcomp->iface);
 						int idx = shapeset->get_constrained_edge_face_index(iedge, fcomp->ori, order, fcomp->part, fcomp->dir, shapeset->get_face_fn_variant(indices[j]));
-						al->add(idx, DIRICHLET_DOF, fcomp->coef * cng_fnode->bc_proj[j]);
+						al->add(idx, H3D_DIRICHLET_DOF, fcomp->coef * cng_fnode->bc_proj[j]);
 					}
 				}
 			}
@@ -466,7 +466,7 @@ void Space::get_edge_assembly_list(Element *elem, int iedge, AsmList *al) {
 			else if (enode->bc_proj != NULL) {
 				for (int j = 0; j < enode->n; j++) {
 					scalar coef = enode->bc_proj[j];
-					al->add(indices[j], DIRICHLET_DOF, coef);
+					al->add(indices[j], H3D_DIRICHLET_DOF, coef);
 				}
 			}
 		}
@@ -488,7 +488,7 @@ void Space::get_face_assembly_list(Element *elem, int iface, AsmList *al) {
 					for (int j = 0, dof = cng_fnode->dof; j < cng_fnode->n; j++, dof += stride) {
 						order2_t order = shapeset->get_order(indices[j]).get_face_order(iface);
 						int idx = shapeset->get_constrained_face_index(iface, fnode->ori, order, fnode->part, shapeset->get_face_fn_variant(indices[j]));
-						assert(dof == DIRICHLET_DOF || (dof >= first_dof && dof < next_dof));
+						assert(dof == H3D_DIRICHLET_DOF || (dof >= first_dof && dof < next_dof));
 						al->add(idx, dof, 1.0);
 					}
 				}
@@ -512,7 +512,7 @@ void Space::get_face_assembly_list(Element *elem, int iface, AsmList *al) {
 			else if (fnode->bc_proj != NULL) {
 				for (int j = 0; j < fnode->n; j++) {
 					scalar coef = fnode->bc_proj[j];
-					al->add(indices[j], DIRICHLET_DOF, coef);
+					al->add(indices[j], H3D_DIRICHLET_DOF, coef);
 				}
 			}
 		}
@@ -556,7 +556,7 @@ void Space::set_bc_information() {
 			// set boundary condition for face
 			assert(fn_data.exists(idx));
 			fn_data[idx]->bc_type = bc_type;
-			if (fn_data[idx]->marker == MARKER_UNDEFINED)
+			if (fn_data[idx]->marker == H3D_MARKER_UNDEFINED)
 				fn_data[idx]->marker = marker;
 
 			Element *elem = mesh->elements[facet->left];
@@ -598,7 +598,7 @@ Space::VertexData *Space::create_vertex_node_data(Word_t vid, bool ced) {
 			vd->ncomponents = 0;
 		}
 		else {
-			vd->dof = DOF_UNASSIGNED;
+			vd->dof = H3D_DOF_UNASSIGNED;
 			vd->n = -1;
 		}
 	}
@@ -628,8 +628,8 @@ Space::EdgeData *Space::create_edge_node_data(Word_t eid, bool ced) {
 			ed->face_ncomponents = 0;
 		}
 		else {
-			ed->order = INVALID_EDGE_ORDER;
-			ed->dof = DOF_UNASSIGNED;
+			ed->order = H3D_INVALID_EDGE_ORDER;
+			ed->dof = H3D_DOF_UNASSIGNED;
 			ed->n = -1;
 		}
 	}
@@ -661,7 +661,7 @@ Space::FaceData *Space::create_face_node_data(Word_t fid, bool ced) {
 			fd->part.vert = 0;
 		}
 		else {
-			fd->dof = DOF_UNASSIGNED;
+			fd->dof = H3D_DOF_UNASSIGNED;
 			fd->n = -1;
 		}
 	}
@@ -697,7 +697,7 @@ void Space::fc_face(Word_t eid, int iface, bool ced) {
 	// set CEDs
 	Word_t emp[4], fmp;
 	switch (facet->ref_mask) {
-		case REFT_QUAD_HORZ:
+		case H3D_REFT_QUAD_HORZ:
 			emp[0] = mesh->peek_midpoint(vtcs[1], vtcs[2]);
 			emp[1] = mesh->peek_midpoint(vtcs[3], vtcs[0]);
 
@@ -715,7 +715,7 @@ void Space::fc_face(Word_t eid, int iface, bool ced) {
 			create_edge_node_data(mesh->get_edge_id(vtcs[2], vtcs[3]), false);
 			break;
 
-		case REFT_QUAD_VERT:
+		case H3D_REFT_QUAD_VERT:
 			emp[0] = mesh->peek_midpoint(vtcs[0], vtcs[1]);
 			emp[1] = mesh->peek_midpoint(vtcs[2], vtcs[3]);
 
@@ -733,7 +733,7 @@ void Space::fc_face(Word_t eid, int iface, bool ced) {
 			create_edge_node_data(mesh->get_edge_id(vtcs[1], vtcs[2]), false);
 			break;
 
-		case REFT_QUAD_BOTH:
+		case H3D_REFT_QUAD_BOTH:
 			emp[0] = mesh->peek_midpoint(vtcs[0], vtcs[1]);
 			emp[1] = mesh->peek_midpoint(vtcs[1], vtcs[2]);
 			emp[2] = mesh->peek_midpoint(vtcs[2], vtcs[3]);
@@ -1293,7 +1293,7 @@ void Space::calc_vertex_edge_ced(Word_t vtx, Word_t eid, int ori, int part) {
 					int idx = shapeset->get_constrained_edge_index(0, ecomp->ori, order, ecomp->part);
 					baselist[nci].dof = dof;
 					baselist[nci].coef = (ecomp->coef) * shapeset->get_fn_value(idx, 0, -1.0, -1.0, 0);
-					if (cng_enode->dof == DIRICHLET_DOF) baselist[nci].coef *= cng_enode->bc_proj[j];
+					if (cng_enode->dof == H3D_DIRICHLET_DOF) baselist[nci].coef *= cng_enode->bc_proj[j];
 					else dof += stride;
 				}
 			}
@@ -1312,7 +1312,7 @@ void Space::calc_vertex_edge_ced(Word_t vtx, Word_t eid, int ori, int part) {
 
 					baselist[nci].dof = dof;
 					baselist[nci].coef = (fcomp->coef) * shapeset->get_fn_value(idx, 0.0, -1.0, -1.0, 0);
-					if (cng_fnode->dof == DIRICHLET_DOF) baselist[nci].coef *= cng_fnode->bc_proj[j];
+					if (cng_fnode->dof == H3D_DIRICHLET_DOF) baselist[nci].coef *= cng_fnode->bc_proj[j];
 					else dof += stride;
 				}
 			}
@@ -1335,7 +1335,7 @@ void Space::calc_vertex_edge_ced(Word_t vtx, Word_t eid, int ori, int part) {
 			for (int j = 0, dof = ed->dof; j < ed->n; j++) {
 				baselist[j].dof = dof;
 				baselist[j].coef = shapeset->get_fn_value(indices[j], mid, -1.0, -1.0, 0);
-				if (ed->dof == DIRICHLET_DOF) baselist[j].coef *= ed->bc_proj[j];
+				if (ed->dof == H3D_DIRICHLET_DOF) baselist[j].coef *= ed->bc_proj[j];
 				else dof += stride;
 			}
 		}
@@ -1440,7 +1440,7 @@ void Space::calc_mid_vertex_edge_ced(Word_t vtx, Word_t fmp, Word_t eid, int ori
 				int idx = shapeset->get_constrained_edge_index(0, ecomp->ori, order, ecomp->part);
 				baselist[nci].dof = dof;
 				baselist[nci].coef = ecomp->coef * shapeset->get_fn_value(idx, 0, -1.0, -1.0, 0);
-				if (cng_enode->dof == DIRICHLET_DOF) baselist[nci].coef *= cng_enode->bc_proj[j];
+				if (cng_enode->dof == H3D_DIRICHLET_DOF) baselist[nci].coef *= cng_enode->bc_proj[j];
 				else dof += stride;
 			}
 		}
@@ -1461,7 +1461,7 @@ void Space::calc_mid_vertex_edge_ced(Word_t vtx, Word_t fmp, Word_t eid, int ori
 
 				baselist[nci].dof = dof;
 				baselist[nci].coef = fcomp->coef * shapeset->get_fn_value(idx, 0.0, -1.0, -1.0, 0);
-				if (cng_fnode->dof == DIRICHLET_DOF) baselist[nci].coef *= cng_fnode->bc_proj[j];
+				if (cng_fnode->dof == H3D_DIRICHLET_DOF) baselist[nci].coef *= cng_fnode->bc_proj[j];
 				else dof += stride;
 			}
 		}
@@ -1549,7 +1549,7 @@ void Space::calc_vertex_face_ced(Word_t vtx, Word_t fid, int ori, int iface, int
 
 				baselist[j].dof = dof;
 				baselist[j].coef = shapeset->get_fn_value(idx, 0.0, -1.0, 0.0,  0);
-				if (fd->dof == DIRICHLET_DOF) baselist[j].coef *= fd->bc_proj[j];
+				if (fd->dof == H3D_DIRICHLET_DOF) baselist[j].coef *= fd->bc_proj[j];
 				else dof += stride;
 				PRINTF(" - [%d]: dof = %d, coef = %lf\n", j, baselist[j].dof, baselist[j].coef);
 			}
@@ -1840,7 +1840,7 @@ void Space::uc_face(Word_t eid, int iface) {
 	int part_ori;			// orientation of edge/face constraint
 
 	switch (facet->ref_mask) {
-		case REFT_QUAD_HORZ:
+		case H3D_REFT_QUAD_HORZ:
 			PRINTF("HORZ\n");
 
 			emp[0] = mesh->peek_midpoint(vtcs[1], vtcs[2]);
@@ -1902,7 +1902,7 @@ void Space::uc_face(Word_t eid, int iface) {
 			calc_face_face_ced(sub_fid[1], cng_face_id, cng_face_ori, sub_fi[1]->h_part, sub_fi[1]->v_part);
 			break;
 
-		case REFT_QUAD_VERT:
+		case H3D_REFT_QUAD_VERT:
 			PRINTF("VERT\n");
 
 			emp[0] = mesh->peek_midpoint(vtcs[0], vtcs[1]);
@@ -1963,7 +1963,7 @@ void Space::uc_face(Word_t eid, int iface) {
 			calc_face_face_ced(sub_fid[1], cng_face_id, cng_face_ori, sub_fi[1]->h_part, sub_fi[1]->v_part);
 			break;
 
-		case REFT_QUAD_BOTH:
+		case H3D_REFT_QUAD_BOTH:
 			PRINTF("BOTH\n");
 
 			emp[0] = mesh->peek_midpoint(vtcs[0], vtcs[1]);
@@ -2149,11 +2149,11 @@ void Space::uc_element(Word_t idx) {
 						break;
 
 					case MODE_TRIANGLE:
-						EXIT(ERR_NOT_IMPLEMENTED);
+						EXIT(H3D_ERR_NOT_IMPLEMENTED);
 						break;
 
 					default:
-						EXIT(ERR_UNKNOWN_MODE);
+						EXIT(H3D_ERR_UNKNOWN_MODE);
 						break;
 				}
 			}
@@ -2210,8 +2210,8 @@ void Space::uc_dep(Word_t eid)
 	_F_
 	// find all direct dependencies and include them into deps array
 	// dependencies already solved are not included (flags are kept in uc_deps array)
-#define MAX_DEP				1000
-	Word_t deps[MAX_DEP];
+#define H3D_MAX_DEP				1000
+	Word_t deps[H3D_MAX_DEP];
 	int idep = 0;
 
 	Element *e = mesh->elements[eid];

@@ -442,8 +442,8 @@ int main(int argc, char **args)
 	Mesh mesh2;
 	mesh2.copy(mesh1);
 	// do some changes
-	mesh2.refine_all_elements(REFT_HEX_XYZ);
-	mesh2.refine_all_elements(REFT_HEX_XYZ);
+	mesh2.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
+	mesh2.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 
 	Solution fsln(&mesh2);
 	fsln.set_const(-6.0);
@@ -456,9 +456,9 @@ int main(int argc, char **args)
 	mesh3.copy(mesh1);
 
 	// change meshes
-	mesh1.refine_all_elements(REFT_HEX_X);
-	mesh2.refine_all_elements(REFT_HEX_Y);
-	mesh3.refine_all_elements(REFT_HEX_Z);
+	mesh1.refine_all_elements(H3D_REFT_HEX_X);
+	mesh2.refine_all_elements(H3D_REFT_HEX_Y);
+	mesh3.refine_all_elements(H3D_REFT_HEX_Z);
 
 	printf("* Setup spaces\n");
 	H1Space space1(&mesh1, &shapeset);

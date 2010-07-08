@@ -98,10 +98,10 @@ int main(int argc, char **argv)
   mloader.load("lshape_hex.mesh3d", &mesh);			// hexahedron
 
   // Perform initial mesh refinements. 
-  mesh.refine_all_elements(REFT_HEX_XYZ);
-  mesh.refine_all_elements(REFT_HEX_XY);
-  mesh.refine_all_elements(REFT_HEX_XY);
-  mesh.refine_all_elements(REFT_HEX_XY);
+  mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
+  mesh.refine_all_elements(H3D_H3D_REFT_HEX_XY);
+  mesh.refine_all_elements(H3D_H3D_REFT_HEX_XY);
+  mesh.refine_all_elements(H3D_H3D_REFT_HEX_XY);
 
   // Matrix solver. 
 #if defined WITH_UMFPACK

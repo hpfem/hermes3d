@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 
 	Word_t ne = mesh.elements.count();
 	// make the mesh for the ref. solution
-	mesh.refine_all_elements(REFT_HEX_XYZ);
+	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 
 	H1Space space(&mesh, &shapeset);
 	space.set_bc_types(bc_types);
@@ -238,62 +238,62 @@ int main(int argc, char *argv[])
 
 		//
 		error = 0.0;
-		error += proj->get_error(REFT_HEX_NONE, -1, order);
+		error += proj->get_error(H3D_REFT_HEX_NONE, -1, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 
 		//
 		error = 0.0;
-		error += proj->get_error(REFT_HEX_X, 20, order);
-		error += proj->get_error(REFT_HEX_X, 21, order);
+		error += proj->get_error(H3D_REFT_HEX_X, 20, order);
+		error += proj->get_error(H3D_REFT_HEX_X, 21, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 
 		//
 		error = 0.0;
-		error += proj->get_error(REFT_HEX_Y, 22, order);
-		error += proj->get_error(REFT_HEX_Y, 23, order);
+		error += proj->get_error(H3D_REFT_HEX_Y, 22, order);
+		error += proj->get_error(H3D_REFT_HEX_Y, 23, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 
 		//
 		error = 0.0;
-		error += proj->get_error(REFT_HEX_Z, 24, order);
-		error += proj->get_error(REFT_HEX_Z, 25, order);
+		error += proj->get_error(H3D_REFT_HEX_Z, 24, order);
+		error += proj->get_error(H3D_REFT_HEX_Z, 25, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 
 		//
 		error = 0.0;
-		error += proj->get_error(REFT_HEX_XY,  8, order);
-		error += proj->get_error(REFT_HEX_XY,  9, order);
-		error += proj->get_error(REFT_HEX_XY, 10, order);
-		error += proj->get_error(REFT_HEX_XY, 11, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XY,  8, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XY,  9, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XY, 10, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XY, 11, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 
 		//
 		error = 0.0;
-		error += proj->get_error(REFT_HEX_XZ, 12, order);
-		error += proj->get_error(REFT_HEX_XZ, 13, order);
-		error += proj->get_error(REFT_HEX_XZ, 14, order);
-		error += proj->get_error(REFT_HEX_XZ, 15, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XZ, 12, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XZ, 13, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XZ, 14, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_XZ, 15, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 
 		//
 		error = 0.0;
-		error += proj->get_error(REFT_HEX_YZ, 16, order);
-		error += proj->get_error(REFT_HEX_YZ, 17, order);
-		error += proj->get_error(REFT_HEX_YZ, 18, order);
-		error += proj->get_error(REFT_HEX_YZ, 19, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_YZ, 16, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_YZ, 17, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_YZ, 18, order);
+		error += proj->get_error(H3D_H3D_REFT_HEX_YZ, 19, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 
 		//
 		error = 0.0;
 		for (int j = 0; j < 8; j++)
-			error += proj->get_error(REFT_HEX_XYZ, j, order);
+			error += proj->get_error(H3D_H3D_H3D_REFT_HEX_XYZ, j, order);
 		error = sqrt(error);
 		CHECK_ERROR;
 

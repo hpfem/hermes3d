@@ -210,7 +210,7 @@ static int std_np_1d[] = {
 
 QuadStd1D::QuadStd1D()
 {
-	max_order = MAX_QUAD_ORDER;
+	max_order = H3D_MAX_QUAD_ORDER;
 	np = std_np_1d;
 	tables = std_tables_1d;
 }
@@ -958,7 +958,7 @@ static QuadPt2D *std_tables_2d_tri[] = {
 
 QuadStdTri::QuadStdTri() {
 	mode = MODE_TRIANGLE;
-	max_order = MAX_QUAD_ORDER_TRI;
+	max_order = H3D_MAX_QUAD_ORDER_TRI;
 
 	//
 	np = std_np_2d_tri;
@@ -973,9 +973,9 @@ QuadStdTri::QuadStdTri() {
 	for (int edge = 0; edge < Tri::NUM_EDGES; edge++) {
 		const int *edge_vtcs = RefTri::get_edge_vertices(edge);
 		assert(edge_vtcs != NULL);
-		edge_tables[edge] = new QuadPt2D *[MAX_QUAD_ORDER + 1];
+		edge_tables[edge] = new QuadPt2D *[H3D_MAX_QUAD_ORDER + 1];
 		MEM_CHECK(edge_tables[edge]);
-		for (int order = 0; order <= MAX_QUAD_ORDER; order++) {
+		for (int order = 0; order <= H3D_MAX_QUAD_ORDER; order++) {
 			int num = std_np_1d[order];
 			edge_tables[edge][order] = new QuadPt2D[num];
 			MEM_CHECK(edge_tables[edge][order]);
@@ -994,7 +994,7 @@ QuadStdTri::QuadStdTri() {
 
 QuadStdTri::~QuadStdTri() {
 	for (int edge = 0; edge < Tri::NUM_EDGES; edge++) {
-		for (int order = 0; order <= MAX_QUAD_ORDER; order++)
+		for (int order = 0; order <= H3D_MAX_QUAD_ORDER; order++)
 			delete [] edge_tables[edge][order];
 
 		delete [] edge_tables[edge];
@@ -4171,11 +4171,11 @@ QuadStdTetra::QuadStdTetra() {
 #ifdef WITH_TETRA
 	mode = MODE_TETRAHEDRON;
 
-	max_order = MAX_QUAD_ORDER_TETRA;
-	max_edge_order = MAX_QUAD_ORDER_TETRA;
-	max_face_order = MAX_QUAD_ORDER_TRI;
+	max_order = H3D_MAX_QUAD_ORDER_TETRA;
+	max_edge_order = H3D_MAX_QUAD_ORDER_TETRA;
+	max_face_order = H3D_MAX_QUAD_ORDER_TRI;
 
-	for (int i = 0; i <= MAX_QUAD_ORDER_TETRA; i++) {
+	for (int i = 0; i <= H3D_MAX_QUAD_ORDER_TETRA; i++) {
 		order3_t o(i);
 		Word_t oi = o.get_idx();
 		tables[oi] = std_tables_3d_tet[i];
@@ -4191,7 +4191,7 @@ QuadStdTetra::QuadStdTetra() {
 		const int *tet_edge_vtcs = RefTetra::get_edge_vertices(iedge);
 		assert(tet_edge_vtcs != NULL);
 
-		for (int order = 0; order <= MAX_QUAD_ORDER; order++) {
+		for (int order = 0; order <= H3D_MAX_QUAD_ORDER; order++) {
 			order3_t o(order);
 			Word_t oi = o.get_idx();
 			int num = std_np_1d[oi];
@@ -4298,29 +4298,29 @@ QuadStdHex::QuadStdHex() {
 #ifdef WITH_HEX
 	mode = MODE_HEXAHEDRON;
 
-	max_edge_order = MAX_QUAD_ORDER;
-	max_face_order = order2_t(MAX_QUAD_ORDER, MAX_QUAD_ORDER);
-	max_order = order3_t(MAX_QUAD_ORDER, MAX_QUAD_ORDER, MAX_QUAD_ORDER);
+	max_edge_order = H3D_MAX_QUAD_ORDER;
+	max_face_order = order2_t(H3D_MAX_QUAD_ORDER, H3D_MAX_QUAD_ORDER);
+	max_order = order3_t(H3D_MAX_QUAD_ORDER, H3D_MAX_QUAD_ORDER, H3D_MAX_QUAD_ORDER);
 
 	// element points
-	for (int i = 0; i <= MAX_QUAD_ORDER; i++)
-		for (int j = 0; j <= MAX_QUAD_ORDER; j++)
-			for (int k = 0; k <= MAX_QUAD_ORDER; k++) {
+	for (int i = 0; i <= H3D_MAX_QUAD_ORDER; i++)
+		for (int j = 0; j <= H3D_MAX_QUAD_ORDER; j++)
+			for (int k = 0; k <= H3D_MAX_QUAD_ORDER; k++) {
 				order3_t m(i, j, k);
 				np[m.get_idx()] = std_np_1d[i] * std_np_1d[j] * std_np_1d[k];
 			}
 
 	// faces
 	face_tables = new Array<QuadPt3D *>[Hex::NUM_FACES];
-	for (int i = 0; i <= MAX_QUAD_ORDER; i++)
-		for (int j = 0; j <= MAX_QUAD_ORDER; j++) {
+	for (int i = 0; i <= H3D_MAX_QUAD_ORDER; i++)
+		for (int j = 0; j <= H3D_MAX_QUAD_ORDER; j++) {
 			order2_t m(i, j);
 			np_face[m.get_idx()] = std_np_1d[i] * std_np_1d[j];
 //			if (i ==24 && j==24) printf("AAA = %d\n", m.get_idx());
 		}
 
 	// edges
-	for (int order = 0; order <= MAX_QUAD_ORDER; order++)
+	for (int order = 0; order <= H3D_MAX_QUAD_ORDER; order++)
 		np_edge[order] = std_np_1d[order];
 
 	const Point3D *ref_vtcs = RefHex::get_vertices();
@@ -4329,7 +4329,7 @@ QuadStdHex::QuadStdHex() {
 	for (int iedge = 0; iedge < Hex::NUM_EDGES; iedge++) {
 		const int *hex_edge_vtcs = RefHex::get_edge_vertices(iedge);
 		assert(hex_edge_vtcs != NULL);
-		for (int order = 0; order <= MAX_QUAD_ORDER; order++) {
+		for (int order = 0; order <= H3D_MAX_QUAD_ORDER; order++) {
 			edge_tables[iedge][order] = new QuadPt3D[np_edge[order]];
 			MEM_CHECK(edge_tables[iedge][order]);
 			QuadPt1D *pts1d = std_tables_1d[order];
@@ -4482,18 +4482,18 @@ QuadStdPrism::QuadStdPrism() {
 	_F_
 #ifdef WITH_PRISM
 	mode = MODE_PRISM;
-	max_order = MAKE_PRISM_ORDER(MAX_QUAD_ORDER_TRI, MAX_QUAD_ORDER);
-	max_edge_order = MAX_QUAD_ORDER;
+	max_order = MAKE_PRISM_ORDER(H3D_MAX_QUAD_ORDER_TRI, H3D_MAX_QUAD_ORDER);
+	max_edge_order = H3D_MAX_QUAD_ORDER;
 	// FIXME: some faces have triangles, some have quads
-	max_face_order = MAKE_QUAD_ORDER(MAX_QUAD_ORDER, MAX_QUAD_ORDER);
+	max_face_order = MAKE_QUAD_ORDER(H3D_MAX_QUAD_ORDER, H3D_MAX_QUAD_ORDER);
 
 	int num = max_order + 1;
 
 	// number of integration points
 	np = new int [num];
 	memset(np, 0, num * sizeof(int));
-	for (int i = 0; i <= MAX_QUAD_ORDER_TRI; i++) {
-		for (int j = 0; j <= MAX_QUAD_ORDER; j++) {
+	for (int i = 0; i <= H3D_MAX_QUAD_ORDER_TRI; i++) {
+		for (int j = 0; j <= H3D_MAX_QUAD_ORDER; j++) {
 			int m = MAKE_PRISM_ORDER(i, j);
 		}
 	}
@@ -4501,8 +4501,8 @@ QuadStdPrism::QuadStdPrism() {
 	// tables with points
 	tables = new QuadPt3D *[num];
 	memset(tables, 0, num * sizeof(QuadPt3D *));
-	for (int i = 0; i <= MAX_QUAD_ORDER_TRI; i++) {
-		for (int j = 0; j <= MAX_QUAD_ORDER; j++) {
+	for (int i = 0; i <= H3D_MAX_QUAD_ORDER_TRI; i++) {
+		for (int j = 0; j <= H3D_MAX_QUAD_ORDER; j++) {
 			int m = MAKE_PRISM_ORDER(i, j);
 			np[m] = std_np_2d_tri[i] * std_np_1d[j];
 			tables[m] = new QuadPt3D[np[m]];
@@ -4534,8 +4534,8 @@ QuadStdPrism::~QuadStdPrism() {
 #ifdef WITH_PRISM
 	delete [] np;
 
-	for (int i = 0; i <= MAX_QUAD_ORDER_TRI; i++) {
-		for (int j = 0; j <= MAX_QUAD_ORDER; j++) {
+	for (int i = 0; i <= H3D_MAX_QUAD_ORDER_TRI; i++) {
+		for (int j = 0; j <= H3D_MAX_QUAD_ORDER; j++) {
 			int m = MAKE_PRISM_ORDER(i, j);
 			delete [] tables[m];
 		}
@@ -4548,26 +4548,26 @@ QuadStdPrism::~QuadStdPrism() {
 
 #ifdef WITH_TETRA
 	static QuadStdTetra			quad_std_tetra;
-	#define QUAD_STD_TETRA		&quad_std_tetra
+	#define H3D_QUAD_STD_TETRA		&quad_std_tetra
 #else
-	#define QUAD_STD_TETRA		NULL
+	#define H3D_QUAD_STD_TETRA		NULL
 #endif
 
 #ifdef WITH_HEX
 	static QuadStdHex			quad_std_hex;
-	#define QUAD_STD_HEX		&quad_std_hex
+	#define H3D_QUAD_STD_HEX		&quad_std_hex
 #else
-	#define QUAD_STD_HEX		NULL
+	#define H3D_QUAD_STD_HEX		NULL
 #endif
 
 #ifdef WITH_PRISM
 	static QuadStdPrism			quad_std_prism;
-	#define QUAD_STD_PRISM		&quad_std_prism
+	#define H3D_QUAD_STD_PRISM		&quad_std_prism
 #else
-	#define QUAD_STD_PRISM		NULL
+	#define H3D_QUAD_STD_PRISM		NULL
 #endif
 
-Quad3D *g_quad_3d[] = { QUAD_STD_TETRA, QUAD_STD_HEX, QUAD_STD_PRISM };
+Quad3D *g_quad_3d[] = { H3D_QUAD_STD_TETRA, H3D_QUAD_STD_HEX, H3D_QUAD_STD_PRISM };
 
 Quad3D *get_quadrature(EMode3D mode) { return g_quad_3d[mode]; }
 

@@ -113,9 +113,9 @@ int main(int argc, char **args) {
 	if (!mesh_loader.load(args[1], &mesh)) error("Loading mesh file '%s'\n", args[1]);
 
 //	for (int it = 0; it < 8; it++) {
-//	mesh.refine_all_elements(REFT_HEX_XYZ);
-//	mesh.refine_all_elements(REFT_HEX_XYZ);
-//	mesh.refine_all_elements(REFT_HEX_XYZ);
+//	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
+//	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
+//	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 
 	H1ShapesetLobattoHex shapeset;
 //	printf("* Setting the space up\n");

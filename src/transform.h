@@ -83,7 +83,7 @@ public:
 	Trf *get_ctm() const { return ctm; }
 
 protected:
-	static const int STACK_SIZE = 10;
+	static const int H3D_STACK_SIZE = 10;
 
 	Element *element;				/// the active element
 
@@ -91,7 +91,7 @@ protected:
 	uint64 sub_idx;					/// sub-element transformation index
 	static const unsigned max_idx = 0x4000;
 
-	Trf stack[STACK_SIZE];					/// transformation matrix stack
+	Trf stack[H3D_STACK_SIZE];					/// transformation matrix stack
 	int top;       					/// stack top
 
 	static Trf hex_trf[];

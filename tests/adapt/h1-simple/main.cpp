@@ -194,7 +194,7 @@ int main(int argc, char **argv) {
 
 		Mesh rmesh;
 		rmesh.copy(mesh);
-		rmesh.refine_all_elements(REFT_HEX_XYZ);
+		rmesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 
 		Space *rspace = space.dup(&rmesh);
 		rspace->copy_orders(space, 1);

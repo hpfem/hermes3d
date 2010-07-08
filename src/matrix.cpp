@@ -29,7 +29,7 @@
 #include <common/callstack.h>
 
 
-#define TINY 1.0e-20
+#define H3D_TINY 1.0e-20
 
 
 // ludcmp, lubksb - LU decomposition and back-substitution routines from
@@ -78,7 +78,7 @@ void ludcmp(double **a, int n, int *indx, double *d)
 			vv[imax] = vv[j];
 		}
 		indx[j] = imax;
-		if (a[j][j] == 0.0) a[j][j] = TINY;
+		if (a[j][j] == 0.0) a[j][j] = H3D_TINY;
 		if (j != n-1) {
 			dum = 1.0 / (a[j][j]);
 			for (i = j+1; i < n; i++) a[i][j] *= dum;

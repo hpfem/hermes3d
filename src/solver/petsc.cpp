@@ -29,7 +29,7 @@
 #include <common/callstack.h>
 #include <common/timer.h>
 
-#define PETSC_NOT_COMPILED	"hermes3d was not built with PETSc support."
+#define H3D_PETSC_NOT_COMPILED	"hermes3d was not built with PETSc support."
 
 
 PetscMatrix::PetscMatrix() {
@@ -37,7 +37,7 @@ PetscMatrix::PetscMatrix() {
 #ifdef WITH_PETSC
 	inited = false;
 #else
-	error(PETSC_NOT_COMPILED);
+	error(H3D_PETSC_NOT_COMPILED);
 #endif
 }
 
@@ -117,7 +117,7 @@ void PetscMatrix::zero() {
 void PetscMatrix::add(int m, int n, scalar v) {
 	_F_
 #ifdef WITH_PETSC
-	if (v != 0.0 && m != DIRICHLET_DOF && n != DIRICHLET_DOF)		// ignore "dirichlet DOF"
+	if (v != 0.0 && m != H3D_DIRICHLET_DOF && n != H3D_DIRICHLET_DOF)		// ignore "dirichlet DOF"
 		MatSetValue(matrix, m, n, (PetscScalar) v, ADD_VALUES);
 #endif
 }
@@ -125,7 +125,7 @@ void PetscMatrix::add(int m, int n, scalar v) {
 void PetscMatrix::add(int m, int n, scalar **mat, int *rows, int *cols) {
 	_F_
 #ifdef WITH_PETSC
-	// TODO: pass in just the block of the matrix without DIRICHLET_DOFs (so that can use MatSetValues directly without checking
+	// TODO: pass in just the block of the matrix without H3D_DIRICHLET_DOFs (so that can use MatSetValues directly without checking
 	// row and cols for -1)
 	for (int i = 0; i < m; i++)				// rows
 		for (int j = 0; j < n; j++)			// cols
@@ -157,7 +157,7 @@ PetscVector::PetscVector() {
 #ifdef WITH_PETSC
 	inited = false;
 #else
-	error(PETSC_NOT_COMPILED);
+	error(H3D_PETSC_NOT_COMPILED);
 #endif
 }
 
@@ -256,7 +256,7 @@ PetscLinearSolver::PetscLinearSolver(PetscMatrix *mat, PetscVector *rhs)
 	_F_
 #ifdef WITH_PETSC
 #else
-	warning(PETSC_NOT_COMPILED);
+	warning(H3D_PETSC_NOT_COMPILED);
 	exit(128);
 #endif
 }
@@ -268,7 +268,7 @@ PetscLinearSolver::PetscLinearSolver(LinProblem *lp)
 	m = new PetscMatrix;
 	rhs = new PetscVector;
 #else
-	warning(PETSC_NOT_COMPILED);
+	warning(H3D_PETSC_NOT_COMPILED);
 	exit(128);
 #endif
 }

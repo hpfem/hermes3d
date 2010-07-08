@@ -168,5 +168,5 @@ bool ExodusIIReader::load(const char *file_name, Mesh *mesh)
 
 bool ExodusIIReader::save(const char *file_name, Mesh *mesh)
 {
-	error(ERR_NOT_IMPLEMENTED);
+	error(H3D_ERR_NOT_IMPLEMENTED);
 }

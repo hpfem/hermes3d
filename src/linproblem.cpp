@@ -159,7 +159,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 
 				for (int i = 0; i < am->cnt; i++) {
 					int k = am->dof[i];
-					if (!tra && k == DIRICHLET_DOF) continue;
+					if (!tra && k == H3D_DIRICHLET_DOF) continue;
 					fv->set_active_shape(am->idx[i]);
 
 					if (!sym) { // unsymmetric block
@@ -167,7 +167,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 							fu->set_active_shape(an->idx[j]);
 							scalar bi = eval_form(mfv, NULL, fu, fv, refmap + n, refmap + m)
 								* an->coef[j] * am->coef[i];
-							if (an->dof[j] == DIRICHLET_DOF) rhs->add(k, -bi);
+							if (an->dof[j] == H3D_DIRICHLET_DOF) rhs->add(k, -bi);
 							else mat[i][j] = bi;
 						}
 					}
@@ -177,7 +177,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 							fu->set_active_shape(an->idx[j]);
 							scalar bi = eval_form(mfv, NULL, fu, fv, refmap + n, refmap + m)
 								* an->coef[j] * am->coef[i];
-							if (an->dof[j] == DIRICHLET_DOF) rhs->add(k, -bi);
+							if (an->dof[j] == H3D_DIRICHLET_DOF) rhs->add(k, -bi);
 							else mat[i][j] = mat[j][i] = bi;
 						}
 					}
@@ -194,9 +194,9 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 
 					// we also need to take care of the RHS...
 					for (int j = 0; j < am->cnt; j++)
-						if (am->dof[j] == DIRICHLET_DOF)
+						if (am->dof[j] == H3D_DIRICHLET_DOF)
 							for (int i = 0; i < an->cnt; i++)
-								if (an->dof[i] != DIRICHLET_DOF)
+								if (an->dof[i] != H3D_DIRICHLET_DOF)
 									rhs->add(an->dof[i], -mat[i][j]);
 				}
 			}
@@ -209,7 +209,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 				int m = vfv->i;  fv = test_fn + m;  am = al + m;
 
 				for (int i = 0; i < am->cnt; i++) {
-					if (am->dof[i] == DIRICHLET_DOF) continue;
+					if (am->dof[i] == H3D_DIRICHLET_DOF) continue;
 					fv->set_active_shape(am->idx[i]);
 					rhs->add(am->dof[i], eval_form(vfv, NULL, fv, refmap + m) * am->coef[i]);
 				}
@@ -245,13 +245,13 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 					scalar **mat = get_matrix_buffer(std::max(am->cnt, an->cnt));
 					for (int i = 0; i < am->cnt; i++) {
 						int k = am->dof[i];
-						if (k == DIRICHLET_DOF) continue;
+						if (k == H3D_DIRICHLET_DOF) continue;
 						fv->set_active_shape(am->idx[i]);
 						for (int j = 0; j < an->cnt; j++) {
 							fu->set_active_shape(an->idx[j]);
 							scalar bi = eval_form(mfs, NULL, fu, fv, refmap + n, refmap + m, fp + iface)
 								* an->coef[j] * am->coef[i];
-							if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
+							if (an->dof[j] != H3D_DIRICHLET_DOF) mat[i][j] = bi;
 							else rhs->add(k, -bi);
 						}
 					}
@@ -270,7 +270,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 					fp[iface].space_v = spaces[m];
 
 					for (int i = 0; i < am->cnt; i++) {
-						if (am->dof[i] == DIRICHLET_DOF) continue;
+						if (am->dof[i] == H3D_DIRICHLET_DOF) continue;
 						fv->set_active_shape(am->idx[i]);
 						rhs->add(am->dof[i], eval_form(vfs, NULL, fv, refmap + m, fp + iface)
 						         * am->coef[i]);
@@ -360,9 +360,9 @@ void LinProblem::create(Matrix *matrix, Vector *rhs)
 						// pretend assembling of the element stiffness matrix
 						// register nonzero elements
 						for (int i = 0; i < am->cnt; i++)
-							if (am->dof[i] != DIRICHLET_DOF)
+							if (am->dof[i] != H3D_DIRICHLET_DOF)
 								for (int j = 0; j < an->cnt; j++)
-									if (an->dof[j] != DIRICHLET_DOF)
+									if (an->dof[j] != H3D_DIRICHLET_DOF)
 										mat->pre_add_ij(am->dof[i], an->dof[j]);
 					}
 		}

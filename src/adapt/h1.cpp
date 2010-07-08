@@ -91,7 +91,7 @@ void H1Adapt::init(Tuple<Space *> sp)
 	// default parameters
 	h_only = false;
 	strategy = 0;
-	max_order = MAX_ELEMENT_ORDER;
+	max_order = H3D_MAX_ELEMENT_ORDER;
 	aniso = false;			// FIXME: when implementing aniso, change this to true
 	exponent = 1.0 / 3.0;
 
@@ -187,11 +187,11 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 	_F_
 	int dofs = 0;
 	switch (split) {
-		case REFT_HEX_NONE:
+		case H3D_REFT_HEX_NONE:
 			dofs = ndofs_elem(order[0]);
 			break;
 
-		case REFT_HEX_X:
+		case H3D_REFT_HEX_X:
 			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]);
 			dofs -= ndofs_face(0, order[0], order[1]);			// face
 			dofs -= 2 * ndofs_edge(3, order[0], order[1]); 		// edge
@@ -199,7 +199,7 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 			dofs -= 4;											// vertex
 			break;
 
-		case REFT_HEX_Y:
+		case H3D_REFT_HEX_Y:
 			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]);
 			dofs -= ndofs_face(2, order[0], order[1]);
 			dofs -= 2 * ndofs_edge(0, order[0], order[1]); 		// edge
@@ -207,7 +207,7 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 			dofs -= 4;											// vertex
 			break;
 
-		case REFT_HEX_Z:
+		case H3D_REFT_HEX_Z:
 			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]);
 			dofs -= ndofs_face(4, order[0], order[1]);
 			dofs -= 2 * ndofs_edge(0, order[0], order[1]); 		// edge
@@ -215,7 +215,7 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 			dofs -= 4;											// vertex
 			break;
 
-		case REFT_HEX_XY:
+		case H3D_H3D_REFT_HEX_XY:
 			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2])
 				+ ndofs_elem(order[3]);
 			dofs -= ndofs_face(1, order[0], order[1]);			// faces
@@ -228,7 +228,7 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 			dofs -= 10;											// vertex
 			break;
 
-		case REFT_HEX_XZ:
+		case H3D_H3D_REFT_HEX_XZ:
 			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2])
 				+ ndofs_elem(order[3]);
 			dofs -= ndofs_face(1, order[0], order[1]);			// faces
@@ -241,7 +241,7 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 			dofs -= 10;											// vertex
 			break;
 
-		case REFT_HEX_YZ:
+		case H3D_H3D_REFT_HEX_YZ:
 			dofs = ndofs_elem(order[0]) + ndofs_elem(order[1]) + ndofs_elem(order[2])
 				+ ndofs_elem(order[3]);
 			dofs -= ndofs_face(3, order[0], order[1]);			// faces
@@ -254,7 +254,7 @@ int H1Adapt::get_dof_count(int split, order3_t order[])
 			dofs -= 10;											// vertex
 			break;
 
-		case REFT_HEX_XYZ:
+		case H3D_H3D_H3D_REFT_HEX_XYZ:
 			for (int i = 0; i < 8; i++) dofs += ndofs_elem(order[i]);
 			dofs -= 15;			// vertex fns
 			dofs -= ndofs_edge(0, order[0], order[4]) + ndofs_edge(0, order[3], order[7])
@@ -321,7 +321,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 
 #define MAKE_P_CAND(q) { \
     assert(n < MAX_CAND);   \
-    cand[n].split = REFT_HEX_NONE; \
+    cand[n].split = H3D_REFT_HEX_NONE; \
     cand[n].p[1] = cand[n].p[2] = cand[n].p[3] = cand[n].p[4] =\
     cand[n].p[5] = cand[n].p[6] = cand[n].p[7] = 0; \
     cand[n].p[0] = (q); \
@@ -329,7 +329,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 
 #define MAKE_HP_CAND(q0, q1, q2, q3, q4, q5, q6, q7) { \
     assert(n < MAX_CAND);  \
-    cand[n].split = REFT_HEX_XYZ; \
+    cand[n].split = H3D_H3D_H3D_REFT_HEX_XYZ; \
     cand[n].p[0] = (q0); \
     cand[n].p[1] = (q1); \
     cand[n].p[2] = (q2); \
@@ -376,13 +376,13 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 		MAKE_HP_CAND(pp[0], pp[0], pp[0], pp[0], pp[0], pp[0], pp[0], pp[0]);
 
 		if (aniso) {
-			MAKE_ANI2_CAND(REFT_HEX_X, pp[0], pp[0]);
-			MAKE_ANI2_CAND(REFT_HEX_Y, pp[0], pp[0]);
-			MAKE_ANI2_CAND(REFT_HEX_Z, pp[0], pp[0]);
+			MAKE_ANI2_CAND(H3D_REFT_HEX_X, pp[0], pp[0]);
+			MAKE_ANI2_CAND(H3D_REFT_HEX_Y, pp[0], pp[0]);
+			MAKE_ANI2_CAND(H3D_REFT_HEX_Z, pp[0], pp[0]);
 
-			MAKE_ANI4_CAND(REFT_HEX_XY, pp[0], pp[0], pp[0], pp[0]);
-			MAKE_ANI4_CAND(REFT_HEX_YZ, pp[0], pp[0], pp[0], pp[0]);
-			MAKE_ANI4_CAND(REFT_HEX_XZ, pp[0], pp[0], pp[0], pp[0]);
+			MAKE_ANI4_CAND(H3D_H3D_REFT_HEX_XY, pp[0], pp[0], pp[0], pp[0]);
+			MAKE_ANI4_CAND(H3D_H3D_REFT_HEX_YZ, pp[0], pp[0], pp[0], pp[0]);
+			MAKE_ANI4_CAND(H3D_H3D_REFT_HEX_XZ, pp[0], pp[0], pp[0], pp[0]);
 		}
 	}
 	else {
@@ -429,7 +429,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 			};
 			for (unsigned int q0 = 0; q0 < countof(ppx); q0++)
 				for (unsigned int q1 = 0; q1 < countof(ppx); q1++)
-					MAKE_ANI2_CAND(REFT_HEX_X, ppx[q0], ppx[q1]);
+					MAKE_ANI2_CAND(H3D_REFT_HEX_X, ppx[q0], ppx[q1]);
 			// Y
 			order3_t ppy[] = {
 				order3_t(order.x, (order.y + 1) / 2, order.z),
@@ -437,7 +437,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 			};
 			for (unsigned int q0 = 0; q0 < countof(ppy); q0++)
 				for (unsigned int q1 = 0; q1 < countof(ppy); q1++)
-					MAKE_ANI2_CAND(REFT_HEX_Y, ppy[q0], ppy[q1]);
+					MAKE_ANI2_CAND(H3D_REFT_HEX_Y, ppy[q0], ppy[q1]);
 			// Z
 			order3_t ppz[] = {
 				order3_t(order.x, order.y, (order.z + 1) / 2),
@@ -445,7 +445,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 			};
 			for (unsigned int q0 = 0; q0 < countof(ppz); q0++)
 				for (unsigned int q1 = 0; q1 < countof(ppz); q1++)
-					MAKE_ANI2_CAND(REFT_HEX_Z, ppz[q0], ppz[q1]);
+					MAKE_ANI2_CAND(H3D_REFT_HEX_Z, ppz[q0], ppz[q1]);
 
 			// XY
 			order3_t ppxy[] = {
@@ -457,7 +457,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 				for (unsigned int q1 = 0; q1 < countof(ppxy); q1++)
 					for (unsigned int q2 = 0; q2 < countof(ppxy); q2++)
 						for (unsigned int q3 = 0; q3 < countof(ppxy); q3++)
-							MAKE_ANI4_CAND(REFT_HEX_XY, ppxy[q0], ppxy[q1], ppxy[q2], ppxy[q3]);
+							MAKE_ANI4_CAND(H3D_H3D_REFT_HEX_XY, ppxy[q0], ppxy[q1], ppxy[q2], ppxy[q3]);
 			// YZ
 			order3_t ppyz[] = {
 					order3_t(order.x, (order.y + 1) / 2, (order.z + 1) / 2),
@@ -468,7 +468,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 				for (unsigned int q1 = 0; q1 < countof(ppyz); q1++)
 					for (unsigned int q2 = 0; q2 < countof(ppyz); q2++)
 						for (unsigned int q3 = 0; q3 < countof(ppyz); q3++)
-							MAKE_ANI4_CAND(REFT_HEX_YZ, ppyz[q0], ppyz[q1], ppyz[q2], ppyz[q3]);
+							MAKE_ANI4_CAND(H3D_H3D_REFT_HEX_YZ, ppyz[q0], ppyz[q1], ppyz[q2], ppyz[q3]);
 			// XZ
 			order3_t ppxz[] = {
 				order3_t((order.x + 1) / 2, order.y, (order.z + 1) / 2),
@@ -479,7 +479,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 				for (unsigned int q1 = 0; q1 < countof(ppxz); q1++)
 					for (unsigned int q2 = 0; q2 < countof(ppxz); q2++)
 						for (unsigned int q3 = 0; q3 < countof(ppxz); q3++)
-							MAKE_ANI4_CAND(REFT_HEX_XZ, ppxz[q0], ppxz[q1], ppxz[q2], ppxz[q3]);
+							MAKE_ANI4_CAND(H3D_H3D_REFT_HEX_XZ, ppxz[q0], ppxz[q1], ppxz[q2], ppxz[q3]);
 		}
 	}
 
@@ -495,45 +495,45 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 
 		c->error = 0.0;
 		switch (c->split) {
-			case REFT_HEX_NONE:
+			case H3D_REFT_HEX_NONE:
 				c->error += get_projection_error(e, c->split, -1, c->p[0], rsln, ss);
 				break;
 
-			case REFT_HEX_XYZ:
+			case H3D_H3D_H3D_REFT_HEX_XYZ:
 				for (int j = 0; j < 8; j++)
 					c->error += get_projection_error(e, c->split, j, c->p[j], rsln, ss);
 				break;
 
-			case REFT_HEX_X:
+			case H3D_REFT_HEX_X:
 				c->error += get_projection_error(e, c->split, 20, c->p[0], rsln, ss);
 				c->error += get_projection_error(e, c->split, 21, c->p[1], rsln, ss);
 				break;
 
-			case REFT_HEX_Y:
+			case H3D_REFT_HEX_Y:
 				c->error += get_projection_error(e, c->split, 22, c->p[0], rsln, ss);
 				c->error += get_projection_error(e, c->split, 23, c->p[1], rsln, ss);
 				break;
 
-			case REFT_HEX_Z:
+			case H3D_REFT_HEX_Z:
 				c->error += get_projection_error(e, c->split, 24, c->p[0], rsln, ss);
 				c->error += get_projection_error(e, c->split, 25, c->p[1], rsln, ss);
 				break;
 
-			case REFT_HEX_XY:
+			case H3D_H3D_REFT_HEX_XY:
 				c->error += get_projection_error(e, c->split,  8, c->p[0], rsln, ss);
 				c->error += get_projection_error(e, c->split,  9, c->p[1], rsln, ss);
 				c->error += get_projection_error(e, c->split, 10, c->p[2], rsln, ss);
 				c->error += get_projection_error(e, c->split, 11, c->p[3], rsln, ss);
 				break;
 
-			case REFT_HEX_XZ:
+			case H3D_H3D_REFT_HEX_XZ:
 				c->error += get_projection_error(e, c->split, 12, c->p[0], rsln, ss);
 				c->error += get_projection_error(e, c->split, 13, c->p[1], rsln, ss);
 				c->error += get_projection_error(e, c->split, 14, c->p[2], rsln, ss);
 				c->error += get_projection_error(e, c->split, 15, c->p[3], rsln, ss);
 				break;
 
-			case REFT_HEX_YZ:
+			case H3D_H3D_REFT_HEX_YZ:
 				c->error += get_projection_error(e, c->split, 16, c->p[0], rsln, ss);
 				c->error += get_projection_error(e, c->split, 17, c->p[1], rsln, ss);
 				c->error += get_projection_error(e, c->split, 18, c->p[2], rsln, ss);
@@ -541,7 +541,7 @@ void H1Adapt::get_optimal_refinement(Mesh *mesh, Element *e, const order3_t &ord
 				break;
 
 			default:
-				EXIT(ERR_NOT_IMPLEMENTED);
+				EXIT(H3D_ERR_NOT_IMPLEMENTED);
 				break;
 		}
 		c->error = sqrt(c->error);
@@ -645,7 +645,7 @@ void H1Adapt::adapt(double thr)
 
 		if (h_only && !aniso) {
 			p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = p[6] = p[7] = cur_order;
-			split = REFT_HEX_XYZ;
+			split = H3D_H3D_H3D_REFT_HEX_XYZ;
 #ifdef DEBUG_PRINT
 			printf("\n");			// new-line
 #endif
@@ -660,27 +660,27 @@ void H1Adapt::adapt(double thr)
 				p[4].get_idx(), p[5].get_idx(), p[6].get_idx(), p[7].get_idx());
 
 		switch (split) {
-			case REFT_HEX_NONE:
+			case H3D_REFT_HEX_NONE:
 				spaces[comp]->set_element_order(id, p[0]);
 				break;
 
-			case REFT_HEX_XYZ:
-				mesh[comp]->refine_element(id, REFT_HEX_XYZ);
+			case H3D_H3D_H3D_REFT_HEX_XYZ:
+				mesh[comp]->refine_element(id, H3D_H3D_H3D_REFT_HEX_XYZ);
 				for (int j = 0; j < Hex::NUM_SONS; j++)
 					spaces[comp]->set_element_order(e->get_son(j), p[j]);
 				break;
 
-			case REFT_HEX_X:
-			case REFT_HEX_Y:
-			case REFT_HEX_Z:
+			case H3D_REFT_HEX_X:
+			case H3D_REFT_HEX_Y:
+			case H3D_REFT_HEX_Z:
 				mesh[comp]->refine_element(id, split);
 				for (int j = 0; j < 2; j++)
 					spaces[comp]->set_element_order(e->get_son(j), p[j]);
 				break;
 
-			case REFT_HEX_XY:
-			case REFT_HEX_XZ:
-			case REFT_HEX_YZ:
+			case H3D_H3D_REFT_HEX_XY:
+			case H3D_H3D_REFT_HEX_XZ:
+			case H3D_H3D_REFT_HEX_YZ:
 				mesh[comp]->refine_element(id, split);
 				for (int j = 0; j < 4; j++)
 					spaces[comp]->set_element_order(e->get_son(j), p[j]);
@@ -882,7 +882,7 @@ double H1Adapt::calc_error_n(Tuple<Solution *> slns, Tuple<Solution *> rslns)
 			for (j = 0; j < num; j++) {
 				if (form[i][j] != NULL) {
 					double err, nrm;
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 					err = fabs(eval_error(e0->marker, form[i][j], ord[i][j], sln[i], sln[j], rsln[i], rsln[j]));
 					nrm = fabs(eval_norm(e0->marker, form[i][j], ord[i][j], rsln[i], rsln[j]));
 #else

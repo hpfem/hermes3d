@@ -1,6 +1,6 @@
 project(output)
 
-if(REAL)
+if(H3D_REAL)
 
 include(CMake.vars OPTIONAL)
 
@@ -120,4 +120,4 @@ add_test(${PROJECT_NAME}-vtk-vec-sln-tet-8 sh -c "${BIN} vec-sln ${MESHES_DIR}/m
 add_test(${PROJECT_NAME}-vtk-3sln-tet-8 sh -c "${BIN} 3sln ${MESHES_DIR}/mesh3d/tetra8.mesh3d | diff - ${CMAKE_CURRENT_SOURCE_DIR}/out/vtk-3sln-tet-8")
 endif(WITH_TETRA)
 
-endif(REAL)
+endif(H3D_REAL)

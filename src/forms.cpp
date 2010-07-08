@@ -286,7 +286,7 @@ mfn_t *init_fn(MeshFunction *f, RefMap *rm, const int np, const QuadPt3D *pt) {
 		memcpy(u->dz2, f->get_dz_values(2), np * sizeof(scalar));
 	}
 	else {
-		EXIT(ERR_NOT_IMPLEMENTED);
+		EXIT(H3D_ERR_NOT_IMPLEMENTED);
 	}
 
 	return u;
@@ -313,6 +313,6 @@ void free_fn_tpl(fn_t<T> *f) {
 }
 
 void free_fn(sfn_t *f) { free_fn_tpl<double>(f); }
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 void free_fn(mfn_t *f) { free_fn_tpl<scalar>(f); }
 #endif

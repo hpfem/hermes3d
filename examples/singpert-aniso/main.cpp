@@ -150,7 +150,7 @@ int main(int argc, char **args) {
 	if (!mesh_loader.load(mesh_file_name, &mesh))
 		error("Unable to load mesh file '%s'\n", mesh_file_name);
 
-	mesh.refine_all_elements(REFT_HEX_XYZ);
+	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 
 	H1ShapesetLobattoHex shapeset;
 
@@ -239,7 +239,7 @@ int main(int argc, char **args) {
 		// construct the mesh for reference solution
 		Mesh rmesh;
 		rmesh.copy(mesh);
-		rmesh.refine_all_elements(REFT_HEX_XYZ);
+		rmesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 		// setup space for the reference solution
 		Space *rspace = space.dup(&rmesh);
 		rspace->copy_orders(space, 1);

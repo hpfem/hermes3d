@@ -246,7 +246,7 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 
 					for (int i = 0; i < am->cnt; i++) {
 						int k = am->dof[i];
-						if (!tra && k == DIRICHLET_DOF) continue;
+						if (!tra && k == H3D_DIRICHLET_DOF) continue;
 						fv->set_active_shape(am->idx[i]);
 
 						if (!sym) { // unsymmetric block
@@ -254,7 +254,7 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 								fu->set_active_shape(an->idx[j]);
 								scalar bi = eval_form(mfv, u_ext, fu, fv, refmap + n, refmap + m)
 									* an->coef[j] * am->coef[i];
-								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
+								if (an->dof[j] != H3D_DIRICHLET_DOF) mat[i][j] = bi;
 							}
 						}
 						else { // symmetric block
@@ -263,7 +263,7 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 								fu->set_active_shape(an->idx[j]);
 								scalar bi = eval_form(mfv, u_ext, fu, fv, refmap + n, refmap + m)
 									* an->coef[j] * am->coef[i];
-								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = mat[j][i] = bi;
+								if (an->dof[j] != H3D_DIRICHLET_DOF) mat[i][j] = mat[j][i] = bi;
 							}
 						}
 					}
@@ -289,7 +289,7 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 					int m = vfv->i;  fv = test_fn + m;  am = al + m;
 
 					for (int i = 0; i < am->cnt; i++) {
-						if (am->dof[i] == DIRICHLET_DOF) continue;
+						if (am->dof[i] == H3D_DIRICHLET_DOF) continue;
 						fv->set_active_shape(am->idx[i]);
 						rhs->add(am->dof[i], eval_form(vfv, u_ext, fv, refmap + m) * am->coef[i]);
 					}
@@ -329,13 +329,13 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 						scalar **mat = get_matrix_buffer(std::max(am->cnt, an->cnt));
 						for (int i = 0; i < am->cnt; i++) {
 							int k = am->dof[i];
-							if (k == DIRICHLET_DOF) continue;
+							if (k == H3D_DIRICHLET_DOF) continue;
 							fv->set_active_shape(am->idx[i]);
 							for (int j = 0; j < an->cnt; j++) {
 								fu->set_active_shape(an->idx[j]);
 								scalar bi = eval_form(mfs, u_ext, fu, fv, refmap + n, refmap + m,
 									fp + iface) * an->coef[j] * am->coef[i];
-								if (an->dof[j] != DIRICHLET_DOF) mat[i][j] = bi;
+								if (an->dof[j] != H3D_DIRICHLET_DOF) mat[i][j] = bi;
 							}
 						}
 						jac->add(am->cnt, an->cnt, mat, am->dof, an->dof);
@@ -355,7 +355,7 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 						fp[iface].space_v = spaces[m];
 
 						for (int i = 0; i < am->cnt; i++) {
-							if (am->dof[i] == DIRICHLET_DOF) continue;
+							if (am->dof[i] == H3D_DIRICHLET_DOF) continue;
 							fv->set_active_shape(am->idx[i]);
 							rhs->add(am->dof[i],
 								eval_form(vfs, u_ext, fv, refmap + m, fp + iface) * am->coef[i]);
@@ -430,9 +430,9 @@ void FeProblem::create(SparseMatrix *mat)
 					// pretend assembling of the element stiffness matrix
 					// register nonzero elements
 					for (int i = 0; i < am->cnt; i++)
-						if (am->dof[i] != DIRICHLET_DOF)
+						if (am->dof[i] != H3D_DIRICHLET_DOF)
 							for (int j = 0; j < an->cnt; j++)
-								if (an->dof[j] != DIRICHLET_DOF)
+								if (an->dof[j] != H3D_DIRICHLET_DOF)
 									mat->pre_add_ij(am->dof[i], an->dof[j]);
 				}
 	}
