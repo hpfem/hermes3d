@@ -1,6 +1,6 @@
 project(quadrature)
 
-if(REAL)
+if(H3D_REAL)
 
 include(CMake.vars OPTIONAL)
 
@@ -27,4 +27,4 @@ configure_file(
 set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 add_test(quadrature-1 ${BIN})
 
-endif(REAL)
+endif(H3D_REAL)

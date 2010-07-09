@@ -176,7 +176,7 @@ bool test_zero_values_of_edge_fns(Shapeset *shapeset) {
 	Quad3D *quad = get_quadrature(MODE);
 	for (int edge = 0; edge < Hex::NUM_EDGES; edge++) {
 		for (int ori = 0; ori < 2; ori++) {
-			int order = MAX_ELEMENT_ORDER;
+			int order = H3D_MAX_ELEMENT_ORDER;
 			int n_fns = shapeset->get_num_edge_fns(order);
 			int *edge_fn = shapeset->get_edge_indices(edge, ori, order);
 
@@ -269,7 +269,7 @@ bool test_zero_values_of_face_fns(Shapeset *shapeset) {
 	Quad3D *quad = get_quadrature(MODE);
 	for (int face = 0; face < Hex::NUM_FACES; face++) {
 		for (int ori = 0; ori < 8; ori++) {
-			order2_t order(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+			order2_t order(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 
 			int n_fns = shapeset->get_num_face_fns(order);
 			int *face_fn = shapeset->get_face_indices(face, ori, order);
@@ -330,7 +330,7 @@ bool test_zero_values_of_bubble_fns(Shapeset *shapeset) {
 	_F_
 	Quad3D *quad = get_quadrature(MODE);
 
-	order3_t order(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+	order3_t order(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 
 	int n_fns = shapeset->get_num_bubble_fns(order);
 	int *bubble_fn = shapeset->get_bubble_indices(order);

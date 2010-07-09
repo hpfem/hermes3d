@@ -85,7 +85,7 @@ bool read_n_nums(char *row, int n, double values[])
 
 int read_matrix_and_rhs(char *file_name, int &n, Array<MatrixEntry> &mat, Array<scalar> &rhs)
 {
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) return ERR_FAILURE;
 
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 #endif
 	set_verbose(false);
 
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 	if (argc < 3) error("Not enough parameters");
 #else
 	if (argc < 2) error("Not enough parameters");

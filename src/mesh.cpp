@@ -93,7 +93,7 @@ Facet::Facet(EMode2D mode) {
 	this->right_face_num = -1;
 	this->lactive = false;
 	this->ractive = false;
-	this->ref_mask = REFT_FACE_NONE;
+	this->ref_mask = H3D_REFT_FACE_NONE;
 
 	this->parent = INVALID_IDX;
 	for (int i = 0; i < MAX_SONS; i++)
@@ -205,7 +205,7 @@ Hex::Hex() {
 	for (int i = 0; i < NUM_SONS; i++)
 		sons[i] = INVALID_IDX;
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 
@@ -218,7 +218,7 @@ Hex::Hex(Word_t v[]) {
 	for (int i = 0; i < NUM_SONS; i++)
 		sons[i] = INVALID_IDX;
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 
@@ -237,7 +237,7 @@ Hex::Hex(Word_t v1, Word_t v2, Word_t v3, Word_t v4, Word_t v5, Word_t v6, Word_
 	for (int i = 0; i < NUM_SONS; i++)
 		sons[i] = INVALID_IDX;
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 
@@ -249,7 +249,7 @@ Hex::Hex(const Hex &o) : Element(o) {
 	for (int i = 0; i < NUM_SONS; i++)
 		sons[i] = o.sons[i];
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 
@@ -369,7 +369,7 @@ Tetra::Tetra() {
 	_F_
 #ifdef WITH_TETRA
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 
@@ -379,7 +379,7 @@ Tetra::Tetra(Word_t v[]) {
 	for (int i = 0; i < NUM_VERTICES; i++)
 		vtcs[i] = v[i];
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 
@@ -391,7 +391,7 @@ Tetra::Tetra(Word_t v1, Word_t v2, Word_t v3, Word_t v4) {
 	vtcs[2] = v3;
 	vtcs[3] = v4;
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 
@@ -403,7 +403,7 @@ Tetra::Tetra(const Tetra &o) :
 	for (int i = 0; i < NUM_VERTICES; i++)
 		vtcs[i] = o.vtcs[i];
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 
@@ -513,7 +513,7 @@ Prism::Prism() {
 	_F_
 #ifdef WITH_PRISM
 #else
-	EXIT(ERR_PRISM_NOT_COMPILED);
+	EXIT(H3D_ERR_PRISM_NOT_COMPILED);
 #endif
 }
 
@@ -523,7 +523,7 @@ Prism::Prism(Word_t v[]) {
 	for (int i = 0; i < NUM_VERTICES; i++)
 		vtcs[i] = v[i];
 #else
-	EXIT(ERR_PRISM_NOT_COMPILED);
+	EXIT(H3D_ERR_PRISM_NOT_COMPILED);
 #endif
 }
 
@@ -537,7 +537,7 @@ Prism::Prism(Word_t v1, Word_t v2, Word_t v3, Word_t v4, Word_t v5, Word_t v6) {
 	vtcs[4] = v5;
 	vtcs[5] = v6;
 #else
-	EXIT(ERR_PRISM_NOT_COMPILED);
+	EXIT(H3D_ERR_PRISM_NOT_COMPILED);
 #endif
 }
 
@@ -549,7 +549,7 @@ Prism::Prism(const Prism &o) :
 	for (int i = 0; i < NUM_VERTICES; i++)
 		vtcs[i] = o.vtcs[i];
 #else
-	EXIT(ERR_PRISM_NOT_COMPILED);
+	EXIT(H3D_ERR_PRISM_NOT_COMPILED);
 #endif
 }
 
@@ -612,14 +612,14 @@ const int *Prism::get_face_edges(int face_num) const {
 
 int Prism::get_edge_orientation(int edge_num) const {
 	_F_
-	EXIT(ERR_NOT_IMPLEMENTED);
+	EXIT(H3D_ERR_NOT_IMPLEMENTED);
 	// FIXME
 	return -1;
 }
 
 int Prism::get_face_orientation(int face_num) const {
 	_F_
-	EXIT(ERR_NOT_IMPLEMENTED);
+	EXIT(H3D_ERR_NOT_IMPLEMENTED);
 	// FIXME
 	return -1;
 }
@@ -1146,10 +1146,10 @@ bool Mesh::is_compatible_quad_refinement(Facet *facet, int reft) const {
 	_F_
 	if (facet->type == Facet::INNER) {
 		// BOTH or NONE on the facet => refinement makes no problem
-		if (facet->ref_mask == REFT_QUAD_BOTH || facet->ref_mask == REFT_FACE_NONE) return true;
+		if (facet->ref_mask == H3D_REFT_QUAD_BOTH || facet->ref_mask == H3D_REFT_FACE_NONE) return true;
 
 		// applying BOTH or NONE is also no problem
-		if (reft == REFT_QUAD_BOTH || reft == REFT_FACE_NONE) return true;
+		if (reft == H3D_REFT_QUAD_BOTH || reft == H3D_REFT_FACE_NONE) return true;
 
 		Word_t eid;
 		int face_num;
@@ -1176,11 +1176,11 @@ bool Mesh::is_compatible_quad_refinement(Facet *facet, int reft) const {
 
 		// check if the vertices are there, if so => compatible refinement
 		Word_t emp[2] = { INVALID_IDX, INVALID_IDX };
-		if (reft == REFT_QUAD_HORZ) {
+		if (reft == H3D_REFT_QUAD_HORZ) {
 			emp[0] = peek_midpoint(face_vtx[0], face_vtx[3]);
 			emp[1] = peek_midpoint(face_vtx[1], face_vtx[2]);
 		}
-		else if (reft == REFT_QUAD_VERT) {
+		else if (reft == H3D_REFT_QUAD_VERT) {
 			emp[0] = peek_midpoint(face_vtx[0], face_vtx[1]);
 			emp[1] = peek_midpoint(face_vtx[2], face_vtx[3]);
 		}
@@ -1201,9 +1201,9 @@ bool Mesh::can_refine_element(Word_t eid, int reft) const {
 	assert(elem != NULL);
 	switch (elem->get_mode()) {
 		case MODE_HEXAHEDRON: can_refine = can_refine_hex((Hex *) elem, reft); break;
-		case MODE_TETRAHEDRON: EXIT(ERR_NOT_IMPLEMENTED); break;
-		case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
-		default: EXIT(ERR_UNKNOWN_MODE); break;
+		case MODE_TETRAHEDRON: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+		case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+		default: EXIT(H3D_ERR_UNKNOWN_MODE); break;
 	}
 
 	return can_refine;
@@ -1217,79 +1217,79 @@ bool Mesh::can_refine_hex(Hex *elem, int refinement) const {
 	int face_reft[Hex::NUM_FACES]; // refinements to apply on each face
 
 	switch (refinement) {
-		case REFT_HEX_NONE:
+		case H3D_REFT_HEX_NONE:
 			return true;
 
 		// refine to 2 hexes
-		case REFT_HEX_X:
+		case H3D_REFT_HEX_X:
 			nf = 4;
-			iface[0] = 2; face_reft[0] = REFT_QUAD_VERT;
-			iface[1] = 3; face_reft[1] = REFT_QUAD_VERT;
-			iface[2] = 4; face_reft[2] = REFT_QUAD_VERT;
-			iface[3] = 5; face_reft[3] = REFT_QUAD_VERT;
+			iface[0] = 2; face_reft[0] = H3D_REFT_QUAD_VERT;
+			iface[1] = 3; face_reft[1] = H3D_REFT_QUAD_VERT;
+			iface[2] = 4; face_reft[2] = H3D_REFT_QUAD_VERT;
+			iface[3] = 5; face_reft[3] = H3D_REFT_QUAD_VERT;
 			break;
 
-		case REFT_HEX_Y:
+		case H3D_REFT_HEX_Y:
 			nf = 4;
-			iface[0] = 0; face_reft[0] = REFT_QUAD_VERT;
-			iface[1] = 1; face_reft[1] = REFT_QUAD_VERT;
-			iface[2] = 4; face_reft[2] = REFT_QUAD_HORZ;
-			iface[3] = 5; face_reft[3] = REFT_QUAD_HORZ;
+			iface[0] = 0; face_reft[0] = H3D_REFT_QUAD_VERT;
+			iface[1] = 1; face_reft[1] = H3D_REFT_QUAD_VERT;
+			iface[2] = 4; face_reft[2] = H3D_REFT_QUAD_HORZ;
+			iface[3] = 5; face_reft[3] = H3D_REFT_QUAD_HORZ;
 			break;
 
-		case REFT_HEX_Z:
+		case H3D_REFT_HEX_Z:
 			nf = 4;
-			iface[0] = 0; face_reft[0] = REFT_QUAD_HORZ;
-			iface[1] = 1; face_reft[1] = REFT_QUAD_HORZ;
-			iface[2] = 2; face_reft[2] = REFT_QUAD_HORZ;
-			iface[3] = 3; face_reft[3] = REFT_QUAD_HORZ;
+			iface[0] = 0; face_reft[0] = H3D_REFT_QUAD_HORZ;
+			iface[1] = 1; face_reft[1] = H3D_REFT_QUAD_HORZ;
+			iface[2] = 2; face_reft[2] = H3D_REFT_QUAD_HORZ;
+			iface[3] = 3; face_reft[3] = H3D_REFT_QUAD_HORZ;
 			break;
 
 		// refine to 4 hexes
-		case REFT_HEX_XY:
+		case H3D_H3D_REFT_HEX_XY:
 			nf = 6;
-			iface[0] = 0; face_reft[0] = REFT_QUAD_VERT;
-			iface[1] = 1; face_reft[1] = REFT_QUAD_VERT;
-			iface[2] = 2; face_reft[2] = REFT_QUAD_VERT;
-			iface[3] = 3; face_reft[3] = REFT_QUAD_VERT;
-			iface[4] = 4; face_reft[4] = REFT_QUAD_BOTH;
-			iface[5] = 5; face_reft[5] = REFT_QUAD_BOTH;
+			iface[0] = 0; face_reft[0] = H3D_REFT_QUAD_VERT;
+			iface[1] = 1; face_reft[1] = H3D_REFT_QUAD_VERT;
+			iface[2] = 2; face_reft[2] = H3D_REFT_QUAD_VERT;
+			iface[3] = 3; face_reft[3] = H3D_REFT_QUAD_VERT;
+			iface[4] = 4; face_reft[4] = H3D_REFT_QUAD_BOTH;
+			iface[5] = 5; face_reft[5] = H3D_REFT_QUAD_BOTH;
 			break;
 
-		case REFT_HEX_YZ:
+		case H3D_H3D_REFT_HEX_YZ:
 			nf = 6;
-			iface[0] = 0; face_reft[0] = REFT_QUAD_BOTH;
-			iface[1] = 1; face_reft[1] = REFT_QUAD_BOTH;
-			iface[2] = 2; face_reft[2] = REFT_QUAD_HORZ;
-			iface[3] = 3; face_reft[3] = REFT_QUAD_HORZ;
-			iface[4] = 4; face_reft[4] = REFT_QUAD_HORZ;
-			iface[5] = 5; face_reft[5] = REFT_QUAD_HORZ;
+			iface[0] = 0; face_reft[0] = H3D_REFT_QUAD_BOTH;
+			iface[1] = 1; face_reft[1] = H3D_REFT_QUAD_BOTH;
+			iface[2] = 2; face_reft[2] = H3D_REFT_QUAD_HORZ;
+			iface[3] = 3; face_reft[3] = H3D_REFT_QUAD_HORZ;
+			iface[4] = 4; face_reft[4] = H3D_REFT_QUAD_HORZ;
+			iface[5] = 5; face_reft[5] = H3D_REFT_QUAD_HORZ;
 			break;
 
-		case REFT_HEX_XZ:
+		case H3D_H3D_REFT_HEX_XZ:
 			nf = 6;
-			iface[0] = 0; face_reft[0] = REFT_QUAD_HORZ;
-			iface[1] = 1; face_reft[1] = REFT_QUAD_HORZ;
-			iface[2] = 2; face_reft[2] = REFT_QUAD_BOTH;
-			iface[3] = 3; face_reft[3] = REFT_QUAD_BOTH;
-			iface[4] = 4; face_reft[4] = REFT_QUAD_VERT;
-			iface[5] = 5; face_reft[5] = REFT_QUAD_VERT;
+			iface[0] = 0; face_reft[0] = H3D_REFT_QUAD_HORZ;
+			iface[1] = 1; face_reft[1] = H3D_REFT_QUAD_HORZ;
+			iface[2] = 2; face_reft[2] = H3D_REFT_QUAD_BOTH;
+			iface[3] = 3; face_reft[3] = H3D_REFT_QUAD_BOTH;
+			iface[4] = 4; face_reft[4] = H3D_REFT_QUAD_VERT;
+			iface[5] = 5; face_reft[5] = H3D_REFT_QUAD_VERT;
 			break;
 
 		// refine to 8 hexes
-		case REFT_HEX_XYZ:
+		case H3D_H3D_H3D_REFT_HEX_XYZ:
 			nf = 6;
-			iface[0] = 0; face_reft[0] = REFT_QUAD_BOTH;
-			iface[1] = 1; face_reft[1] = REFT_QUAD_BOTH;
-			iface[2] = 2; face_reft[2] = REFT_QUAD_BOTH;
-			iface[3] = 3; face_reft[3] = REFT_QUAD_BOTH;
-			iface[4] = 4; face_reft[4] = REFT_QUAD_BOTH;
-			iface[5] = 5; face_reft[5] = REFT_QUAD_BOTH;
+			iface[0] = 0; face_reft[0] = H3D_REFT_QUAD_BOTH;
+			iface[1] = 1; face_reft[1] = H3D_REFT_QUAD_BOTH;
+			iface[2] = 2; face_reft[2] = H3D_REFT_QUAD_BOTH;
+			iface[3] = 3; face_reft[3] = H3D_REFT_QUAD_BOTH;
+			iface[4] = 4; face_reft[4] = H3D_REFT_QUAD_BOTH;
+			iface[5] = 5; face_reft[5] = H3D_REFT_QUAD_BOTH;
 			break;
 
 		// WTF?
 		default:
-			EXIT(ERR_UNKNOWN_REFINEMENT_TYPE);
+			EXIT(H3D_ERR_UNKNOWN_REFINEMENT_TYPE);
 			break;
 	}
 
@@ -1313,9 +1313,9 @@ bool Mesh::refine_element(Word_t id, int refinement) {
 	if (can_refine_element(id, refinement)) {
 		switch (elem->get_mode()) {
 			case MODE_HEXAHEDRON: refined = refine_hex((Hex *) elem, refinement); break;
-			case MODE_TETRAHEDRON: EXIT(ERR_NOT_IMPLEMENTED); break;
-			case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
-			default: EXIT(ERR_UNKNOWN_MODE); break;
+			case MODE_TETRAHEDRON: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+			case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
+			default: EXIT(H3D_ERR_UNKNOWN_MODE); break;
 		}
 
 		seq = g_mesh_seq++;
@@ -1332,27 +1332,27 @@ bool Mesh::refine_hex(Hex *elem, int refinement) {
 
 	bool refined = false;
 	switch (refinement) {
-		case REFT_HEX_NONE: /* do nothing */
+		case H3D_REFT_HEX_NONE: /* do nothing */
 			break;
 		// refine to 2 hexes
-		case REFT_HEX_X:
-		case REFT_HEX_Y:
-		case REFT_HEX_Z:
+		case H3D_REFT_HEX_X:
+		case H3D_REFT_HEX_Y:
+		case H3D_REFT_HEX_Z:
 			refined = refine_hex_2(elem, refinement);
 			break;
 		// refine to 4 hexes
-		case REFT_HEX_XY:
-		case REFT_HEX_XZ:
-		case REFT_HEX_YZ:
+		case H3D_H3D_REFT_HEX_XY:
+		case H3D_H3D_REFT_HEX_XZ:
+		case H3D_H3D_REFT_HEX_YZ:
 			refined = refine_hex_4(elem, refinement);
 			break;
 		// refine to 8 hexes
-		case REFT_HEX_XYZ:
+		case H3D_H3D_H3D_REFT_HEX_XYZ:
 			refined = refine_hex_8(elem, refinement);
 			break;
 		// WTF?
 		default:
-			EXIT(ERR_UNKNOWN_REFINEMENT_TYPE);
+			EXIT(H3D_ERR_UNKNOWN_REFINEMENT_TYPE);
 			break;
 	}
 
@@ -1379,17 +1379,17 @@ bool Mesh::refine_hex_2(Hex *parent, int refinement) {
 	Word_t mp[4] = { 0 }; // four midpoints shared when refining to two elements
 	const int *left, *right; // vertex indices for "left" and "right" face
 	switch (refinement) {
-		case REFT_HEX_X:
+		case H3D_REFT_HEX_X:
 			left = hex_face_vtcs_0;
 			right = hex_face_vtcs_1;
 			break;
 
-		case REFT_HEX_Y:
+		case H3D_REFT_HEX_Y:
 			left = hex_face_vtcs_2;
 			right = hex_face_vtcs_3;
 			break;
 
-		case REFT_HEX_Z:
+		case H3D_REFT_HEX_Z:
 			left = hex_face_vtcs_4;
 			right = hex_face_vtcs_5;
 			break;
@@ -1424,8 +1424,8 @@ bool Mesh::refine_hex_2(Hex *parent, int refinement) {
 	int face_2[4]; // four faces that are splitted
 	int face_refts[4]; // refinements that are applied on faces in face_2 array
 	switch (refinement) {
-		case REFT_HEX_X: {
-			int fr[] = { REFT_QUAD_VERT, REFT_QUAD_VERT, REFT_QUAD_VERT, REFT_QUAD_VERT };
+		case H3D_REFT_HEX_X: {
+			int fr[] = { H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT };
 			memcpy(face_refts, fr, sizeof(fr));
 			int f0[] = { 0, 1 };
 			int f2[] = { 2, 3, 4, 5 };
@@ -1433,8 +1433,8 @@ bool Mesh::refine_hex_2(Hex *parent, int refinement) {
 			memcpy(face_2, f2, sizeof(f2));
 			} break;
 
-		case REFT_HEX_Y: {
-			int fr[] = { REFT_QUAD_VERT, REFT_QUAD_VERT, REFT_QUAD_HORZ, REFT_QUAD_HORZ };
+		case H3D_REFT_HEX_Y: {
+			int fr[] = { H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ };
 			memcpy(face_refts, fr, sizeof(fr));
 			int f0[] = { 2, 3 };
 			int f2[] = { 0, 1, 4, 5 };
@@ -1442,8 +1442,8 @@ bool Mesh::refine_hex_2(Hex *parent, int refinement) {
 			memcpy(face_2, f2, sizeof(f2));
 			} break;
 
-		case REFT_HEX_Z: {
-			int fr[] = { REFT_QUAD_HORZ, REFT_QUAD_HORZ, REFT_QUAD_HORZ, REFT_QUAD_HORZ };
+		case H3D_REFT_HEX_Z: {
+			int fr[] = { H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ };
 			memcpy(face_refts, fr, sizeof(fr));
 			int f0[] = { 4, 5 };
 			int f2[] = { 0, 1, 2, 3 };
@@ -1455,8 +1455,8 @@ bool Mesh::refine_hex_2(Hex *parent, int refinement) {
 	for (int i = 0; i < 4; i++)
 		refined &= refine_quad_facet(parent, face_2[i], face_refts[i], parent->sons[0], parent->sons[1]);
 
-	refined &= refine_quad_facet(parent, face_0[0], REFT_FACE_NONE, parent->sons[0]);
-	refined &= refine_quad_facet(parent, face_0[1], REFT_FACE_NONE, parent->sons[1]);
+	refined &= refine_quad_facet(parent, face_0[0], H3D_REFT_FACE_NONE, parent->sons[0]);
+	refined &= refine_quad_facet(parent, face_0[1], H3D_REFT_FACE_NONE, parent->sons[1]);
 
 	// add a facet between two new elements
 	add_quad_facet(Facet::INNER, parent->sons[0], face_0[1], parent->sons[1], face_0[0]);
@@ -1473,17 +1473,17 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 
 	const int *left, *right; // vertex indices for "left" and "right" face
 	switch (refinement) {
-		case REFT_HEX_XY:
+		case H3D_H3D_REFT_HEX_XY:
 			left = hex_face_vtcs_4;
 			right = hex_face_vtcs_5;
 			break;
 
-		case REFT_HEX_YZ:
+		case H3D_H3D_REFT_HEX_YZ:
 			left = hex_face_vtcs_0;
 			right = hex_face_vtcs_1;
 			break;
 
-		case REFT_HEX_XZ:
+		case H3D_H3D_REFT_HEX_XZ:
 			left = hex_face_vtcs_2;
 			right = hex_face_vtcs_3;
 			break;
@@ -1510,7 +1510,7 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 	// sons (child elements keep the orientation of the parent element)
 	Word_t son[4][Hex::NUM_VERTICES]; // four hex elements
 	switch (refinement) {
-		case REFT_HEX_XY: {
+		case H3D_H3D_REFT_HEX_XY: {
 			Word_t s[4][Hex::NUM_VERTICES] = {
 				{ vp[0][0], emp[0][0], fmp[0], emp[0][3], vp[1][0], emp[1][0], fmp[1], emp[1][3] },
 				{ emp[0][0], vp[0][1], emp[0][1], fmp[0], emp[1][0], vp[1][1], emp[1][1], fmp[1] },
@@ -1520,7 +1520,7 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 			memcpy(son, s, sizeof(s));
 			} break;
 
-		case REFT_HEX_YZ: {
+		case H3D_H3D_REFT_HEX_YZ: {
 			Word_t s[4][Hex::NUM_VERTICES] = {
 				{ vp[0][0], vp[1][0], emp[1][0], emp[0][0], emp[0][3], emp[1][3], fmp[1], fmp[0] },
 				{ emp[0][0], emp[1][0], vp[1][1], vp[0][1], fmp[0], fmp[1], emp[1][1], emp[0][1] },
@@ -1530,7 +1530,7 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 			memcpy(son, s, sizeof(s));
 			} break;
 
-		case REFT_HEX_XZ: {
+		case H3D_H3D_REFT_HEX_XZ: {
 			Word_t s[4][Hex::NUM_VERTICES] = {
 				{ vp[0][0], emp[0][0], emp[1][0], vp[1][0], emp[0][3], fmp[0], fmp[1], emp[1][3] },
 				{ emp[0][0], vp[0][1], vp[1][1], emp[1][0], fmp[0], emp[0][1], emp[1][1], fmp[1] },
@@ -1558,8 +1558,8 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 	int face_2[4]; // four faces that are splitted into two facets
 	int face_refts[4]; // refinements that are applied on faces in face_2 array
 	switch (refinement) {
-		case REFT_HEX_XY: {
-			int fr[] = { REFT_QUAD_VERT, REFT_QUAD_VERT, REFT_QUAD_VERT, REFT_QUAD_VERT };
+		case H3D_H3D_REFT_HEX_XY: {
+			int fr[] = { H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT };
 			memcpy(face_refts, fr, sizeof(fr));
 			int f4[] = { 4, 5 };
 			int f2[] = { 0, 1, 2, 3 };
@@ -1567,8 +1567,8 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 			memcpy(face_4, f4, sizeof(f4));
 			} break;
 
-		case REFT_HEX_YZ: {
-			int fr[] = { REFT_QUAD_HORZ, REFT_QUAD_HORZ, REFT_QUAD_HORZ, REFT_QUAD_HORZ };
+		case H3D_H3D_REFT_HEX_YZ: {
+			int fr[] = { H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ };
 			memcpy(face_refts, fr, sizeof(fr));
 			int f4[] = { 0, 1 };
 			int f2[] = { 2, 3, 4, 5 };
@@ -1576,8 +1576,8 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 			memcpy(face_4, f4, sizeof(f4));
 			} break;
 
-		case REFT_HEX_XZ: {
-			int fr[] = { REFT_QUAD_HORZ, REFT_QUAD_HORZ, REFT_QUAD_VERT, REFT_QUAD_VERT };
+		case H3D_H3D_REFT_HEX_XZ: {
+			int fr[] = { H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_HORZ, H3D_REFT_QUAD_VERT, H3D_REFT_QUAD_VERT };
 			memcpy(face_refts, fr, sizeof(fr));
 			int f4[] = { 2, 3 };
 			int f2[] = { 0, 1, 4, 5 };
@@ -1590,8 +1590,8 @@ bool Mesh::refine_hex_4(Hex *parent, int refinement) {
 	for (int i = 0; i < 4; i++)
 		refined &= refine_quad_facet(parent, face_2[i], face_refts[i], parent->sons[eidx[i][0]], parent->sons[eidx[i][1]]);
 
-	refined &= refine_quad_facet(parent, face_4[0], REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[2], parent->sons[3]);
-	refined &= refine_quad_facet(parent, face_4[1], REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[2], parent->sons[3]);
+	refined &= refine_quad_facet(parent, face_4[0], H3D_REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[2], parent->sons[3]);
+	refined &= refine_quad_facet(parent, face_4[1], H3D_REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[2], parent->sons[3]);
 
 	// add facet between two new elements
 	add_quad_facet(Facet::INNER, parent->sons[0], face_2[1], parent->sons[1], face_2[0]);
@@ -1657,12 +1657,12 @@ bool Mesh::refine_hex_8(Hex *parent, int refinement) {
 	nactive += 7; // seven new active element
 
 	// adjust facets
-	refined &= refine_quad_facet(parent, 0, REFT_QUAD_BOTH, parent->sons[0], parent->sons[3], parent->sons[7], parent->sons[4]);
-	refined &= refine_quad_facet(parent, 1, REFT_QUAD_BOTH, parent->sons[1], parent->sons[2], parent->sons[6], parent->sons[5]);
-	refined &= refine_quad_facet(parent, 2, REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[5], parent->sons[4]);
-	refined &= refine_quad_facet(parent, 3, REFT_QUAD_BOTH, parent->sons[3], parent->sons[2], parent->sons[6], parent->sons[7]);
-	refined &= refine_quad_facet(parent, 4, REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[2], parent->sons[3]);
-	refined &= refine_quad_facet(parent, 5, REFT_QUAD_BOTH, parent->sons[4], parent->sons[5], parent->sons[6], parent->sons[7]);
+	refined &= refine_quad_facet(parent, 0, H3D_REFT_QUAD_BOTH, parent->sons[0], parent->sons[3], parent->sons[7], parent->sons[4]);
+	refined &= refine_quad_facet(parent, 1, H3D_REFT_QUAD_BOTH, parent->sons[1], parent->sons[2], parent->sons[6], parent->sons[5]);
+	refined &= refine_quad_facet(parent, 2, H3D_REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[5], parent->sons[4]);
+	refined &= refine_quad_facet(parent, 3, H3D_REFT_QUAD_BOTH, parent->sons[3], parent->sons[2], parent->sons[6], parent->sons[7]);
+	refined &= refine_quad_facet(parent, 4, H3D_REFT_QUAD_BOTH, parent->sons[0], parent->sons[1], parent->sons[2], parent->sons[3]);
+	refined &= refine_quad_facet(parent, 5, H3D_REFT_QUAD_BOTH, parent->sons[4], parent->sons[5], parent->sons[6], parent->sons[7]);
 
 	// add new facets
 	add_quad_facet(Facet::INNER, parent->sons[0], 1, parent->sons[1], 0);
@@ -1685,7 +1685,7 @@ bool Mesh::refine_hex_8(Hex *parent, int refinement) {
 
 bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refinement, Word_t eid) {
 	_F_
-	assert(face_refinement == REFT_FACE_NONE);
+	assert(face_refinement == H3D_REFT_FACE_NONE);
 
 	Word_t fid = get_facet_id(parent_elem, iface);
 	Facet *facet = facets.get(fid);
@@ -1701,14 +1701,14 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 
 bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refinement, Word_t eid0, Word_t eid1) {
 	_F_
-	assert(face_refinement == REFT_QUAD_HORZ || face_refinement == REFT_QUAD_VERT);
+	assert(face_refinement == H3D_REFT_QUAD_HORZ || face_refinement == H3D_REFT_QUAD_VERT);
 
 	Word_t fid = get_facet_id(parent_elem, iface);
 	Facet *facet = facets.get(fid);
 	assert(facet->mode == MODE_QUAD);
 	if (facet->type == Facet::INNER && facet->left == parent_elem->id) {
 		// refine to the left
-		if (facet->ref_mask == REFT_FACE_NONE || facet->ref_mask == face_refinement) {
+		if (facet->ref_mask == H3D_REFT_FACE_NONE || facet->ref_mask == face_refinement) {
 			facet->lactive = false;
 			facet->ref_mask = face_refinement;
 
@@ -1718,7 +1718,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 			f0->parent = fid;
 			f1->parent = fid;
 
-			if (face_refinement == REFT_QUAD_HORZ) {
+			if (face_refinement == H3D_REFT_QUAD_HORZ) {
 				facet->sons[0] = get_facet_id(elements[eid0], facet->left_face_num);
 				facet->sons[1] = get_facet_id(elements[eid1], facet->left_face_num);
 			}
@@ -1727,20 +1727,20 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 				facet->sons[3] = get_facet_id(elements[eid1], facet->left_face_num);
 			}
 		}
-		else if (face_refinement == REFT_QUAD_HORZ) {
+		else if (face_refinement == H3D_REFT_QUAD_HORZ) {
 			Facet *upper_facet = add_quad_facet(Facet::INNER, eid1, facet->left_face_num, INVALID_IDX, -1);
 			Facet *lower_facet = add_quad_facet(Facet::INNER, eid0, facet->left_face_num, INVALID_IDX, -1);
 
 			upper_facet->parent = fid;
 			upper_facet->ractive = false;
-			upper_facet->ref_mask = REFT_QUAD_VERT;
+			upper_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			upper_facet->sons[2] = facet->sons[3];
 			upper_facet->sons[3] = facet->sons[2];
 			Word_t upper_id = get_facet_id(elements[eid1], facet->left_face_num);
 
 			lower_facet->parent = fid;
 			lower_facet->ractive = false;
-			lower_facet->ref_mask = REFT_QUAD_VERT;
+			lower_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			lower_facet->sons[2] = facet->sons[0];
 			lower_facet->sons[3] = facet->sons[1];
 			Word_t lower_id = get_facet_id(elements[eid0], facet->left_face_num);
@@ -1749,25 +1749,25 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 			facets.get(facet->sons[3])->parent = facets.get(facet->sons[2])->parent = upper_id;
 
 			facet->lactive = false;
-			facet->ref_mask = REFT_QUAD_HORZ;
+			facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			facet->sons[0] = upper_id;
 			facet->sons[1] = lower_id;
 			facet->sons[2] = facet->sons[3] = INVALID_IDX;
 		}
-		else if (face_refinement == REFT_QUAD_VERT) {
+		else if (face_refinement == H3D_REFT_QUAD_VERT) {
 			Facet *upper_facet = add_quad_facet(Facet::INNER, eid1, facet->left_face_num, INVALID_IDX, -1);
 			Facet *lower_facet = add_quad_facet(Facet::INNER, eid0, facet->left_face_num, INVALID_IDX, -1);
 
 			upper_facet->parent = fid;
 			upper_facet->ractive = false;
-			upper_facet->ref_mask = REFT_QUAD_HORZ;
+			upper_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			upper_facet->sons[1] = facet->sons[2];
 			upper_facet->sons[0] = facet->sons[1];
 			Word_t upper_id = get_facet_id(elements[eid1], facet->left_face_num);
 
 			lower_facet->parent = fid;
 			lower_facet->ractive = false;
-			lower_facet->ref_mask = REFT_QUAD_HORZ;
+			lower_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			lower_facet->sons[1] = facet->sons[3];
 			lower_facet->sons[0] = facet->sons[0];
 			Word_t lower_id = get_facet_id(elements[eid0], facet->left_face_num);
@@ -1776,7 +1776,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 			facets.get(facet->sons[0])->parent = facets.get(facet->sons[3])->parent = lower_id;
 
 			facet->lactive = false;
-			facet->ref_mask = REFT_QUAD_VERT;
+			facet->ref_mask = H3D_REFT_QUAD_VERT;
 			facet->sons[2] = lower_id;
 			facet->sons[3] = upper_id;
 			facet->sons[0] = facet->sons[1] = INVALID_IDX;
@@ -1786,7 +1786,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 	}
 	else if (facet->type == Facet::INNER && facet->right == parent_elem->id) {
 		// refine to the right (with element)
-		if (facet->ref_mask == REFT_FACE_NONE || facet->ref_mask == face_refinement) {
+		if (facet->ref_mask == H3D_REFT_FACE_NONE || facet->ref_mask == face_refinement) {
 			facet->ractive = false;
 			facet->ref_mask = face_refinement;
 
@@ -1796,7 +1796,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 			f0->parent = fid;
 			f1->parent = fid;
 
-			if (face_refinement == REFT_QUAD_HORZ) {
+			if (face_refinement == H3D_REFT_QUAD_HORZ) {
 				facet->sons[0] = get_facet_id(elements[eid0], facet->right_face_num);
 				facet->sons[1] = get_facet_id(elements[eid1], facet->right_face_num);
 			}
@@ -1805,20 +1805,20 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 				facet->sons[3] = get_facet_id(elements[eid1], facet->right_face_num);
 			}
 		}
-		else if (face_refinement == REFT_QUAD_HORZ) {
+		else if (face_refinement == H3D_REFT_QUAD_HORZ) {
 			Facet *upper_facet = add_quad_facet(Facet::INNER, INVALID_IDX, -1, eid1, facet->right_face_num);
 			Facet *lower_facet = add_quad_facet(Facet::INNER, INVALID_IDX, -1, eid0, facet->right_face_num);
 
 			upper_facet->parent = fid;
 			upper_facet->lactive = false;
-			upper_facet->ref_mask = REFT_QUAD_VERT;
+			upper_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			upper_facet->sons[2] = facet->sons[3];
 			upper_facet->sons[3] = facet->sons[2];
 			Word_t upper_id = get_facet_id(elements[eid1], facet->right_face_num);
 
 			lower_facet->parent = fid;
 			lower_facet->lactive = false;
-			lower_facet->ref_mask = REFT_QUAD_VERT;
+			lower_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			lower_facet->sons[2] = facet->sons[0];
 			lower_facet->sons[3] = facet->sons[1];
 			Word_t lower_id = get_facet_id(elements[eid0], facet->right_face_num);
@@ -1827,25 +1827,25 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 			facets.get(facet->sons[3])->parent = facets.get(facet->sons[2])->parent = upper_id;
 
 			facet->ractive = false;
-			facet->ref_mask = REFT_QUAD_HORZ;
+			facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			facet->sons[1] = upper_id;
 			facet->sons[0] = lower_id;
 			facet->sons[2] = facet->sons[3] = INVALID_IDX;
 		}
-		else if (face_refinement == REFT_QUAD_VERT) {
+		else if (face_refinement == H3D_REFT_QUAD_VERT) {
 			Facet *upper_facet = add_quad_facet(Facet::INNER, INVALID_IDX, -1, eid1, facet->right_face_num);
 			Facet *lower_facet = add_quad_facet(Facet::INNER, INVALID_IDX, -1, eid0, facet->right_face_num);
 
 			upper_facet->parent = fid;
 			upper_facet->lactive = false;
-			upper_facet->ref_mask = REFT_QUAD_HORZ;
+			upper_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			upper_facet->sons[1] = facet->sons[2];
 			upper_facet->sons[0] = facet->sons[1];
 			Word_t upper_id = get_facet_id(elements[eid1], facet->right_face_num);
 
 			lower_facet->parent = fid;
 			lower_facet->lactive = false;
-			lower_facet->ref_mask = REFT_QUAD_HORZ;
+			lower_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			lower_facet->sons[1] = facet->sons[3];
 			lower_facet->sons[0] = facet->sons[0];
 			Word_t lower_id = get_facet_id(elements[eid0], facet->right_face_num);
@@ -1854,7 +1854,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 			facets.get(facet->sons[0])->parent = facets.get(facet->sons[3])->parent = lower_id;
 
 			facet->ractive = false;
-			facet->ref_mask = REFT_QUAD_VERT;
+			facet->ref_mask = H3D_REFT_QUAD_VERT;
 			facet->sons[2] = lower_id;
 			facet->sons[3] = upper_id;
 			facet->sons[0] = facet->sons[1] = INVALID_IDX;
@@ -1874,7 +1874,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 		f0->parent = fid;
 		f1->parent = fid;
 
-		if (face_refinement == REFT_QUAD_HORZ) {
+		if (face_refinement == H3D_REFT_QUAD_HORZ) {
 			facet->sons[0] = get_facet_id(elements[eid0], facet->left_face_num);
 			facet->sons[1] = get_facet_id(elements[eid1], facet->left_face_num);
 		}
@@ -1893,7 +1893,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 
 bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refinement, Word_t eid0, Word_t eid1, Word_t eid2, Word_t eid3) {
 	_F_
-	assert(face_refinement == REFT_QUAD_BOTH);
+	assert(face_refinement == H3D_REFT_QUAD_BOTH);
 
 	Word_t fid = get_facet_id(parent_elem, iface);
 	Facet *facet = facets.get(fid);
@@ -1902,11 +1902,11 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 	//	if (is_compatible_quad_refinement(facet, face_refinement)) {
 	if (facet->type == Facet::INNER && facet->left == parent_elem->id) {
 		// refine to the left
-		if (facet->ref_mask == REFT_FACE_NONE || facet->ref_mask == REFT_QUAD_BOTH) {
+		if (facet->ref_mask == H3D_REFT_FACE_NONE || facet->ref_mask == H3D_REFT_QUAD_BOTH) {
 			// no refinement OR the same type of the refinement on the right side
 			// -> refinement on the left side is safe
 			facet->lactive = false;
-			facet->ref_mask = REFT_QUAD_BOTH;
+			facet->ref_mask = H3D_REFT_QUAD_BOTH;
 
 			Word_t ei[4] = { eid0, eid1, eid2, eid3 };
 			for (int i = 0; i < 4; i++) {
@@ -1915,7 +1915,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 				facet->sons[i] = get_facet_id(elements[ei[i]], facet->left_face_num);
 			}
 		}
-		else if (facet->ref_mask == REFT_QUAD_HORZ) { // FIXME: ignoring the orientation
+		else if (facet->ref_mask == H3D_REFT_QUAD_HORZ) { // FIXME: ignoring the orientation
 			facet->lactive = false;
 
 			Word_t ei[4] = { eid0, eid1, eid2, eid3 };
@@ -1924,18 +1924,18 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 				child_facets[i] = add_quad_facet(Facet::INNER, ei[i], facet->left_face_num, INVALID_IDX, -1);
 
 			Facet *upper_facet = facets.get(facet->sons[1]);
-			upper_facet->ref_mask = REFT_QUAD_VERT;
+			upper_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			upper_facet->sons[2] = get_facet_id(elements[ei[3]], facet->left_face_num);
 			upper_facet->sons[3] = get_facet_id(elements[ei[2]], facet->left_face_num);
 			child_facets[2]->parent = child_facets[3]->parent = get_facet_id(elements[upper_facet->right], upper_facet->right_face_num);
 
 			Facet *lower_facet = facets.get(facet->sons[0]);
-			lower_facet->ref_mask = REFT_QUAD_VERT;
+			lower_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			lower_facet->sons[2] = get_facet_id(elements[ei[0]], facet->left_face_num);
 			lower_facet->sons[3] = get_facet_id(elements[ei[1]], facet->left_face_num);
 			child_facets[0]->parent = child_facets[1]->parent = get_facet_id(elements[lower_facet->right], lower_facet->right_face_num);
 		}
-		else if (facet->ref_mask == REFT_QUAD_VERT) { // FIXME: ignoring the orientation
+		else if (facet->ref_mask == H3D_REFT_QUAD_VERT) { // FIXME: ignoring the orientation
 			facet->lactive = false;
 
 			Word_t ei[4] = { eid0, eid1, eid2, eid3 };
@@ -1944,13 +1944,13 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 				child_facets[i] = add_quad_facet(Facet::INNER, ei[i], facet->left_face_num, INVALID_IDX, -1);
 
 			Facet *upper_facet = facets.get(facet->sons[3]);
-			upper_facet->ref_mask = REFT_QUAD_HORZ;
+			upper_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			upper_facet->sons[1] = get_facet_id(elements[ei[2]], facet->left_face_num);
 			upper_facet->sons[0] = get_facet_id(elements[ei[1]], facet->left_face_num);
 			child_facets[2]->parent = child_facets[1]->parent = get_facet_id(elements[upper_facet->right], upper_facet->right_face_num);
 
 			Facet *lower_facet = facets.get(facet->sons[2]);
-			lower_facet->ref_mask = REFT_QUAD_HORZ;
+			lower_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			lower_facet->sons[1] = get_facet_id(elements[ei[3]], facet->left_face_num);
 			lower_facet->sons[0] = get_facet_id(elements[ei[0]], facet->left_face_num);
 			child_facets[0]->parent = child_facets[3]->parent = get_facet_id(elements[lower_facet->right], lower_facet->right_face_num);
@@ -1958,11 +1958,11 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 	}
 	else if (facet->type == Facet::INNER && facet->right == parent_elem->id) {
 		// refine to the right (with element)
-		if (facet->ref_mask == REFT_FACE_NONE || facet->ref_mask == REFT_QUAD_BOTH) {
+		if (facet->ref_mask == H3D_REFT_FACE_NONE || facet->ref_mask == H3D_REFT_QUAD_BOTH) {
 			// no refinement OR the same type of the refinement on the left side
 			// -> refinement on the right side is safe
 			facet->ractive = false;
-			facet->ref_mask = REFT_QUAD_BOTH;
+			facet->ref_mask = H3D_REFT_QUAD_BOTH;
 
 			Word_t ei[4] = { eid0, eid1, eid2, eid3 };
 			for (int i = 0; i < 4; i++) {
@@ -1972,7 +1972,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 			}
 
 		}
-		else if (facet->ref_mask == REFT_QUAD_HORZ) { // FIXME: ignoring the orientation
+		else if (facet->ref_mask == H3D_REFT_QUAD_HORZ) { // FIXME: ignoring the orientation
 			facet->ractive = false;
 
 			Word_t ei[4] = { eid0, eid1, eid2, eid3 };
@@ -1981,18 +1981,18 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 				child_facets[i] = add_quad_facet(Facet::INNER, INVALID_IDX, -1, ei[i], facet->right_face_num);
 
 			Facet *upper_facet = facets.get(facet->sons[1]);
-			upper_facet->ref_mask = REFT_QUAD_VERT;
+			upper_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			upper_facet->sons[2] = get_facet_id(elements[ei[3]], facet->right_face_num);
 			upper_facet->sons[3] = get_facet_id(elements[ei[2]], facet->right_face_num);
 			child_facets[2]->parent = child_facets[3]->parent = get_facet_id(elements[upper_facet->left], upper_facet->left_face_num);
 
 			Facet *lower_facet = facets.get(facet->sons[0]);
-			lower_facet->ref_mask = REFT_QUAD_VERT;
+			lower_facet->ref_mask = H3D_REFT_QUAD_VERT;
 			lower_facet->sons[2] = get_facet_id(elements[ei[0]], facet->right_face_num);
 			lower_facet->sons[3] = get_facet_id(elements[ei[1]], facet->right_face_num);
 			child_facets[0]->parent = child_facets[1]->parent = get_facet_id(elements[lower_facet->left], lower_facet->left_face_num);
 		}
-		else if (facet->ref_mask == REFT_QUAD_VERT) { // FIXME: ignoring the orientation
+		else if (facet->ref_mask == H3D_REFT_QUAD_VERT) { // FIXME: ignoring the orientation
 			facet->ractive = false;
 
 			Word_t ei[4] = { eid0, eid1, eid2, eid3 };
@@ -2001,13 +2001,13 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 				child_facets[i] = add_quad_facet(Facet::INNER, INVALID_IDX, -1, ei[i], facet->right_face_num);
 
 			Facet *upper_facet = facets.get(facet->sons[3]);
-			upper_facet->ref_mask = REFT_QUAD_HORZ;
+			upper_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			upper_facet->sons[1] = get_facet_id(elements[ei[2]], facet->right_face_num);
 			upper_facet->sons[0] = get_facet_id(elements[ei[1]], facet->right_face_num);
 			child_facets[2]->parent = child_facets[1]->parent = get_facet_id(elements[upper_facet->left], upper_facet->left_face_num);
 
 			Facet *lower_facet = facets.get(facet->sons[2]);
-			lower_facet->ref_mask = REFT_QUAD_HORZ;
+			lower_facet->ref_mask = H3D_REFT_QUAD_HORZ;
 			lower_facet->sons[1] = get_facet_id(elements[ei[3]], facet->right_face_num);
 			lower_facet->sons[0] = get_facet_id(elements[ei[0]], facet->right_face_num);
 			child_facets[0]->parent = child_facets[3]->parent = get_facet_id(elements[lower_facet->left], lower_facet->left_face_num);
@@ -2017,7 +2017,7 @@ bool Mesh::refine_quad_facet(Hex *parent_elem, int iface, unsigned int face_refi
 		// refine to the right (with boundary)
 		facet->lactive = false;
 		facet->ractive = false;
-		facet->ref_mask = REFT_QUAD_BOTH;
+		facet->ref_mask = H3D_REFT_QUAD_BOTH;
 
 		Word_t ei[4] = { eid0, eid1, eid2, eid3 };
 		for (int i = 0; i < 4; i++) {
@@ -2257,7 +2257,7 @@ void Mesh::regularize() {
 						if (parent->parent != INVALID_IDX) {
 							Facet *super_parent = facets.get(parent->parent);
 							if (super_parent->ractive) {
-								refine_element(super_parent->right, REFT_HEX_XYZ);
+								refine_element(super_parent->right, H3D_H3D_H3D_REFT_HEX_XYZ);
 							}
 							else {
 								EXIT("Cannot handle hanging node of order > 1");
@@ -2276,7 +2276,7 @@ void Mesh::regularize() {
 						if (parent->parent != INVALID_IDX) {
 							Facet *super_parent = facets.get(parent->parent);
 							if (super_parent->lactive) {
-								refine_element(super_parent->left, REFT_HEX_XYZ);
+								refine_element(super_parent->left, H3D_H3D_H3D_REFT_HEX_XYZ);
 							}
 							else {
 								EXIT("Cannot handle hanging node of order > 1");
@@ -2297,7 +2297,7 @@ void Mesh::refine_towards_boundary(int marker, int depth) {
 	FOR_ALL_ACTIVE_ELEMENTS(eid, this) {
 		Element *e = elements[eid];
 
-		int split = SPLIT_NONE;
+		int split = H3D_SPLIT_NONE;
 		for (int iface = 0; iface < e->get_num_faces(); iface++) {
 			Word_t fid = get_facet_id(e, iface);
 			Facet *facet = facets[fid];
@@ -2305,16 +2305,16 @@ void Mesh::refine_towards_boundary(int marker, int depth) {
 			if (facet->type == Facet::OUTER) {
 				Boundary *bnd = boundaries[facet->right];
 				if (bnd->marker == marker) {
-					if (iface == 0 || iface == 1) split |= SPLIT_HEX_X;
-					else if (iface == 2 || iface == 3) split |= SPLIT_HEX_Y;
-					else if (iface == 4 || iface == 5) split |= SPLIT_HEX_Z;
+					if (iface == 0 || iface == 1) split |= H3D_SPLIT_HEX_X;
+					else if (iface == 2 || iface == 3) split |= H3D_SPLIT_HEX_Y;
+					else if (iface == 4 || iface == 5) split |= H3D_SPLIT_HEX_Z;
 				}
 			}
 		}
 
 		int reft[] = {
-			REFT_HEX_NONE, REFT_HEX_X, REFT_HEX_Y, REFT_HEX_XY,
-			REFT_HEX_Z, REFT_HEX_XZ, REFT_HEX_YZ, REFT_HEX_XYZ
+			H3D_REFT_HEX_NONE, H3D_REFT_HEX_X, H3D_REFT_HEX_Y, H3D_H3D_REFT_HEX_XY,
+			H3D_REFT_HEX_Z, H3D_H3D_REFT_HEX_XZ, H3D_H3D_REFT_HEX_YZ, H3D_H3D_H3D_REFT_HEX_XYZ
 		};
 		refine_element(eid, reft[split]);
 	}
@@ -2333,7 +2333,7 @@ void Mesh::check_elem_oris()
 		order3_t ord;
 		if (e->get_mode() == MODE_HEXAHEDRON) ord = order3_t(1, 1, 1);
 		else if (e->get_mode() == MODE_TETRAHEDRON) ord = order3_t(2);
-		else warning(ERR_NOT_IMPLEMENTED);
+		else warning(H3D_ERR_NOT_IMPLEMENTED);
 		Quad3D *quad = get_quadrature(e->get_mode());
 		int np = quad->get_num_points(ord);
 		QuadPt3D *pt = quad->get_points(ord);

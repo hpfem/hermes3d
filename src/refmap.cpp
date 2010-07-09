@@ -39,26 +39,26 @@
 #ifdef WITH_TETRA
 	static RefMapShapesetTetra		ref_map_shapeset_tetra;
 	static ShapeFunction 			ref_map_pss_tetra(&ref_map_shapeset_tetra);
-	#define REFMAP_SHAPESET_TETRA	&ref_map_shapeset_tetra
-	#define REFMAP_PSS_TETRA		&ref_map_pss_tetra
+	#define H3D_REFMAP_SHAPESET_TETRA	&ref_map_shapeset_tetra
+	#define H3D_REFMAP_PSS_TETRA		&ref_map_pss_tetra
 #else
-	#define REFMAP_SHAPESET_TETRA	NULL
-	#define REFMAP_PSS_TETRA		NULL
+	#define H3D_REFMAP_SHAPESET_TETRA	NULL
+	#define H3D_REFMAP_PSS_TETRA		NULL
 #endif
 
 #ifdef WITH_HEX
 	static RefMapShapesetHex 		ref_map_shapeset_hex;
 	static ShapeFunction			ref_map_pss_hex(&ref_map_shapeset_hex);
-	#define REFMAP_SHAPESET_HEX		&ref_map_shapeset_hex
-	#define REFMAP_PSS_HEX			&ref_map_pss_hex
+	#define H3D_REFMAP_SHAPESET_HEX		&ref_map_shapeset_hex
+	#define H3D_REFMAP_PSS_HEX			&ref_map_pss_hex
 #else
-	#define REFMAP_SHAPESET_HEX		NULL
-	#define REFMAP_PSS_HEX			NULL
+	#define H3D_REFMAP_SHAPESET_HEX		NULL
+	#define H3D_REFMAP_PSS_HEX			NULL
 #endif
 
 // TODO: prisms
 
-static ShapeFunction *ref_map_pss[] = { REFMAP_PSS_TETRA, REFMAP_PSS_HEX, NULL };
+static ShapeFunction *ref_map_pss[] = { H3D_REFMAP_PSS_TETRA, H3D_REFMAP_PSS_HEX, NULL };
 
 // RefMap /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,14 +112,14 @@ void RefMap::set_active_element(Element *e) {
 	switch (mode) {
 		case MODE_TETRAHEDRON: ref_order = order3_t(0); break;
 		case MODE_HEXAHEDRON:  ref_order = order3_t(1, 1, 1); break;
-		case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
+		case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
 	}
 
 	// calculate the order of the inverse reference map
 	switch (mode) {
 		case MODE_TETRAHEDRON: inv_ref_order = order3_t(0); break;
 		case MODE_HEXAHEDRON:  inv_ref_order = order3_t(1, 1, 1); break;
-		case MODE_PRISM: EXIT(ERR_NOT_IMPLEMENTED); break;
+		case MODE_PRISM: EXIT(H3D_ERR_NOT_IMPLEMENTED); break;
 	}
 
 	// constant inverse reference map
@@ -426,7 +426,7 @@ void RefMap::calc_face_normal(int iface, const int np, const QuadPt3D *pt, doubl
 			break;
 
 		case MODE_PRISM:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 	}
 
 	delete [] m;

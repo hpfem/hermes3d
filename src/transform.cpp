@@ -97,7 +97,7 @@ Transformable::Transformable() {
 void Transformable::push_transform(int son) {
 	_F_
     assert(element != NULL);
-    if (top >= STACK_SIZE) EXIT("Too deep transform.");
+    if (top >= H3D_STACK_SIZE) EXIT("Too deep transform.");
 
 	Trf *mat = stack + (++top);
 	Trf *tr = NULL;
@@ -105,7 +105,7 @@ void Transformable::push_transform(int son) {
 		case MODE_TETRAHEDRON: tr = tetra_trf + son; break;
 		case MODE_HEXAHEDRON:  tr = hex_trf + son; break;
 		case MODE_PRISM:       tr = prism_trf + son; break;
-		default: EXIT(ERR_UNKNOWN_MODE);
+		default: EXIT(H3D_ERR_UNKNOWN_MODE);
 	}
 
 	// update transformation matrix

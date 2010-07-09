@@ -161,9 +161,9 @@ int main(int argc, char **argv) {
 	Mesh3DReader mloader;
 	if (!mloader.load(argv[1], &mesh)) error("Loading mesh file '%s'\n", argv[1]);
 
-	mesh.refine_all_elements(REFT_HEX_XYZ);
-	mesh.refine_all_elements(REFT_HEX_XYZ);
-	mesh.refine_all_elements(REFT_HEX_XYZ);
+	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
+	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
+	mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 
 	H1ShapesetLobattoHex shapeset;
 

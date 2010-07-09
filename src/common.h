@@ -37,17 +37,17 @@
 #include <set>
 
 // error codes
-#define ERR_NOT_IMPLEMENTED                 "Not yet implemened."
-#define ERR_UNKNOWN_MODE                    "Unknown mode (mode = %d)."
-#define ERR_FACE_INDEX_OUT_OF_RANGE         "Face index out of range."
-#define ERR_EDGE_INDEX_OUT_OF_RANGE         "Edge index out of range."
-#define ERR_TETRA_NOT_COMPILED              "hermes3d was not built with tetra elements."
-#define ERR_HEX_NOT_COMPILED                "hermes3d was not built with hex elements."
-#define ERR_PRISM_NOT_COMPILED              "hermes3d was not built with prism elements."
-#define ERR_UNKNOWN_REFINEMENT_TYPE         "Unknown refinement type (refinement = %d)."
+#define H3D_ERR_NOT_IMPLEMENTED                 "Not yet implemened."
+#define H3D_ERR_UNKNOWN_MODE                    "Unknown mode (mode = %d)."
+#define H3D_ERR_FACE_INDEX_OUT_OF_RANGE         "Face index out of range."
+#define H3D_ERR_EDGE_INDEX_OUT_OF_RANGE         "Edge index out of range."
+#define H3D_ERR_TETRA_NOT_COMPILED              "hermes3d was not built with tetra elements."
+#define H3D_ERR_HEX_NOT_COMPILED                "hermes3d was not built with hex elements."
+#define H3D_ERR_PRISM_NOT_COMPILED              "hermes3d was not built with prism elements."
+#define H3D_ERR_UNKNOWN_REFINEMENT_TYPE         "Unknown refinement type (refinement = %d)."
 
 
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 
 #include <complex>
 
@@ -249,17 +249,17 @@ typedef scalar scalar3[3];
 typedef unsigned long long int uint64;
 
 // maximal polynomial order of elements
-#define MAX_ELEMENT_ORDER							10
+#define H3D_MAX_ELEMENT_ORDER							10
 
 // Dirichlet lift is a special DOF with nubmer -1
-#define DIRICHLET_DOF								-1
+#define H3D_DIRICHLET_DOF								-1
 
 //
 
 inline int sqr(int x) { return x*x; }
 inline double sqr(double x) { return x*x; }
 
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 inline double sqr(complex x) { return std::norm(x); }
 #endif
 

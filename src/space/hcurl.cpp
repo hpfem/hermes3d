@@ -61,16 +61,16 @@ int HcurlSpace::get_edge_ndofs(order1_t order) {
 int HcurlSpace::get_face_ndofs(order2_t order) {
 	switch (order.type) {
 		case MODE_QUAD: return (order.x + 1) * order.y + order.x * (order.y + 1);
-		case MODE_TRIANGLE: EXIT(ERR_NOT_IMPLEMENTED); return -1;
-		default: EXIT(ERR_UNKNOWN_MODE); return -1;
+		case MODE_TRIANGLE: EXIT(H3D_ERR_NOT_IMPLEMENTED); return -1;
+		default: EXIT(H3D_ERR_UNKNOWN_MODE); return -1;
 	}
 }
 
 int HcurlSpace::get_element_ndofs(order3_t order) {
 	switch (order.type) {
 		case MODE_HEXAHEDRON: return (order.x + 1) * order.y * order.z + order.x * (order.y + 1) * order.z + order.x * order.y * (order.z + 1);
-		case MODE_TETRAHEDRON: EXIT(ERR_NOT_IMPLEMENTED); return -1;
-		default: EXIT(ERR_UNKNOWN_MODE); return -1;
+		case MODE_TETRAHEDRON: EXIT(H3D_ERR_NOT_IMPLEMENTED); return -1;
+		default: EXIT(H3D_ERR_UNKNOWN_MODE); return -1;
 	}
 }
 
@@ -140,7 +140,7 @@ void HcurlSpace::calc_vertex_boundary_projection(Element *elem, int ivertex) {
 	if (vnode->bc_type == BC_ESSENTIAL) {
 		// FIXME: use bc_vec_value_callback_by_coord
 		if ((vnode->bc_proj = bc_value_callback_by_coord(vnode->marker, v->x, v->y, v->z)) != 0.0)
-			EXIT(ERR_NOT_IMPLEMENTED);  //projection of nonzero bc not implemented, see comment in .h
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);  //projection of nonzero bc not implemented, see comment in .h
 	}
 }
 
@@ -180,7 +180,7 @@ void HcurlSpace::calc_edge_boundary_projection(Element *elem, int iedge) {
 	for (int k = 0; k < np; k++) {
 		// FIXME: use bc_vec_value_callback_by_coord
 		if (bc_value_callback_by_coord(enode->marker, edge_phys_x[k], edge_phys_y[k], edge_phys_z[k]) != 0.)
-			EXIT(ERR_NOT_IMPLEMENTED);  // projection of nonzero BC not implemented, see comment in .h
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);  // projection of nonzero BC not implemented, see comment in .h
 	}
 
 	delete [] edge_phys_x;
@@ -219,7 +219,7 @@ void HcurlSpace::calc_face_boundary_projection(Element *elem, int iface) {
 	for (int k = 0; k < quad->get_face_num_points(iface, order_rhs); k++) {
 		// FIXME: use bc_vec_value_callback_by_coord
 		if (bc_value_callback_by_coord(fnode->marker, face_phys_x[k], face_phys_y[k], face_phys_z[k]) != 0.)
-			EXIT(ERR_NOT_IMPLEMENTED);  // projection of nonzero BC not implemented, see comment in .h
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);  // projection of nonzero BC not implemented, see comment in .h
 	}
 
 	delete [] face_phys_x;

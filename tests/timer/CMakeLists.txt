@@ -14,11 +14,11 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} ${TESTS_LIBRARIES}) 
 
-if(REAL)
+if(H3D_REAL)
 	target_link_libraries(${PROJECT_NAME} ${HERMES_REAL_BIN})
-elseif(COMPLEX)
+elseif(H3D_COMPLEX)
 	target_link_libraries(${PROJECT_NAME} ${HERMES_CPLX_BIN})
-endif(REAL)
+endif(H3D_REAL)
 
 configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake

@@ -133,7 +133,7 @@ scalar3 &bc_values(int ess_bdy_marker, double x, double y, double z) {
 			break;
 
 		default:
-			EXIT(ERR_FACE_INDEX_OUT_OF_RANGE);
+			EXIT(H3D_ERR_FACE_INDEX_OUT_OF_RANGE);
 	}
 
 	switch (marker) {
@@ -156,7 +156,7 @@ scalar3 &bc_values(int ess_bdy_marker, double x, double y, double z) {
 			break;
 
 		default:
-			EXIT(ERR_FACE_INDEX_OUT_OF_RANGE);
+			EXIT(H3D_ERR_FACE_INDEX_OUT_OF_RANGE);
 	}
 
 	return bc;

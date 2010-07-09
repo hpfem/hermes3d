@@ -131,7 +131,7 @@ void PardisoMatrix::add(int m, int n, scalar **mat, int *rows, int *cols) {
 	_F_
 	for (int i = 0; i < m; i++)				// rows
 		for (int j = 0; j < n; j++)			// cols
-			if (mat[i][j] != 0.0 && rows[i] != DIRICHLET_DOF && cols[j] != DIRICHLET_DOF)		// ignore dirichlet DOFs
+			if (mat[i][j] != 0.0 && rows[i] != H3D_DIRICHLET_DOF && cols[j] != H3D_DIRICHLET_DOF)		// ignore dirichlet DOFs
 				add(rows[i], cols[j], mat[i][j]);
 }
 
@@ -163,7 +163,7 @@ bool PardisoMatrix::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt
 		}
 
 		case DF_PLAIN_ASCII:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 			return false;
 
 		default:
@@ -272,7 +272,7 @@ bool PardisoVector::dump(FILE *file, const char *var_name, EMatrixDumpFormat fmt
 		}
 
 		case DF_PLAIN_ASCII:
-			EXIT(ERR_NOT_IMPLEMENTED);
+			EXIT(H3D_ERR_NOT_IMPLEMENTED);
 			return false;
 
 		default:

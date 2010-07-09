@@ -231,8 +231,8 @@ Quad3D *get_quadrature(EMode3D mode);
 	#define LIMIT_TRI_ORDER(o)
 	#define LIMIT_QUAD_ORDER(o)
 #else
-	#define LIMIT_TRI_ORDER(o) 							o = MAX_QUAD_ORDER_TRI;
-	#define LIMIT_QUAD_ORDER(o) 						o = MAKE_QUAD_ORDER(MAX_QUAD_ORDER, MAX_QUAD_ORDER);
+	#define LIMIT_TRI_ORDER(o) 							o = H3D_MAX_QUAD_ORDER_TRI;
+	#define LIMIT_QUAD_ORDER(o) 						o = MAKE_QUAD_ORDER(H3D_MAX_QUAD_ORDER, H3D_MAX_QUAD_ORDER);
 #endif
 
 #endif

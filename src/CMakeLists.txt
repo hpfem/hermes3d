@@ -107,17 +107,18 @@ macro(LIBRARY_SETTINGS BIN)
 endmacro(LIBRARY_SETTINGS)
 
 # real version
-if(REAL)
+if(H3D_REAL)
 	add_library(${HERMES_REAL_BIN} SHARED ${SRC})
 	LIBRARY_SETTINGS(${HERMES_REAL_BIN})
-endif(REAL)
+endif(H3D_REAL)
 
 # complex version
-if(COMPLEX)
+if(H3D_COMPLEX)
 	add_library(${HERMES_CPLX_BIN} SHARED ${SRC})
-	set_target_properties(${HERMES_CPLX_BIN} PROPERTIES COMPILE_FLAGS -DCOMPLEX)
+	set_target_properties(${HERMES_CPLX_BIN} PROPERTIES COMPILE_FLAGS
+-DH3D_COMPLEX)
 	LIBRARY_SETTINGS(${HERMES_CPLX_BIN})
-endif(COMPLEX)
+endif(H3D_COMPLEX)
 
 #
 configure_file(
@@ -154,10 +155,10 @@ install(FILES ${INC_INTEGRALS} DESTINATION include/integrals)
 install(FILES ${INC_ADAPT}     DESTINATION include/adapt)
 
 # install library
-if(REAL)
+if(H3D_REAL)
 	install(TARGETS ${HERMES_REAL_BIN} LIBRARY DESTINATION lib)
-endif(REAL)
+endif(H3D_REAL)
 
-if(COMPLEX)
+if(H3D_COMPLEX)
 	install(TARGETS ${HERMES_CPLX_BIN} LIBRARY DESTINATION lib)
-endif(COMPLEX)
+endif(H3D_COMPLEX)

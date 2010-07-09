@@ -46,7 +46,7 @@ public:
 	int get_order() const { return order; }
 	// lowest common max order is tetrahedral
 	// TODO: different max order for hexes and tets
-	int get_max_order() const { return MAX_QUAD_ORDER_TETRA; }
+	int get_max_order() const { return H3D_MAX_QUAD_ORDER_TETRA; }
 
 	ord_t operator+(const ord_t &o) { return ord_t(std::max(this->order, o.order)); }
 	ord_t operator-(const ord_t &o) { return ord_t(std::max(this->order, o.order)); }
@@ -73,7 +73,7 @@ inline ord_t sqrt(const ord_t &a) { return a; }
 inline ord_t sqr(const ord_t &a) { return ord_t(2 * a.get_order()); }
 inline ord_t conj(const ord_t &a) { return a; }
 
-#ifdef COMPLEX
+#ifdef H3D_COMPLEX
 namespace std {
 	inline ord_t conj(const ord_t &a) { return a; }
 	inline ord_t abs(const ord_t &a) { return a; }

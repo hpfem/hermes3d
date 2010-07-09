@@ -102,8 +102,8 @@ public:
 	/// Set maximal order to be used
 	void set_max_order(int order)
 	{
-		if (order <= MAX_ELEMENT_ORDER) max_order = order;
-		else error("Cannot set order greater than max elem. order (%d)", MAX_ELEMENT_ORDER);
+		if (order <= H3D_MAX_ELEMENT_ORDER) max_order = order;
+		else error("Cannot set order greater than max elem. order (%d)", H3D_MAX_ELEMENT_ORDER);
 	}
 
 protected:

@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 
   // Initial uniform mesh refinements. 
   printf("Performing %d initial mesh refinements.\n", INIT_REF_NUM);
-  for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements(REFT_HEX_XYZ);
+  for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
   Word_t (nelem) = mesh.get_num_elements();
   printf("New number of elements is %d.\n", (int) nelem);
 

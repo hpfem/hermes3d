@@ -213,7 +213,7 @@ HcurlShapesetLobattoHex::HcurlShapesetLobattoHex() : Shapeset(3)
 
 	vertex_indices = NULL;
 #else
-	EXIT(ERR_HEX_NOT_COMPILED);
+	EXIT(H3D_ERR_HEX_NOT_COMPILED);
 #endif
 }
 

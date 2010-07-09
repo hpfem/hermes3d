@@ -106,7 +106,7 @@ RefMapShapesetTetra::RefMapShapesetTetra() : Shapeset(4)
 
 	vertex_indices = refmap_tetra_vertex_indices;
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 
@@ -213,7 +213,7 @@ RefMapShapesetHex::RefMapShapesetHex() : Shapeset(5)
 	// vertices
 	vertex_indices = refmap_hex_vertex_indices;
 #else
-	EXIT(ERR_TETRA_NOT_COMPILED);
+	EXIT(H3D_ERR_TETRA_NOT_COMPILED);
 #endif
 }
 

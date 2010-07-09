@@ -74,9 +74,9 @@ bool test_lin_indep(Shapeset *shapeset) {
 	UMFPackLinearSolver solver(&mat, &rhs);
 
 	ShapeFunction pss_u(shapeset), pss_v(shapeset);
-	int n = Hex::NUM_EDGES * shapeset->get_num_edge_fns(MAX_ELEMENT_ORDER)
-		+ Hex::NUM_FACES * shapeset->get_num_face_fns(order2_t(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER))
-	    + shapeset->get_num_bubble_fns(order3_t(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER));
+	int n = Hex::NUM_EDGES * shapeset->get_num_edge_fns(H3D_MAX_ELEMENT_ORDER)
+		+ Hex::NUM_FACES * shapeset->get_num_face_fns(order2_t(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER))
+	    + shapeset->get_num_bubble_fns(order3_t(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER));
 
 	printf("number of functions = %d\n", n);
 
@@ -84,20 +84,20 @@ bool test_lin_indep(Shapeset *shapeset) {
 	int m = 0;
 	// edge fns
 	for (int i = 0; i < Hex::NUM_EDGES; i++) {
-		int order = MAX_ELEMENT_ORDER;
+		int order = H3D_MAX_ELEMENT_ORDER;
 		int *edge_idx = shapeset->get_edge_indices(i, 0, order);
 		for (int j = 0; j < shapeset->get_num_edge_fns(order); j++, m++)
 			fn_idx[m] = edge_idx[j];
 	}
 	// face fns
 	for (int i = 0; i < Hex::NUM_FACES; i++) {
-		order2_t order(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+		order2_t order(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 		int *face_idx = shapeset->get_face_indices(i, 0, order);
 		for (int j = 0; j < shapeset->get_num_face_fns(order); j++, m++)
 			fn_idx[m] = face_idx[j];
 	}
 	// bubble
-	order3_t order(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+	order3_t order(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 	int *bubble_idx = shapeset->get_bubble_indices(order);
 	for (int j = 0; j < shapeset->get_num_bubble_fns(order); j++, m++)
 		fn_idx[m] = bubble_idx[j];

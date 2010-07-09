@@ -26,7 +26,7 @@
 #include <common/timer.h>
 
 
-#define NOX_NOT_COMPILED "hermes3d was not built with NOX support."
+#define H3D_NOX_NOT_COMPILED "hermes3d was not built with NOX support."
 
 #ifdef HAVE_NOX
 
@@ -235,7 +235,7 @@ NoxSolver::NoxSolver(FeProblem *problem)
 	// NOX_Epetra_Interface
 	interface = Teuchos::rcp(new NoxProblemInterface(*problem));
 #else
-	warning(NOX_NOT_COMPILED);
+	warning(H3D_NOX_NOT_COMPILED);
 	exit(128);
 #endif
 }
@@ -413,7 +413,7 @@ bool NoxSolver::solve()
 		num_iters = solver->getNumIterations();
 
 		// Get the Epetra_Vector with the final solution from the solver
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 		const NOX::Epetra::Group &f_grp =
 			dynamic_cast<const NOX::Epetra::Group &>(solver->getSolutionGroup());
 		const Epetra_Vector &f_sln =
@@ -424,7 +424,7 @@ bool NoxSolver::solve()
 		delete [] sln;
 		sln = new scalar[n];
 		memset(sln, 0, n * sizeof(double));
-#ifndef COMPLEX
+#ifndef H3D_COMPLEX
 		f_sln.ExtractCopy(sln);
 #else
 #endif

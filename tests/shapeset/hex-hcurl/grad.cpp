@@ -120,7 +120,7 @@ bool test_gradients(Shapeset *shapeset) {
 	// edge fns
 	printf("\n* Edge functions\n");
 	for (int i = 0; i < Hex::NUM_EDGES; i++) {
-		order1_t order = MAX_ELEMENT_ORDER;
+		order1_t order = H3D_MAX_ELEMENT_ORDER;
 		int *edge_idx = shapeset->get_edge_indices(i, 0, order);
 		for (int j = 0; j < shapeset->get_num_edge_fns(order); j++) {
 			if (!test_grad(edge_idx[j], shapeset))
@@ -131,7 +131,7 @@ bool test_gradients(Shapeset *shapeset) {
 	// face fns
 	printf("\n* Face functions\n");
 	for (int i = 0; i < Hex::NUM_FACES; i++) {
-		order2_t order(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+		order2_t order(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 		int *face_idx = shapeset->get_face_indices(i, 0, order);
 		for (int j = 0; j < shapeset->get_num_face_fns(order); j++) {
 			if (!test_grad(face_idx[j], shapeset))
@@ -141,7 +141,7 @@ bool test_gradients(Shapeset *shapeset) {
 
 	// bubble
 	printf("\n* Bubble functions\n");
-	order3_t order(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+	order3_t order(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 	int *bubble_idx = shapeset->get_bubble_indices(order);
 	for (int j = 0; j < shapeset->get_num_bubble_fns(order); j++) {
 		if (!test_grad(bubble_idx[j], shapeset))

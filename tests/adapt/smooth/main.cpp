@@ -416,7 +416,7 @@ int main(int argc, char **argv)
 
 		Mesh rmesh;
 		rmesh.copy(mesh);
-		rmesh.refine_all_elements(REFT_HEX_XYZ);
+		rmesh.refine_all_elements(H3D_H3D_H3D_REFT_HEX_XYZ);
 
 #ifdef REFERENCE_SOLUTION
 

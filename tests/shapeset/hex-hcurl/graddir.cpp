@@ -90,7 +90,7 @@ bool test_gradients_directly(Shapeset *ss) {
 	bool passed = true;
 	int *indices, ii;
 
-	order1_t order = MAX_ELEMENT_ORDER;
+	order1_t order = H3D_MAX_ELEMENT_ORDER;
 	for (int ie = 0; ie < 12; ie++) {
 		for (int ori = 0; ori < 2; ori++) {
 			indices = ss->get_edge_indices(ie, ori, order);
@@ -101,7 +101,7 @@ bool test_gradients_directly(Shapeset *ss) {
 		}
 	}
 
-	order2_t order2(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+	order2_t order2(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 	for (int ic = 0; ic < 6; ic++) {
 		for (int ori = 0; ori < 8; ori++) {
 			indices = ss->get_face_indices(ic, ori, order2);
@@ -112,7 +112,7 @@ bool test_gradients_directly(Shapeset *ss) {
 		}
 	}
 
-	order3_t order3(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER);
+	order3_t order3(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER);
 	indices = ss->get_bubble_indices(order3);
 	for (ii = 0; ii < ss->get_num_bubble_fns(order3); ii++) {
 		printf("."); fflush(stdout);

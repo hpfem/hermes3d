@@ -188,9 +188,9 @@ void test_mm(Mesh *mesh)
 	mesh1.copy(*mesh);
 	mesh2.copy(*mesh);
 
-	mesh0.refine_element(1, REFT_HEX_X);
-	mesh1.refine_element(1, REFT_HEX_Y);
-	mesh2.refine_element(1, REFT_HEX_Z);
+	mesh0.refine_element(1, H3D_REFT_HEX_X);
+	mesh1.refine_element(1, H3D_REFT_HEX_Y);
+	mesh2.refine_element(1, H3D_REFT_HEX_Z);
 
 	ExactSolution ex_sln0(&mesh0, exact_solution0);
 	ExactSolution ex_sln1(&mesh1, exact_solution1);
@@ -242,7 +242,7 @@ int main(int argc, char **args)
 		else if (mesh.elements[1]->get_mode() == MODE_TETRAHEDRON)
 			order = order3_t(3);
 		else
-			error(ERR_NOT_IMPLEMENTED);
+			error(H3D_ERR_NOT_IMPLEMENTED);
 		space.set_uniform_order(order);
 
 		output.out_orders(&space, "orders");

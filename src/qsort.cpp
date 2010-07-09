@@ -5,17 +5,17 @@
 
 #define SWAP(a, b) { int c = *(a); *(a) = *(b); *(b) = c; }
 
-#define MAX_THRESH 4
+#define H3D_MAX_THRESH 4
 
 typedef struct {
 	int *lo;
 	int *hi;
 } stack_node;
 
-#define STACK_SIZE      (CHAR_BIT * sizeof(size_t))
+#define H3D_STACK_SIZE      (CHAR_BIT * sizeof(size_t))
 #define PUSH(low, high) ((void) ((top->lo = (low)), (top->hi = (high)), ++top))
 #define POP(low, high)  ((void) (--top, (low = top->lo), (high = top->hi)))
-#define STACK_NOT_EMPTY (stack < top)
+#define H3D_STACK_NOT_EMPTY (stack < top)
 
 #define min(x, y) ((x) < (y) ? (x) : (y))
 
@@ -25,15 +25,15 @@ void qsort_int(int *pbase, size_t total_elems) {
 	if (total_elems == 0)
 		return;
 
-	if (total_elems > MAX_THRESH) {
+	if (total_elems > H3D_MAX_THRESH) {
 		int *lo = base_ptr;
 		int *hi = lo + total_elems - 1;
-		stack_node stack[STACK_SIZE];
+		stack_node stack[H3D_STACK_SIZE];
 		stack_node *top = stack;
 
 		PUSH(NULL, NULL);
 
-		while (STACK_NOT_EMPTY) {
+		while (H3D_STACK_NOT_EMPTY) {
 			int *left_ptr;
 			int *right_ptr;
 
@@ -85,14 +85,14 @@ void qsort_int(int *pbase, size_t total_elems) {
 			// ignore one or both.  Otherwise, push the larger partition's
 			// bounds on the stack and continue sorting the smaller one.
 
-			if ((size_t) (right_ptr - lo) <= MAX_THRESH) {
-				if ((size_t) (hi - left_ptr) <= MAX_THRESH)
+			if ((size_t) (right_ptr - lo) <= H3D_MAX_THRESH) {
+				if ((size_t) (hi - left_ptr) <= H3D_MAX_THRESH)
 					// Ignore both small partitions.
 					POP(lo, hi);
 				else
 					// Ignore small left partition.
 					lo = left_ptr;
-			} else if ((size_t) (hi - left_ptr) <= MAX_THRESH)
+			} else if ((size_t) (hi - left_ptr) <= H3D_MAX_THRESH)
 				// Ignore small right partition.
 				hi = right_ptr;
 			else if ((right_ptr - lo) > (hi - left_ptr)) {
@@ -109,14 +109,14 @@ void qsort_int(int *pbase, size_t total_elems) {
 
 	// Once the BASE_PTR array is partially sorted by quicksort the rest
 	// is completely sorted using insertion sort, since this is efficient
-	// for partitions below MAX_THRESH size. BASE_PTR points to the beginning
+	// for partitions below H3D_MAX_THRESH size. BASE_PTR points to the beginning
 	// of the array to sort, and END_PTR points at the very last element in
 	// the array (*not* one beyond it!).
 
 	{
 		int *const end_ptr = base_ptr + total_elems - 1;
 		int *tmp_ptr = base_ptr;
-		int *thresh= min(end_ptr, base_ptr + MAX_THRESH);
+		int *thresh= min(end_ptr, base_ptr + H3D_MAX_THRESH);
 		register int *run_ptr;
 
 		// Find smallest element in first threshold and place it at the

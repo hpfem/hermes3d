@@ -247,9 +247,9 @@ bool test_edge_ced(Mesh *mesh, Shapeset *shapeset) {
 //		for (int ori = 0; ori < RefHex::get_edge_orientations(); ori++) {
 		int ori = 0; {
 			// indices of constraining functions
-			int *cng_idx = shapeset->get_edge_indices(iedge, ori, MAX_ELEMENT_ORDER);
+			int *cng_idx = shapeset->get_edge_indices(iedge, ori, H3D_MAX_ELEMENT_ORDER);
 
-//			for (int order = 2; order <= MAX_ELEMENT_ORDER; order++) {		// edge functions on hex start with order 2
+//			for (int order = 2; order <= H3D_MAX_ELEMENT_ORDER; order++) {		// edge functions on hex start with order 2
 			int order = 2; {
 //				for (int p = 0; p <= 14; p++) {								// 3 levels
 				int p = 2; {
@@ -319,13 +319,13 @@ bool test_edge_face_ced(Mesh *mesh, Shapeset *shapeset) {
 		for (int ori = 0; ori < 1; ori++) {
 			printf("face %d, ori = %d\n", iface, ori);
 			// indices of constraining functions
-			int *cng_idx = shapeset->get_face_indices(iface, ori, MAKE_QUAD_ORDER(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER));
+			int *cng_idx = shapeset->get_face_indices(iface, ori, MAKE_QUAD_ORDER(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER));
 
 			int fn_idx = 0;
 			for (int horder = 2; horder <= 2; horder++) {					// face functions on hex start with order 2 (in each direction)
 				for (int vorder = 2; vorder <= 2; vorder++, fn_idx++) {
-//			for (int horder = 2; horder <= MAX_ELEMENT_ORDER; horder++) {			// face functions on hex start with order 2 (in each direction)
-//				for (int vorder = 2; vorder <= MAX_ELEMENT_ORDER; vorder++) {
+//			for (int horder = 2; horder <= H3D_MAX_ELEMENT_ORDER; horder++) {			// face functions on hex start with order 2 (in each direction)
+//				for (int vorder = 2; vorder <= H3D_MAX_ELEMENT_ORDER; vorder++) {
 					int order = MAKE_QUAD_ORDER(horder, vorder);
 					printf("order = %d\n", order);
 
@@ -433,7 +433,7 @@ bool test_face_ced(Mesh *mesh, Shapeset *shapeset) {
 		int ori = 7; {
 //			printf("face %d, ori = %d\n", iface, ori);
 			// indices of constraining functions
-//			int *cng_idx = shapeset->get_face_indices(iface, ori, MAKE_QUAD_ORDER(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER));
+//			int *cng_idx = shapeset->get_face_indices(iface, ori, MAKE_QUAD_ORDER(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER));
 //			printf("------\n");
 
 			int fn_idx = 0;
@@ -611,7 +611,7 @@ bool test_face_ced_0(Mesh *mesh, Shapeset *shapeset) {
 		int ori = 0; {
 			printf("face %d, ori = %d\n", iface, ori);
 			// indices of constraining functions
-//			int *cng_idx = shapeset->get_face_indices(iface, ori, MAKE_QUAD_ORDER(MAX_ELEMENT_ORDER, MAX_ELEMENT_ORDER));
+//			int *cng_idx = shapeset->get_face_indices(iface, ori, MAKE_QUAD_ORDER(H3D_MAX_ELEMENT_ORDER, H3D_MAX_ELEMENT_ORDER));
 
 //			int fn_idx = 0;
 //			for (int horder = 2; horder <= 2; horder++) {					// face functions on hex start with order 2 (in each direction)
@@ -621,8 +621,8 @@ bool test_face_ced_0(Mesh *mesh, Shapeset *shapeset) {
 
 					int *cng_idx = shapeset->get_face_indices(iface, ori, MAKE_QUAD_ORDER(horder, vorder));
 					int fn_idx = shapeset->get_num_face_fns(MAKE_QUAD_ORDER(horder, vorder)) - 1;
-//			for (int horder = 2; horder <= MAX_ELEMENT_ORDER; horder++) {			// face functions on hex start with order 2 (in each direction)
-//				for (int vorder = 2; vorder <= MAX_ELEMENT_ORDER; vorder++) {
+//			for (int horder = 2; horder <= H3D_MAX_ELEMENT_ORDER; horder++) {			// face functions on hex start with order 2 (in each direction)
+//				for (int vorder = 2; vorder <= H3D_MAX_ELEMENT_ORDER; vorder++) {
 					int order = MAKE_QUAD_ORDER(horder, vorder);
 					printf("order = %d\n", order);
 

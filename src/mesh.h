@@ -91,30 +91,30 @@ class MeshLoader;
 
 
 // refinement type
-#define REFT_HEX_NONE							0x0000
-#define REFT_HEX_X								0x0001
-#define REFT_HEX_Y								0x0002
-#define REFT_HEX_Z								0x0003
-#define REFT_HEX_XY								0x0004
-#define REFT_HEX_XZ								0x0005
-#define REFT_HEX_YZ								0x0006
-#define REFT_HEX_XYZ							0x0007
+#define H3D_REFT_HEX_NONE							0x0000
+#define H3D_REFT_HEX_X								0x0001
+#define H3D_REFT_HEX_Y								0x0002
+#define H3D_REFT_HEX_Z								0x0003
+#define H3D_H3D_REFT_HEX_XY								0x0004
+#define H3D_H3D_REFT_HEX_XZ								0x0005
+#define H3D_H3D_REFT_HEX_YZ								0x0006
+#define H3D_H3D_H3D_REFT_HEX_XYZ							0x0007
 
 // refinements on facets
-#define REFT_FACE_NONE							0x0000
-#define REFT_QUAD_HORZ							0x0001
-#define REFT_QUAD_VERT							0x0002
-#define REFT_QUAD_BOTH							0x0003
+#define H3D_REFT_FACE_NONE							0x0000
+#define H3D_REFT_QUAD_HORZ							0x0001
+#define H3D_REFT_QUAD_VERT							0x0002
+#define H3D_REFT_QUAD_BOTH							0x0003
 
 // splits
-#define SPLIT_NONE								0x0000
-#define SPLIT_HEX_X								0x0001
-#define SPLIT_HEX_Y								0x0002
-#define SPLIT_HEX_Z								0x0004
-#define SPLIT_HEX_XY							SPLIT_HEX_X | SPLIT_HEX_Y
-#define SPLIT_HEX_XZ							SPLIT_HEX_X | SPLIT_HEX_Z
-#define SPLIT_HEX_YZ							SPLIT_HEX_Y | SPLIT_HEX_Z
-#define SPLIT_HEX_XYZ							SPLIT_HEX_X | SPLIT_HEX_Y | SPLIT_HEX_Z
+#define H3D_SPLIT_NONE								0x0000
+#define H3D_SPLIT_HEX_X								0x0001
+#define H3D_SPLIT_HEX_Y								0x0002
+#define H3D_SPLIT_HEX_Z								0x0004
+#define H3D_H3D_SPLIT_HEX_XY							H3D_SPLIT_HEX_X | H3D_SPLIT_HEX_Y
+#define H3D_H3D_SPLIT_HEX_XZ							H3D_SPLIT_HEX_X | H3D_SPLIT_HEX_Z
+#define H3D_H3D_SPLIT_HEX_YZ							H3D_SPLIT_HEX_Y | H3D_SPLIT_HEX_Z
+#define H3D_H3D_H3D_SPLIT_HEX_XYZ							H3D_SPLIT_HEX_X | H3D_SPLIT_HEX_Y | H3D_SPLIT_HEX_Z
 
 /// Represents a vertex in 3D
 ///

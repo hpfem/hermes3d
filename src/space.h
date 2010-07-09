@@ -69,10 +69,10 @@ enum BCType
 };
 
 
-#define MARKER_UNDEFINED				-1
+#define H3D_MARKER_UNDEFINED				-1
 
-#define DOF_UNASSIGNED					-2
-#define DOF_NOT_ANALYZED				-3
+#define H3D_DOF_UNASSIGNED					-2
+#define H3D_DOF_NOT_ANALYZED				-3
 
 /// Base class for all spaces
 ///
@@ -159,7 +159,7 @@ protected:
 		BCType bc_type;
 
 		NodeData() {
-			marker = MARKER_UNDEFINED;
+			marker = H3D_MARKER_UNDEFINED;
 			bc_type = BC_NONE;
 		}
 	};
@@ -262,7 +262,7 @@ protected:
 
 		ElementData() {
 			order = -1;
-			dof = DOF_NOT_ANALYZED;
+			dof = H3D_DOF_NOT_ANALYZED;
 			n = -1;
 		}
 
