@@ -141,7 +141,7 @@ int main(int argc, char **args)
   space.set_essential_bc_values(essential_bc_values);
   space.set_uniform_order(order3_t(P_INIT, P_INIT, P_INIT));
 
-  // Initialize the week formulation. 
+  // Initialize the weak formulation. 
   WeakForm wf;
   wf.add_matrix_form(biform<double, double>, biform<ord_t, ord_t>, SYM, ANY);
   wf.add_vector_form(liform<double, double>, liform<ord_t, ord_t>, ANY);
@@ -184,17 +184,17 @@ int main(int argc, char **args)
     Solution sln(&mesh);
     sln.set_fe_solution(&space, solver.get_solution());
 
+    // Output the orders and the solution.
     if (do_output) 
     {
-    // Output the orders and the solution.
-    out_orders(&space, "order", as);
-    out_fn(&sln, "sln", as);
+      out_orders(&space, "order", as);
+      out_fn(&sln, "sln", as);
     }
 
     // Solving fine mesh problem.
     printf("Solving on fine mesh:\n");
 
-    //Matrix solver.
+    // Matrix solver.
 #if defined WITH_UMFPACK
     UMFPackLinearSolver rsolver(&mat, &rhs);
 #elif defined WITH_PETSC
@@ -267,8 +267,7 @@ int main(int argc, char **args)
     }
     printf("  - adapting... "); fflush(stdout);
     hp.adapt(THRESHOLD);				
-    printf("done in %lf secs (refined %d element(s)).\n", 
-           hp.get_adapt_time(), hp.get_num_refined_elements());
+    printf("done in %lf secs (refined %d element(s)).\n", hp.get_adapt_time(), hp.get_num_refined_elements());
 
     if (rndof >= NDOF_STOP) 
     {
@@ -287,8 +286,8 @@ int main(int argc, char **args)
   } while (!done);
 
 #ifdef WITH_PETSC
-	PetscFinalize();
+  PetscFinalize();
 #endif
 
-    return 1;
+  return 1;
 }
