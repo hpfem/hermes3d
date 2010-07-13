@@ -60,7 +60,7 @@ void out_fn(MeshFunction *fn, const char *name, int iter)
     fclose(f);
   }
   else 
-    warning("Can not not open '%s' for writing.", fname);
+    warning("Can not open '%s' for writing.", fname);
 }
 
 /***********************************************************************************
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
   Word_t (nelem) = mesh.get_num_elements();
   printf("New number of elements is %d.\n", (int) nelem);
 
-  // Initialize the shapset and the cache. 
+  // Initialize the shapeset and the cache. 
   H1ShapesetLobattoHex shapeset;
 
 #if defined WITH_UMFPACK

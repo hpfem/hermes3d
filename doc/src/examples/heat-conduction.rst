@@ -12,7 +12,7 @@ This example describes the implementation of a simple time-dependent heat conduc
    single: problem; time-depenedent
    single: problem; elliptic
 
-The standard heat transfer PDE solved hello:
+The standard heat transfer PDE solved:
 
 .. math::
    :nowrap:
@@ -41,7 +41,7 @@ Right-hand side (load function):
                    \right)
    \end{eqnarray*}
 
-Equation :eq:`heat-conduction` is also equipped with and initial condition of the form: 
+Equation :eq:`heat-conduction` is also equipped with an initial condition of the form: 
 
 .. math::
    :label: heat-conduction-IC
