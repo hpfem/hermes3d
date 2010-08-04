@@ -1,53 +1,50 @@
 .. _example-elasto-statics:
 
-Elasto Statics
-==============
+Elastostatics
+=============
 
-**Git reference:** Examples `elasto statics <http://git.hpfem.org/hermes3d.git/tree/HEAD:/examples/elastostatics>`_.
+**Git reference:** Example `elastostatics <http://git.hpfem.org/hermes3d.git/tree/HEAD:/examples/elastostatics>`_.
 
-This example describes the implementation of a linear elastic problem inside L-shape domain. Strictly speaking, 
-elasticity problem cannot be solved exactly in general: they can be solved exactly in very particular cases 
-(e.g., special geometry); The described problem in the example will be solved numerically. 
-
-Elastostatics studys linear elastic problem under the conditions of equilibrium, where all forces on the elastic 
+This example deals with equations of linear elasticity inside an L-shaped domain. Elastostatics studies 
+linear elastic deformations under the conditions of equilibrium where all forces acting on the elastic 
 body sum to zero, and  displacements are not a function of time. 
 
 .. index::
    single: mesh; fixed
    single: problem; elliptic, linear, symmetric
 
-The governing equation under Cartesian coordinate:
+The governing equations have the form:
 
 .. math::
    :nowrap:
-   :label: elasto-statics
+   :label: elastostatics
 
    \begin{eqnarray*}
-   \sigma_{ji,j} + F_i & = & 0 \hbox{ in }\Omega \\ \nonumber
-   \epsilon_{ij}       & = & \frac{1}{2}(u_{j,i} + u_{i,j})   \\
-   \sigma_{i,j}        & = & C_{ijkl} \, \epsilon_{kl}
+   \sigma_{ji,j} + F_i & = & 0 \hbox{ in }\Omega, \\ \nonumber
+   \epsilon_{ij}       & = & \frac{1}{2}(u_{j,i} + u_{i,j}),   \\
+   \sigma_{i,j}        & = & C_{ijkl} \, \epsilon_{kl}.
    \end{eqnarray*}
 
-where, the subscript $\cdot_{,j}$ indicate $\partial{\cdot}/\partial x_j$; $\sigma_{ji,j}$ is the 
-stress tensor; $\epsilon_{ij}$ is the strain(deformation); $u_i$ is the displacement;
-$C_{ijkl}$ is the forth order stiffness tensor; Please not that, by Einstein summation convention, 
-the $3^{rd}$ equation of Equ :eq:`elasto-statics` represent the following: 
+Here the subscript $\cdot_{,j}$ indicates $\partial{\cdot}/\partial x_j$, $\sigma_{ji,j}$ is the 
+stress tensor, $\epsilon_{ij}$ is the strain (deformation), $u_i$ is the displacement,
+$C_{ijkl}$ is the forth-order stiffness tensor. By Einstein summation convention, 
+the $3^{rd}$ equation of :eq:`elastostatics` represent the following: 
 
 .. math::
    :nowrap:
    :label: elasto-sum
 
    \begin{eqnarray*}
-   C_{ijkl} \, \epsilon_{kl} & = & \sum_{k,l=1}^3 C_{ijkl} \, \epsilon_{kl}
+   C_{ijkl} \, \epsilon_{kl} & = & \sum_{k,l=1}^3 C_{ijkl} \, \epsilon_{kl},
    \end{eqnarray*}
 
-where $i, j, k, l$ all take on the values 1, 2, or 3. 
+where $1 \le i, j, k, l \le 3$.
 
 .. image:: elasto-statics-domain.png
 
-Domain of interest is isotropic homogeneous media of L-shaped bean (see above), equipped with 
-the zero Dirichlet boundary conditions: $u_1 = u_2 = u_3 = 0$ on the all 5 surfaces (${\Gamma}_u$) 
-except the left vertical one (${\Gamma}_F$), where the external force $F$ is applied.  
+The domain of interest is an L-shaped beam equipped with 
+zero Dirichlet boundary conditions: $u_1 = u_2 = u_3 = 0$ on all five boundary faces (${\Gamma}_u$) 
+except the left-most vertical one (${\Gamma}_F$), where an external force $F$ is applied.  
 
 
 .. code-block:: c++
@@ -70,36 +67,34 @@ except the left vertical one (${\Gamma}_F$), where the external force $F$ is app
         }
 
 
-The stiffness tensor $C_{ijkl}$ is constant and symmetric due to homegeneity,  i.e., it has 
-no preferred direction. Therefore, the stress tensor could be written as (derivation omitted):
+The stiffness tensor $C_{ijkl}$ is constant and symmetric:
 
 .. math::
    :nowrap:
    :label: elasto-stress
 
    \begin{eqnarray*}
-   \sigma_{ij} & = & \lambda \delta_{ij} \epsilon_{kk} + 2\mu\epsilon_{ij} \\ \nonumber
-   \lambda     & = & \frac{E\nu}{(1+\nu)(1-2\nu)}                          \\
-   \mu         & = & \frac{E}{2(1+\nu)} 
+   \sigma_{ij} & = & \lambda \delta_{ij} \epsilon_{kk} + 2\mu\epsilon_{ij}, \\ \nonumber
+   \lambda     & = & \frac{E\nu}{(1+\nu)(1-2\nu)},                          \\
+   \mu         & = & \frac{E}{2(1+\nu)}. 
    \end{eqnarray*}
 
-where $\lambda$ is the first lame parameter, $\mu$ is the second lame parameter or shear modulus, 
-$E$ is the Young's modulus, $\nu$ is the Poisson's ratio. In our example, $E = 200 \times 10^9$ Gpa, 
-$\nu = 0.3$. 
+Here $\lambda, \mu$ are the Lame constants, $E$ is the Young modulus, $\nu$ is the Poisson ratio. 
+In our example, $E = 200 \times 10^9$ Gpa and $\nu = 0.3.$ 
 
-Substituting Equ :eq:`elasto-stress` back into Equ :eq:`elasto-statics` yield:
+Substituting :eq:`elasto-stress` back into :eq:`elastostatics`, we obtain:
  
 .. math::
    :nowrap:
    :label: elasto-navier
 
    \begin{eqnarray*}
-   \mu u_{i,jj}  + (\mu + \lambda)u_{j,ij} + F_i & = & 0              \\ \nonumber
+   \mu u_{i,jj}  + (\mu + \lambda)u_{j,ij} + F_i & = & 0,              \\ \nonumber
    \hbox{ or }           & \, & \\                                      
-   \mu \Delta{u} + (\mu + \lambda) \mathsf{grad} \, \mathsf{div} u  + F & = & 0
+   \mu \Delta{u} + (\mu + \lambda) \mathsf{grad} \, \mathsf{div} u  + F & = & 0.
    \end{eqnarray*}
 
-The corresponding weak formulations are as following, each equation for displacement in one direction:
+The corresponding weak formulation is as follows:
 
 .. math::
    :nowrap:
@@ -109,15 +104,15 @@ The corresponding weak formulations are as following, each equation for displace
    \int_{\Omega} (\lambda + 2\mu) u_{i} \, v_{i} + \mu u_{j} \, v_{j} + \mu u_{k} \, v_{k} \quad 
    +\quad \int_{\Omega} \lambda u_{i} \,  v_{j} + \mu u_{j} \, v_{i} \quad
    +\quad \int_{\Omega} \lambda u_{i} \,  v_{k} + \mu u_{k} \, v_{i}
-     &  = & 0 \\ \nonumber
+     &  = & 0, \\ \nonumber
    \int_{\Omega} \mu u_{i} \, v_{i} + (\lambda + 2\mu) u_{j} \, v_{j} + \mu u_{k} \, v_{k} \quad
    +\quad \int_{\Omega} \lambda u_{j} \,  v_{k} + \mu u_{k} \, v_{j}
-     &  = & 0 \\
+     &  = & 0, \\
    \int_{\Omega} \mu u_{i} \, v_{i} + \mu u_{j} \, v_{j} + (\lambda + 2\mu) u_{k} \, v_{k} 
      &  = & \int_{\Gamma_F} F_i v. \nonumber
    \end{eqnarray*}
 
-Code for the weak forms:
+Here is the code for the weak forms:
 
 .. code-block:: c++
 ::
