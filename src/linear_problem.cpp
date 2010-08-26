@@ -21,7 +21,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common.h"
-#include "linproblem.h"
+#include "linear_problem.h"
 #include "matrix.h"
 #include "traverse.h"
 #include <common/error.h>
@@ -29,7 +29,7 @@
 #include <common/timer.h>
 
 
-LinProblem::LinProblem(WeakForm *wf)
+LinearProblem::LinearProblem(WeakForm *wf)
 {
 	_F_
 	this->wf = wf;
@@ -42,30 +42,30 @@ LinProblem::LinProblem(WeakForm *wf)
 	matrix_buffer_dim = 0;
 }
 
-LinProblem::~LinProblem()
+LinearProblem::~LinearProblem()
 {
 	_F_
 	delete [] spaces;
 	delete [] sp_seq;
 }
 
-void LinProblem::free()
+void LinearProblem::free()
 {
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
 }
 
-void LinProblem::set_spaces(Tuple<Space *> sp)
+void LinearProblem::set_spaces(Tuple<Space *> sp)
 {
 	_F_
 	int n = sp.size();
 	if (n <= 0 || n > wf->neq) EXIT("Bad number of spaces.");
         if (n != this->wf->neq) 
-          error("Number of spaces must match the number of equations in LinProblem::set_spaces()");
+          error("Number of spaces must match the number of equations in LinearProblem::set_spaces()");
 	for (int i = 0; i < n; i++) spaces[i] = sp[i];
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
 }
 
-scalar **LinProblem::get_matrix_buffer(int n)
+scalar **LinearProblem::get_matrix_buffer(int n)
 {
 	_F_
 	if (n <= matrix_buffer_dim) return matrix_buffer;
@@ -74,7 +74,7 @@ scalar **LinProblem::get_matrix_buffer(int n)
 	return (matrix_buffer = new_matrix<scalar>(n, n));
 }
 
-bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
+bool LinearProblem::assemble(Matrix *matrix, Vector *rhs)
 {
 	_F_
 	Timer tmr;
@@ -295,7 +295,7 @@ bool LinProblem::assemble(Matrix *matrix, Vector *rhs)
 	return true;
 }
 
-void LinProblem::create(Matrix *matrix, Vector *rhs)
+void LinearProblem::create(Matrix *matrix, Vector *rhs)
 {
 	_F_
 
@@ -323,7 +323,7 @@ void LinProblem::create(Matrix *matrix, Vector *rhs)
 	if (matrix != NULL) {
 		SparseMatrix *mat = dynamic_cast<SparseMatrix *>(matrix);
 		if (mat == NULL) {
-			warning("Calling LinProblem::create() with a matrix that is not sparse matrix.");
+			warning("Calling LinearProblem::create() with a matrix that is not sparse matrix.");
 			return;
 		}
 
@@ -380,7 +380,7 @@ void LinProblem::create(Matrix *matrix, Vector *rhs)
 		sp_seq[i] = spaces[i]->get_seq();
 }
 
-void LinProblem::init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction *> &ext, int order,
+void LinearProblem::init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction *> &ext, int order,
                               RefMap *rm, const int np, const QuadPt3D *pt)
 {
 	_F_
@@ -399,7 +399,7 @@ void LinProblem::init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction 
 	ud.ext = ext_fn;
 }
 
-void LinProblem::init_ext_fns(user_data_t<ord_t> &fake_ud, std::vector<MeshFunction *> &ext)
+void LinearProblem::init_ext_fns(user_data_t<ord_t> &fake_ud, std::vector<MeshFunction *> &ext)
 {
 	_F_
 	fake_ud.nf = ext.size();
@@ -410,7 +410,7 @@ void LinProblem::init_ext_fns(user_data_t<ord_t> &fake_ud, std::vector<MeshFunct
 	fake_ud.ext = fake_ext_fn;
 }
 
-sfn_t *LinProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np,
+sfn_t *LinearProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np,
                           const QuadPt3D *pt)
 {
 	_F_
@@ -423,7 +423,7 @@ sfn_t *LinProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np
 	return u;
 }
 
-sfn_t *LinProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, const int np,
+sfn_t *LinearProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, const int np,
                           const QuadPt3D *pt)
 {
 	fn_key_t key(fu->get_active_shape(), order, fu->get_transform(), fu->get_shapeset()->id);
@@ -435,7 +435,7 @@ sfn_t *LinProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, c
 	return u;
 }
 
-scalar LinProblem::eval_form(WeakForm::MatrixFormVol *mfv, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv,
+scalar LinearProblem::eval_form(WeakForm::MatrixFormVol *mfv, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv,
                              RefMap *ru, RefMap *rv)
 {
 	_F_
@@ -485,7 +485,7 @@ scalar LinProblem::eval_form(WeakForm::MatrixFormVol *mfv, fn_t<scalar> *u_ext[]
 	return mfv->fn(np, jwt, u_ext, u, v, &e, &ud);
 }
 
-scalar LinProblem::eval_form(WeakForm::VectorFormVol *vfv, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv)
+scalar LinearProblem::eval_form(WeakForm::VectorFormVol *vfv, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv)
 {
 	_F_
 	Element *elem = fv->get_active_element();
@@ -531,7 +531,7 @@ scalar LinProblem::eval_form(WeakForm::VectorFormVol *vfv, fn_t<scalar> *u_ext[]
 	return vfv->fn(np, jwt, u_ext, v, &e, &ud);
 }
 
-scalar LinProblem::eval_form(WeakForm::MatrixFormSurf *mfs, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv,
+scalar LinearProblem::eval_form(WeakForm::MatrixFormSurf *mfs, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv,
                              RefMap *ru, RefMap *rv, FacePos *fp)
 {
 	_F_
@@ -581,7 +581,7 @@ scalar LinProblem::eval_form(WeakForm::MatrixFormSurf *mfs, fn_t<scalar> *u_ext[
 	return mfs->fn(np, jwt, u_ext, u, v, &e, &ud);
 }
 
-scalar LinProblem::eval_form(WeakForm::VectorFormSurf *vfs, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv, FacePos *fp)
+scalar LinearProblem::eval_form(WeakForm::VectorFormSurf *vfs, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv, FacePos *fp)
 {
 	_F_
 

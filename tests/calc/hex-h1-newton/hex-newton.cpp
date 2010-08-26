@@ -166,7 +166,7 @@ int main(int argc, char **args) {
 	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>);
 	wf.add_vector_form_surf(linear_form_surf<double, scalar>, linear_form_surf<ord_t, ord_t>);
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 
 	// assemble stiffness matrix

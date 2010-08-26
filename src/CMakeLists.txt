@@ -9,8 +9,8 @@ set(SRC
 	forms.cpp
 	function.cpp
 	mesh.cpp
-	feproblem.cpp
-	linproblem.cpp
+	discrete_problem.cpp
+	linear_problem.cpp
 	loader/exodusii.cpp
 	loader/mesh3d.cpp
 	loader/hdf5.cpp

@@ -82,8 +82,8 @@
 #include "solution.h"
 #include "filter.h"
 #include "weakform.h"
-#include "feproblem.h"
-#include "linproblem.h"
+#include "discrete_problem.h"
+#include "linear_problem.h"
 
 // linear solvers
 #include "solver.h"

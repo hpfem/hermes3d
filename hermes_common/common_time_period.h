@@ -1,25 +1,15 @@
-// This file is part of Hermes2D.
-//
-// Hermes2D is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
-//
-// Hermes2D is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Hermes2D.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (c) 2009 hp-FEM group at the University of Nevada, Reno (UNR).
+// Distributed under the terms of the BSD license (see the LICENSE
+// file for the exact terms).
+// Email: hermes1d@googlegroups.com, home page: http://hpfem.org/
 
 #ifndef __HERMES_COMMON_TIME_PERIOD_H
 #define __HERMES_COMMON_TIME_PERIOD_H
 
 /// Tick type. Used by the class TimePeriod.
 enum TimerPeriodTickType {
-  H2D_ACCUMULATE, ///< Accumulate a period between ticks.
-  H2D_SKIP ///< Skip period between ticks, i.e., do not accumulate it.
+  HERMES_ACCUMULATE, ///< Accumulate a period between ticks.
+  HERMES_SKIP ///< Skip period between ticks, i.e., do not accumulate it.
 };
 
 /// A named time period measurement with accumulation.
@@ -31,7 +21,7 @@ public:
 
   const TimePeriod& reset(); ///< Resets accumulated time.
   const TimePeriod& tick_reset(); ///< Starts a new period and resets accumulated time.
-  const TimePeriod& tick(TimerPeriodTickType type = H2D_ACCUMULATE); ///< Starts/ends a new period.
+  const TimePeriod& tick(TimerPeriodTickType type = HERMES_ACCUMULATE); ///< Starts/ends a new period.
 
   /// Returns a name of the time period if any.
   const std::string& name() const { return period_name; }

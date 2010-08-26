@@ -442,7 +442,7 @@ int main(int argc, char **args) {
 #endif
 
 	// assemble stiffness matrix
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 
 	lp.assemble(&mat, &rhs);

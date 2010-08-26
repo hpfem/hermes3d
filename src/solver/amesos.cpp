@@ -22,7 +22,7 @@
 
 #include "../h3dconfig.h"
 #include "amesos.h"
-#include "../linproblem.h"
+#include "../linear_problem.h"
 #include <common/callstack.h>
 #include <common/timer.h>
 
@@ -49,7 +49,7 @@ AmesosSolver::AmesosSolver(const char *solver_type, EpetraMatrix *m, EpetraVecto
 #endif
 }
 
-AmesosSolver::AmesosSolver(const char *solver_type, LinProblem *lp)
+AmesosSolver::AmesosSolver(const char *solver_type, LinearProblem *lp)
 	: LinearSolver(lp)
 {
 	_F_

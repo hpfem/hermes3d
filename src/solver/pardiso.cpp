@@ -23,7 +23,7 @@
 
 #include "../h3dconfig.h"
 #include "pardiso.h"
-#include "../linproblem.h"
+#include "../linear_problem.h"
 
 #include <common/trace.h>
 #include <common/error.h>
@@ -293,7 +293,7 @@ PardisoLinearSolver::PardisoLinearSolver(PardisoMatrix *m, PardisoVector *rhs)
 #endif
 }
 
-PardisoLinearSolver::PardisoLinearSolver(LinProblem *lp)
+PardisoLinearSolver::PardisoLinearSolver(LinearProblem *lp)
 	: LinearSolver(lp)
 {
 	_F_

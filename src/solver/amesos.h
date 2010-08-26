@@ -37,7 +37,7 @@
 class AmesosSolver : public LinearSolver {
 public:
 	AmesosSolver(const char *solver_type, EpetraMatrix *m, EpetraVector *rhs);
-	AmesosSolver(const char *solver_type, LinProblem *lp);
+	AmesosSolver(const char *solver_type, LinearProblem *lp);
 	virtual ~AmesosSolver();
 
 	static bool is_available(const char *name);

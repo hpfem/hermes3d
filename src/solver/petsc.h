@@ -95,7 +95,7 @@ protected:
 class PetscLinearSolver : public LinearSolver {
 public:
 	PetscLinearSolver(PetscMatrix *mat, PetscVector *rhs);
-	PetscLinearSolver(LinProblem *lp);
+	PetscLinearSolver(LinearProblem *lp);
 	virtual ~PetscLinearSolver();
 
 	virtual bool solve();

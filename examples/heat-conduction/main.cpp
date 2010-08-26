@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
   wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, &sln_prev);
 
   // Initialize the coarse mesh problem. 
-  LinProblem lp(&wf);
+  LinearProblem lp(&wf);
   lp.set_spaces(&space);
 
   // Time stepping. 

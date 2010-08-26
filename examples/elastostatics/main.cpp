@@ -49,16 +49,19 @@ BCType bc_types_z(int marker)
 void out_fn(MeshFunction *x, MeshFunction *y, MeshFunction *z, const char *name) 
 {
   char fname[1024];
-  sprintf(of_name, "%s.vtk", name);
-  FILE *f = fopen(fname, "w");
-  if (f != NULL) {
+  sprintf(fname, "%s.vtk", name);
+  FILE *ofile = fopen(fname, "w");
+  if (ofile != NULL) {
     VtkOutputEngine output(ofile);
     output.out(x, y, z, name);
-    fclose(f);
+    fclose(ofile);
   }
   else 
     warning("Can not open '%s' for writing.", fname);
 }
+
+#include "forms.cpp"
+
 /***********************************************************************************
  * main program                                                                    *
  ***********************************************************************************/
@@ -71,7 +74,7 @@ int main(int argc, char **argv) {
   // Load the initial mesh. 
   Mesh mesh;
   Mesh3DReader mloader;
-  mloader.load("l-beam.mesh3d", &mesh)
+  mloader.load("l-beam.mesh3d", &mesh);
 
   // Initial uniform mesh refinements. 
   printf("Performing %d initial mesh refinements.\n", INIT_REF_NUM);
@@ -137,7 +140,7 @@ int main(int argc, char **argv) {
   wf.add_vector_form_surf(2, surf_linear_form_2<double, scalar>, surf_linear_form_2<ord_t, ord_t>, 5);
 
   // Initialize the mesh problem.
-  LinProblem lp(&wf);
+  LinearProblem lp(&wf);
   lp.set_spaces(Tuple<Space *>(&xdisp, &ydisp, &zdisp));
 
   // Assemble stiffness matrix
@@ -161,7 +164,6 @@ int main(int argc, char **argv) {
     printf("done in %s (%lf secs)\n", tmr_solve.get_human_time(), tmr_solve.get_seconds());
   else {
     printf("failed\n");
-    break;
   }
 
   // Construct a solution. 

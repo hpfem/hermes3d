@@ -22,7 +22,7 @@
 
 #include "../h3dconfig.h"
 #include "mumps.h"
-#include "../linproblem.h"
+#include "../linear_problem.h"
 #include <common/trace.h>
 #include <common/error.h>
 #include <common/utils.h>
@@ -356,7 +356,7 @@ MumpsSolver::MumpsSolver(MumpsMatrix *m, MumpsVector *rhs) :
 #endif
 }
 
-MumpsSolver::MumpsSolver(LinProblem *lp)
+MumpsSolver::MumpsSolver(LinearProblem *lp)
 	: LinearSolver(lp)
 {
 	_F_

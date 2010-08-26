@@ -79,8 +79,8 @@ public:
 	void update_refmap()
 		{ refmap->force_transform(sub_idx, ctm); }
 
-	friend class FeProblem;
-	friend class LinProblem;
+	friend class DiscreteProblem;
+	friend class LinearProblem;
 };
 
 

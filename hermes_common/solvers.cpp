@@ -6,10 +6,18 @@
 #include "matrix.h"
 #include "solvers.h"
 
+bool CommonSolver::solve(Matrix *mat, Vector *res)
+{
+    if (res->is_complex())
+        return this->_solve(mat, res->get_c_array_cplx());
+    else
+        return this->_solve(mat, res->get_c_array());
+}
+
 // Standard CG method starting from zero vector
 // (because we solve for the increment)
 // x... comes as right-hand side, leaves as solution
-bool CommonSolverCG::solve(Matrix* A, double *x, double tol, int maxiter)
+bool CommonSolverCG::_solve(Matrix* A, double *x, double tol, int maxiter)
 {
     printf("CG solver\n");
 
@@ -65,14 +73,14 @@ bool CommonSolverCG::solve(Matrix* A, double *x, double tol, int maxiter)
 }
 
 
-bool CommonSolverCG::solve(Matrix* A, cplx *x)
+bool CommonSolverCG::_solve(Matrix* A, cplx *x)
 {
     _error("CommonSolverCG::solve(Matrix *mat, cplx *res) not implemented.");
 }
 
 // ***********************************************************************************************************************
 
-bool CommonSolverDenseLU::solve(Matrix* A, double *x)
+bool CommonSolverDenseLU::_solve(Matrix* A, double *x)
 {
     printf("DenseLU solver\n");
 
@@ -97,7 +105,7 @@ bool CommonSolverDenseLU::solve(Matrix* A, double *x)
         delete Aden;
 }
 
-bool CommonSolverDenseLU::solve(Matrix* A, cplx *x)
+bool CommonSolverDenseLU::_solve(Matrix* A, cplx *x)
 {
     _error("CommonSolverDenseLU::solve(Matrix *mat, cplx *res) not implemented.");
 }

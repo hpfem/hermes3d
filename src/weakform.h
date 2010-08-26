@@ -190,8 +190,8 @@ private:
 		return mfvol.size() > 0 || mfsurf.size() > 0 || vfvol.size() > 0 || vfsurf.size() > 0;
 	}
 
-	friend class LinProblem;
-	friend class FeProblem;
+	friend class LinearProblem;
+	friend class DiscreteProblem;
 	friend class Precond;
 };
 

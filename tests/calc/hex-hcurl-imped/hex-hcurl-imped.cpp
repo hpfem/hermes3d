@@ -272,7 +272,7 @@ int main(int argc, char **args) {
 //	wf.add_liform(linear_form);
 //	wf.add_liform_surf(linear_form_surf);
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 
 	// assemble stiffness matrix

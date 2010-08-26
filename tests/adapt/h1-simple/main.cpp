@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
 	wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM, ANY);
 	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY);
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 
 	bool done = false;
@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
 		Space *rspace = space.dup(&rmesh);
 		rspace->copy_orders(space, 1);
 
-		LinProblem rlp(&wf);
+		LinearProblem rlp(&wf);
 		rlp.set_space(rspace);
 
 		int rndofs = rspace->assign_dofs();

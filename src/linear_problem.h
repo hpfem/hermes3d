@@ -20,8 +20,8 @@
 // along with Hermes3D; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef _FEPROBLEM_H_
-#define _FEPROBLEM_H_
+#ifndef _LINEAR_PROBLEM_H_
+#define _LINEAR_PROBLEM_H_
 
 #include <common/array.h>
 #include "weakform.h"
@@ -29,43 +29,38 @@
 
 class Space;
 class Matrix;
-class SparseMatrix;
 class Vector;
 class FacePos;
 
-/// Finite Element problem class
-///
-/// This class does assembling into passed-in structures.
-///
-class FeProblem {
+class LinearProblem {
 public:
-	FeProblem(WeakForm *wf);
-	virtual ~FeProblem();
+	LinearProblem(WeakForm *wf);
+	virtual ~LinearProblem();
 	void free();
 
 	void set_spaces(Tuple<Space *> sp);
-	void set_space(Space* sp);
+	void set_space(Space* sp) {
+          this->set_spaces(Tuple<Space *> (sp));
+        };
 
-	void create(SparseMatrix *mat);
-	void assemble(Vector* rhs, Matrix* jac, Vector* x = NULL);
-	void assemble(Vector* rhs, Matrix* jac, Tuple<Solution*> u_ext =  Tuple<Solution*> ());
+	// @return true if successful, otherwise false
+	bool assemble(Matrix *matrix, Vector *rhs = NULL);
 
-	int get_num_dofs();
-	bool is_matrix_free() { return wf->is_matrix_free(); }
+	double get_time() { return time; }
 
 protected:
 	WeakForm *wf;
 
-	int ndof;					/// number of DOFs
+	int ndofs;					/// number of DOFs
 	int *sp_seq;				/// sequence numbers of spaces
 	Space **spaces;
-	Solution **slns;
-	bool have_spaces;
+	double time;				/// time of the assembling (in secs)
 
 	scalar **matrix_buffer;		/// buffer for holding square matrix (during assembling)
 	int matrix_buffer_dim;		/// dimension of the matrix held by 'matrix_buffer'
 	inline scalar **get_matrix_buffer(int n);
-	bool is_up_to_date();
+
+	void create(Matrix *matrix, Vector *rhs = NULL);
 
 	// pre-transforming and fn. caching
 	struct fn_key_t {
@@ -87,28 +82,38 @@ protected:
 		Array<geom_t<double> > e;		// geometries
 		Map<fn_key_t, sfn_t*> fn;		// shape functions
 		Map<fn_key_t, mfn_t*> ext;		// external functions
-		Map<fn_key_t, mfn_t*> sln;		// sln from prev iter
 
-		~FnCache();
-		void free();
+		~FnCache() {
+			free();
+		}
+
+		void free() {
+			for (Word_t i = jwt.first(); i != INVALID_IDX; i = jwt.next(i))
+				delete [] jwt[i];
+			jwt.remove_all();
+			for (Word_t i = e.first(); i != INVALID_IDX; i = e.next(i))
+				free_geom(&e[i]);
+			e.remove_all();
+			for (Word_t i = fn.first(); i != INVALID_IDX; i = fn.next(i))
+				free_fn(fn[i]);
+			fn.remove_all();
+			for (Word_t i = ext.first(); i != INVALID_IDX; i = ext.next(i))
+				delete ext[i];
+			ext.remove_all();
+		}
 	} fn_cache;
 
-	scalar eval_form(WeakForm::MatrixFormVol *mfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
-	                 ShapeFunction *fv, RefMap *ru, RefMap *rv);
-	scalar eval_form(WeakForm::VectorFormVol *vfv, Tuple<Solution *> u_ext, ShapeFunction *fv, RefMap *rv);
-	scalar eval_form(WeakForm::MatrixFormSurf *mfs, Tuple<Solution *> u_ext, ShapeFunction *fu,
-	                 ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp);
-	scalar eval_form(WeakForm::VectorFormSurf *vfs, Tuple<Solution *> u_ext, ShapeFunction *fv, RefMap *rv,
-	                 FacePos *fp);
+	scalar eval_form(WeakForm::MatrixFormVol *mfv, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv, RefMap *ru, RefMap *rv);
+	scalar eval_form(WeakForm::VectorFormVol *vfv, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv);
+	scalar eval_form(WeakForm::MatrixFormSurf *mfs, fn_t<scalar> *u_ext[], ShapeFunction *fu, ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp);
+	scalar eval_form(WeakForm::VectorFormSurf *vfs, fn_t<scalar> *u_ext[], ShapeFunction *fv, RefMap *rv, FacePos *fp);
 
 	sfn_t *get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt);
-	sfn_t *get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, const int np,
-	              const QuadPt3D *pt);
-	mfn_t *get_fn(Solution *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt);
+	sfn_t *get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, const int np, const QuadPt3D *pt);
 
 	void init_ext_fns(user_data_t<ord_t> &fake_ud, std::vector<MeshFunction *> &ext);
-	void init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction *> &ext, int order,
-	                  RefMap *rm, const int np, const QuadPt3D *pt);
+	void init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction *> &ext, int order, RefMap *rm, const int np, const QuadPt3D *pt);
+
 };
 
-#endif /* _LINPROBLEM_H_ */
+#endif /* _LINEAR_PROBLEM_H_ */

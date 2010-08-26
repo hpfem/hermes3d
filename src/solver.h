@@ -26,8 +26,8 @@
 
 #include "common.h"
 
-class LinProblem;
-class FeProblem;
+class LinearProblem;
+class DiscreteProblem;
 
 /// @defgroup solvers Solvers
 ///
@@ -65,11 +65,11 @@ protected:
 class LinearSolver : public Solver {
 public:
 	LinearSolver() : Solver() { lp = NULL; }
-	LinearSolver(LinProblem *lp) : Solver() { this->lp = lp; }
+	LinearSolver(LinearProblem *lp) : Solver() { this->lp = lp; }
 
 protected:
-	LinProblem *lp;        // linear problem being solved (not NULL in case of using
-	                       // LinearProblem(LinProblem *) ctor
+	LinearProblem *lp;        // linear problem being solved (not NULL in case of using
+	                       // LinearProblem(LinearProblem *) ctor
 };
 
 /// Abstract class for defining interface for LinearSolvers
@@ -79,11 +79,11 @@ protected:
 class NonlinearSolver : public Solver {
 public:
 	NonlinearSolver() : Solver() { fp = NULL; }
-	NonlinearSolver(FeProblem *fp) : Solver() { this->fp = fp; }
+	NonlinearSolver(DiscreteProblem *fp) : Solver() { this->fp = fp; }
 
 protected:
-	FeProblem *fp;        // FE problem being solved (not NULL in case of using
-	                      // NonlinearProblem(FeProblem *) ctor
+	DiscreteProblem *fp;        // FE problem being solved (not NULL in case of using
+	                      // NonlinearProblem(DiscreteProblem *) ctor
 };
 
 #endif

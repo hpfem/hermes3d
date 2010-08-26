@@ -21,19 +21,19 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common.h"
-#include "feproblem.h"
+#include "discrete_problem.h"
 #include "matrix.h"
 #include "traverse.h"
 #include <common/error.h>
 #include <common/callstack.h>
 
 
-FeProblem::FnCache::~FnCache()
+DiscreteProblem::FnCache::~FnCache()
 {
 	free();
 }
 
-void FeProblem::FnCache::free()
+void DiscreteProblem::FnCache::free()
 {
 	_F_
 	for (Word_t i = jwt.first(); i != INVALID_IDX; i = jwt.next(i))
@@ -53,9 +53,9 @@ void FeProblem::FnCache::free()
 	sln.remove_all();
 }
 
-// FeProblem ///////////////////////////////////////////////////////////////////////////////////////
+// DiscreteProblem ///////////////////////////////////////////////////////////////////////////////////////
 
-FeProblem::FeProblem(WeakForm *wf)
+DiscreteProblem::DiscreteProblem(WeakForm *wf)
 {
 	_F_
 	this->wf = wf;
@@ -70,20 +70,20 @@ FeProblem::FeProblem(WeakForm *wf)
 	matrix_buffer_dim = 0;
 }
 
-FeProblem::~FeProblem()
+DiscreteProblem::~DiscreteProblem()
 {
 	_F_
 	delete [] spaces;
 	delete [] sp_seq;
 }
 
-void FeProblem::free()
+void DiscreteProblem::free()
 {
 	_F_
 	memset(sp_seq, -1, sizeof(int) * wf->neq);
 }
 
-void FeProblem::set_spaces(Tuple<Space *> sp)
+void DiscreteProblem::set_spaces(Tuple<Space *> sp)
 {
 	_F_
 	  int n = sp.size();
@@ -95,7 +95,7 @@ void FeProblem::set_spaces(Tuple<Space *> sp)
 	have_spaces = true;
 }
 
-int FeProblem::get_num_dofs()
+int DiscreteProblem::get_num_dofs()
 {
 	_F_
 	if (!is_up_to_date()) {
@@ -106,7 +106,7 @@ int FeProblem::get_num_dofs()
 	return this->ndof;
 }
 
-scalar **FeProblem::get_matrix_buffer(int n)
+scalar **DiscreteProblem::get_matrix_buffer(int n)
 {
 	_F_
 	if (n <= matrix_buffer_dim) return matrix_buffer;
@@ -115,7 +115,7 @@ scalar **FeProblem::get_matrix_buffer(int n)
 	return (matrix_buffer = new_matrix<scalar>(n, n));
 }
 
-void FeProblem::assemble(Vector *rhs, Matrix *jac, Vector *x)
+void DiscreteProblem::assemble(Vector *rhs, Matrix *jac, Vector *x)
 {
 	_F_
         // Sanity checks.
@@ -157,7 +157,7 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Vector *x)
 }
 
 
-void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
+void DiscreteProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 {
 	_F_
         // Sanity checks.
@@ -372,7 +372,7 @@ void FeProblem::assemble(Vector *rhs, Matrix *jac, Tuple<Solution*> u_ext)
 	matrix_buffer_dim = 0;
 }
 
-bool FeProblem::is_up_to_date()
+bool DiscreteProblem::is_up_to_date()
 {
 	_F_
 	// check if we can reuse the matrix structure
@@ -385,7 +385,7 @@ bool FeProblem::is_up_to_date()
 	return up_to_date;
 }
 
-void FeProblem::create(SparseMatrix *mat)
+void DiscreteProblem::create(SparseMatrix *mat)
 {
 	_F_
 	assert(mat != NULL);
@@ -443,7 +443,7 @@ void FeProblem::create(SparseMatrix *mat)
 	mat->alloc();
 }
 
-void FeProblem::init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction *> &ext, int order,
+void DiscreteProblem::init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction *> &ext, int order,
                              RefMap *rm, const int np, const QuadPt3D *pt)
 {
 	_F_
@@ -463,7 +463,7 @@ void FeProblem::init_ext_fns(user_data_t<scalar> &ud, std::vector<MeshFunction *
 	ud.ext = ext_fn;
 }
 
-void FeProblem::init_ext_fns(user_data_t<ord_t> &fake_ud, std::vector<MeshFunction *> &ext)
+void DiscreteProblem::init_ext_fns(user_data_t<ord_t> &fake_ud, std::vector<MeshFunction *> &ext)
 {
 	_F_
 
@@ -475,7 +475,7 @@ void FeProblem::init_ext_fns(user_data_t<ord_t> &fake_ud, std::vector<MeshFuncti
 	fake_ud.ext = fake_ext_fn;
 }
 
-sfn_t *FeProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt)
+sfn_t *DiscreteProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt)
 {
 	fn_key_t key(fu->get_active_shape(), order, fu->get_transform(), fu->get_shapeset()->id);
 	sfn_t *u = NULL;
@@ -486,7 +486,7 @@ sfn_t *FeProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, const int np,
 	return u;
 }
 
-sfn_t *FeProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, const int np,
+sfn_t *DiscreteProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, const int np,
                          const QuadPt3D *pt)
 {
 	fn_key_t key(fu->get_active_shape(), order, fu->get_transform(), fu->get_shapeset()->id);
@@ -498,7 +498,7 @@ sfn_t *FeProblem::get_fn(ShapeFunction *fu, int order, RefMap *rm, int iface, co
 	return u;
 }
 
-mfn_t *FeProblem::get_fn(Solution *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt)
+mfn_t *DiscreteProblem::get_fn(Solution *fu, int order, RefMap *rm, const int np, const QuadPt3D *pt)
 {
 	fn_key_t key(fu->seq, order, fu->get_transform());
 	mfn_t *u = NULL;
@@ -509,7 +509,7 @@ mfn_t *FeProblem::get_fn(Solution *fu, int order, RefMap *rm, const int np, cons
 	return u;
 }
 
-scalar FeProblem::eval_form(WeakForm::MatrixFormVol *mfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
+scalar DiscreteProblem::eval_form(WeakForm::MatrixFormVol *mfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
                             ShapeFunction *fv, RefMap *ru, RefMap *rv)
 {
 	_F_
@@ -565,7 +565,7 @@ scalar FeProblem::eval_form(WeakForm::MatrixFormVol *mfv, Tuple<Solution *> u_ex
 	return mfv->fn(np, jwt, prev, u, v, &e, &ud);
 }
 
-scalar FeProblem::eval_form(WeakForm::VectorFormVol *vfv, Tuple<Solution *> u_ext, ShapeFunction *fv, RefMap *rv)
+scalar DiscreteProblem::eval_form(WeakForm::VectorFormVol *vfv, Tuple<Solution *> u_ext, ShapeFunction *fv, RefMap *rv)
 {
 	_F_
 	Element *elem = fv->get_active_element();
@@ -617,7 +617,7 @@ scalar FeProblem::eval_form(WeakForm::VectorFormVol *vfv, Tuple<Solution *> u_ex
 	return vfv->fn(np, jwt, prev, v, &e, &ud);
 }
 
-scalar FeProblem::eval_form(WeakForm::MatrixFormSurf *mfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
+scalar DiscreteProblem::eval_form(WeakForm::MatrixFormSurf *mfv, Tuple<Solution *> u_ext, ShapeFunction *fu,
                             ShapeFunction *fv, RefMap *ru, RefMap *rv, FacePos *fp)
 {
 	_F_
@@ -673,8 +673,8 @@ scalar FeProblem::eval_form(WeakForm::MatrixFormSurf *mfv, Tuple<Solution *> u_e
 	return mfv->fn(np, jwt, prev, u, v, &e, &ud);
 }
 
-scalar FeProblem::eval_form(WeakForm::VectorFormSurf *vfs, Tuple<Solution *> u_ext, ShapeFunction *fv,
-                            RefMap *rv, FacePos *fp)
+scalar DiscreteProblem::eval_form(WeakForm::VectorFormSurf *vfs, Tuple<Solution *> u_ext, 
+                                  ShapeFunction *fv, RefMap *rv, FacePos *fp)
 {
 	_F_
 

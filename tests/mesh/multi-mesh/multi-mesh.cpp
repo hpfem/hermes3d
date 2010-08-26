@@ -515,7 +515,7 @@ int main(int argc, char **args)
 	wf.add_matrix_form(bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
 	wf.add_vector_form(linear_form<double, scalar>, linear_form<ord_t, ord_t>, ANY, &fsln);
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 #elif defined SYS3
 	WeakForm wf(3);
@@ -529,7 +529,7 @@ int main(int argc, char **args)
 
 	wf.add_matrix_form(2, 2, biform_3_3<double, scalar>, biform_3_3<ord_t, ord_t>, SYM);
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_spaces(Tuple<Space *>(&space1, &space2, &space3));
 #endif
 

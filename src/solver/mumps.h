@@ -110,7 +110,7 @@ protected:
 class MumpsSolver : public LinearSolver {
 public:
 	MumpsSolver(MumpsMatrix *m, MumpsVector *rhs);
-	MumpsSolver(LinProblem *lp);
+	MumpsSolver(LinearProblem *lp);
 	virtual ~MumpsSolver();
 
 	virtual bool solve();

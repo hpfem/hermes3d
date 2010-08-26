@@ -148,7 +148,7 @@ int main(int argc, char **args) {
   wf.add_vector_form(liform<double, double>, liform<ord_t, ord_t>, ANY);
 
   // Initialize the coarse mesh problem.
-  LinProblem lp(&wf);
+  LinearProblem lp(&wf);
   lp.set_space(&space);
 
   // Adaptivity loop.
@@ -213,7 +213,7 @@ int main(int argc, char **args) {
     rspace->copy_orders(space, 1);
 
     // Initialize the mesh problem for reference solution.
-    LinProblem rlp(&wf);
+    LinearProblem rlp(&wf);
     rlp.set_space(rspace);
 
     // Assign DOF.

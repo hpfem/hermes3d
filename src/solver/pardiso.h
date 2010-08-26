@@ -81,7 +81,7 @@ protected:
 class PardisoLinearSolver : public LinearSolver {
 public:
 	PardisoLinearSolver(PardisoMatrix *m, PardisoVector *rhs);
-	PardisoLinearSolver(LinProblem *lp);
+	PardisoLinearSolver(LinearProblem *lp);
 	virtual ~PardisoLinearSolver();
 
 	virtual bool solve();

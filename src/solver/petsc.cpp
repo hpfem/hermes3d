@@ -23,7 +23,7 @@
 
 
 #include "petsc.h"
-#include "../linproblem.h"
+#include "../linear_problem.h"
 #include <common/trace.h>
 #include <common/error.h>
 #include <common/callstack.h>
@@ -261,7 +261,7 @@ PetscLinearSolver::PetscLinearSolver(PetscMatrix *mat, PetscVector *rhs)
 #endif
 }
 
-PetscLinearSolver::PetscLinearSolver(LinProblem *lp)
+PetscLinearSolver::PetscLinearSolver(LinearProblem *lp)
 	: LinearSolver(lp)
 {
 #ifdef WITH_PETSC

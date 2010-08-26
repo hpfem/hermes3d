@@ -24,7 +24,7 @@
 #define _NOX_SOLVER_H_
 
 #include "../solver.h"
-#include "../feproblem.h"
+#include "../discrete_problem.h"
 #include "../precond.h"
 #include "epetra.h"
 
@@ -40,7 +40,7 @@ class NoxProblemInterface;
 /// @ingroup solvers
 class NoxSolver : public Solver {
 public:
-	NoxSolver(FeProblem *problem);
+	NoxSolver(DiscreteProblem *problem);
 	virtual ~NoxSolver();
 
 	bool set_init_sln(double *ic);

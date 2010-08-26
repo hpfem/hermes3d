@@ -19,7 +19,7 @@
 #include <ir.h>
 #include <qmr.h>
 
-bool CommonSolverSparseLib::solve(Matrix *mat, double *res)
+bool CommonSolverSparseLib::_solve(Matrix *mat, double *res)
 {
     printf("SparseLib++ solver\n");
 
@@ -53,7 +53,7 @@ bool CommonSolverSparseLib::solve(Matrix *mat, double *res)
     int result = -1;
     switch (method)
     {
-    case CommonSolverSparseLibSolver_ConjugateGradientSquared:
+    case HERMES_CommonSolverSparseLibSolver_ConjugateGradientSquared:
         result = CGS(Acc, xv, rhs, ILU, maxiter, tolerance);
         break;
     case CommonSolverSparseLibSolver_RichardsonIterativeRefinement:
@@ -81,7 +81,7 @@ bool CommonSolverSparseLib::solve(Matrix *mat, double *res)
         delete Acsc;
 }
 
-bool CommonSolverSparseLib::solve(Matrix *mat, cplx *res)
+bool CommonSolverSparseLib::_solve(Matrix *mat, cplx *res)
 {
     _error("CommonSolverSparseLib::solve(Matrix *mat, cplx *res) not implemented.");
 }

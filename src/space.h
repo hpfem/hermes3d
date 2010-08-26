@@ -393,8 +393,8 @@ protected:
 	/// Internal. Used by LinProblem to detect changes in the space.
 	int get_seq() const { return seq; }
 
-	friend class FeProblem;
-	friend class LinProblem;
+	friend class DiscreteProblem;
+	friend class LinearProblem;
 };
 
 

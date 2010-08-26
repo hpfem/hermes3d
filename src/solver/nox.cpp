@@ -43,7 +43,7 @@ class NoxProblemInterface :
 	public NOX::Epetra::Interface::Preconditioner
 {
 public:
-	NoxProblemInterface(FeProblem &problem);
+	NoxProblemInterface(DiscreteProblem &problem);
 	virtual ~NoxProblemInterface();
 
 	/// Compute and return F
@@ -70,7 +70,7 @@ public:
 	Precond *get_precond() { return precond; }
 	void set_precond(Precond *pc);
 
-	FeProblem &fep;				// finite element problem being solved
+	DiscreteProblem &fep;				// finite element problem being solved
 
 	EpetraVector init_sln;		// initial solution
 	EpetraMatrix jacobian;		// jacobian (optional)
@@ -84,7 +84,7 @@ public:
 };
 
 
-NoxProblemInterface::NoxProblemInterface(FeProblem &problem) :
+NoxProblemInterface::NoxProblemInterface(DiscreteProblem &problem) :
 	fep(problem)
 {
 	_F_
@@ -205,7 +205,7 @@ bool NoxProblemInterface::computePreconditioner(const Epetra_Vector &x, Epetra_O
 
 // NOX solver //////////////////////////////////////////////////////////////////////////////////////
 
-NoxSolver::NoxSolver(FeProblem *problem)
+NoxSolver::NoxSolver(DiscreteProblem *problem)
 {
 	_F_
 #ifdef HAVE_NOX

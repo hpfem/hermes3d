@@ -22,7 +22,7 @@
 
 #include "../h3dconfig.h"
 #include "aztecoo.h"
-#include "../linproblem.h"
+#include "../linear_problem.h"
 #include <common/callstack.h>
 #include <common/timer.h>
 #ifdef HAVE_KOMPLEX
@@ -48,7 +48,7 @@ AztecOOSolver::AztecOOSolver(EpetraMatrix *m, EpetraVector *rhs)
 #endif
 }
 
-AztecOOSolver::AztecOOSolver(LinProblem *lp)
+AztecOOSolver::AztecOOSolver(LinearProblem *lp)
 	: LinearSolver(lp)
 {
 	_F_

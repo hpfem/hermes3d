@@ -432,7 +432,7 @@ int main(int argc, char **args) {
 	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>);
 
 	// assemble stiffness matrix
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 
 	lp.assemble(&mat, &rhs);

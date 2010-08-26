@@ -170,7 +170,7 @@ void test_mat(Mesh *mesh, StiffMatrix &mat)
 	wf.add_matrix_form(0, 0, bilinear_form<double, scalar>, bilinear_form<ord_t, ord_t>, SYM);
 	wf.add_vector_form(0, linear_form<double, scalar>, linear_form<ord_t, ord_t>);
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 
 	// assemble stiffness matrix

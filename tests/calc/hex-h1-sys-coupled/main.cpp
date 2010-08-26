@@ -190,7 +190,7 @@ int main(int argc, char **args) {
 	wf.add_matrix_form(1, 1, bilinear_form_2_2<double, scalar>, bilinear_form_2_2<ord_t, ord_t>, SYM);
 	wf.add_vector_form(1, linear_form_2<double, scalar>, linear_form_2<ord_t, ord_t>);
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_spaces(Tuple<Space *>(&space1, &space2));
 
 	// assemble stiffness matrix

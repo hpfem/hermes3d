@@ -81,7 +81,7 @@ protected:
 class UMFPackLinearSolver : public LinearSolver {
 public:
 	UMFPackLinearSolver(UMFPackMatrix *m, UMFPackVector *rhs);
-	UMFPackLinearSolver(LinProblem *lp);
+	UMFPackLinearSolver(LinearProblem *lp);
 	virtual ~UMFPackLinearSolver();
 
 	virtual bool solve();

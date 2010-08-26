@@ -142,7 +142,7 @@ int main(int argc, char **args) {
 	wf.add_matrix_form(FORM_CB(bilinear_form), SYM);
 	wf.add_vector_form(FORM_CB(linear_form));
 
-	LinProblem lp(&wf);
+	LinearProblem lp(&wf);
 	lp.set_space(&space);
 
 	printf("  - assembling... ");

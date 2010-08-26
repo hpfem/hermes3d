@@ -95,6 +95,192 @@ protected:
     bool complex;
 };
 
+class Vector {
+public:
+    virtual void init(int n, bool is_complex=false) = 0; 
+    Vector() {};
+    virtual ~Vector() {};
+    inline virtual int get_size() { return this->size; }
+    inline bool is_complex() { return this->complex; }
+    virtual void set_zero() = 0;
+    virtual void change_size(int new_size) {_error("Vector::change_size() called.");};
+    virtual void free_data() = 0;
+    virtual void print() = 0;
+
+    virtual void add(int m, double v) = 0;
+    virtual void add(int m, cplx v)
+    {
+        _error("internal error: add(int, cplx) not implemented.");
+    }
+    virtual void add_block(int *iidx, int ilen, double* vec)
+    {
+        for (int i = 0; i < ilen; i++)
+            if (iidx[i] >= 0)
+                this->add(iidx[i], vec[i]);
+    }
+    virtual void add_block(int *iidx, int ilen, cplx* vec)
+    {
+        for (int i = 0; i < ilen; i++)
+            if (iidx[i] >= 0)
+                this->add(iidx[i], vec[i]);
+    }
+    virtual void set(int m, double v) = 0;
+    virtual void set(int m, cplx v)
+    {
+        _error("internal error: set(int, cplx) not implemented.");
+    }
+    virtual double get(int m) = 0;
+    virtual cplx get_cplx(int m)
+    {
+        _error("internal error: get_cplx(int) not implemented.");
+    }
+    virtual double *get_c_array()
+    {
+        _error("internal error: get_c_array() not implemented.");
+    }
+    virtual cplx *get_c_array_cplx()
+    {
+        _error("internal error: get_c_array_cplx() not implemented.");
+    }
+    virtual void set_c_array(double* ptr, int size)
+    {
+        _error("internal error: set_c_array() not implemented.");
+    }
+    virtual void set_c_array_cplx(cplx* ptr, int size)
+    {
+        _error("internal error: set_c_array_cplx() not implemented.");
+    }
+
+protected:
+    int size;
+    bool complex;
+};
+
+// print vector - int
+void print_vector(const char *label, int *value, int size);
+// print vector - double
+void print_vector(const char *label, double *value, int size);
+// print vector - cplx
+void print_vector(const char *label, cplx *value, int size);
+
+
+// Uses a C++ array as the internal implementation
+class AVector: public Vector {
+public:
+    virtual void init(int n, bool is_complex = false) {
+        this->size = n;
+        this->complex = is_complex;
+        if (is_complex) {
+            this->v_cplx = new cplx[n];
+            for (int i=0; i < n; i++)
+                this->v_cplx[i] = 0;
+        }
+        else {
+            this->v = new double[n];
+            for (int i=0; i < n; i++)
+                this->v[i] = 0;
+        }
+    }
+    AVector(int n, bool is_complex=false) {
+        this->init(n, is_complex);
+    }
+    virtual void set_zero() {
+      if (complex) {
+        for (int i=0; i < this->size; i++) this->v_cplx[i] = 0;
+      }
+      else {
+        for (int i=0; i < this->size; i++) this->v[i] = 0;
+      }
+    };
+    virtual void change_size(int new_length) {
+      if (complex) {
+        this->v_cplx = (cplx*)realloc(this->v_cplx, new_length*sizeof(cplx));
+        if (this->v_cplx == NULL) _error("AVector::change_length() failed.");
+        this->size = new_length;
+      } else {
+        this->v = (double*)realloc(this->v, new_length*sizeof(double));
+        if (this->v == NULL) _error("AVector::change_length() failed.");
+        this->size = new_length;
+      }
+    }
+
+    virtual void free_data() {
+      if (complex) {
+	if (this->v_cplx != NULL) {
+          delete[] this->v_cplx;
+          this->v_cplx = NULL;
+          this->size = 0;
+        }
+      }
+      else {
+        if (this->v != NULL) {
+          delete[] this->v;
+          this->v = NULL;
+          this->size = 0;
+        }
+      }
+    };
+    virtual ~AVector() {
+      free_data();
+    }
+    virtual void print() {
+        if (this->complex)
+            print_vector("", this->v_cplx, this->get_size());
+        else
+            print_vector("", this->v, this->get_size());
+    }
+
+    virtual void add(int m, double v) {
+        if (this->complex)
+            _error("can't call add(int, double) for complex vectors");
+        if (m >= 0)
+            this->v[m] += v;
+    }
+    virtual void add(int m, cplx v)
+    {
+        if (!(this->complex))
+            _error("can't call add(int, cplx) for real vectors");
+        if (m >= 0)
+            this->v_cplx[m] += v;
+    }
+    virtual void set(int m, double v) {
+        if (m >= 0)
+            this->v[m] = v;
+    }
+    virtual void set(int m, cplx v) {
+        if (m >= 0)
+            this->v_cplx[m] = v;
+    }
+    virtual double get(int m) {
+        return this->v[m];
+    }
+    virtual cplx get_cplx(int m) {
+        return this->v_cplx[m];
+    }
+    virtual double *get_c_array()
+    {
+        return this->v;
+    }
+    virtual cplx *get_c_array_cplx()
+    {
+        return this->v_cplx;
+    }
+    virtual void set_c_array(double* ptr, int size)
+    {
+        this->v = ptr;
+        this->size = size;
+    }
+    virtual void set_c_array_cplx(cplx* ptr, int size)
+    {
+        this->v_cplx = ptr;
+        this->size = size;
+    }
+
+private:
+    double *v;
+    cplx *v_cplx;
+};
+
 // **********************************************************************************************************
 
 class CooMatrix : public Matrix {
@@ -110,10 +296,7 @@ public:
     inline virtual void init() { this->complex = false; free_data(); }
     virtual void free_data();
 
-    virtual void set_zero()
-    {
-        _error("CooMatrix::set_zero() not implemented.");
-    }
+    virtual void set_zero();
 
     virtual int get_nnz();
     virtual void print();
@@ -316,13 +499,6 @@ private:
     int *Ap;
     int *Ai;
 };
-
-// print vector - int
-void print_vector(const char *label, int *value, int size);
-// print vector - double
-void print_vector(const char *label, double *value, int size);
-// print vector - cplx
-void print_vector(const char *label, cplx *value, int size);
 
 template<typename T>
 void dense_to_coo(int size, int nnz, T **Ad, int *row, int *col, T *A);

@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 #include "umfpack.h"
-#include "../linproblem.h"
+#include "../linear_problem.h"
 #include <common/trace.h>
 #include <common/error.h>
 #include <common/utils.h>
@@ -296,7 +296,7 @@ UMFPackLinearSolver::UMFPackLinearSolver(UMFPackMatrix *m, UMFPackVector *rhs)
 #endif
 }
 
-UMFPackLinearSolver::UMFPackLinearSolver(LinProblem *lp)
+UMFPackLinearSolver::UMFPackLinearSolver(LinearProblem *lp)
 	: LinearSolver(lp)
 {
 	_F_
